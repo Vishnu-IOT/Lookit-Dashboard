@@ -122,7 +122,7 @@ const Notiupdate = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete notification?")) return;
         await fetch(`${API_BASE}/notifications/delete/${id}`, {
-            method: "POST",
+            method: "get",
         });
         fetchNotifications();
     };
