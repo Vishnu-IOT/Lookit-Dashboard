@@ -76,7 +76,7 @@ const NotificationList = () => {
         try {
             const res = await fetch(
                 `https://users.mpdatahub.com/deletenotification/${id}`,
-                { method: "DELETE" }
+                { method: "GET" }
             );
 
             if (res.ok) {
