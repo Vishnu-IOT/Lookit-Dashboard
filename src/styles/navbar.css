@@ -1,0 +1,536 @@
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background: #E9EEF3;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-toggle {
+  display: none;
+}
+
+.menu-toggle:hover {
+  background-color: #f5f5f5;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navlogo1 {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.logoa {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.logoa:hover {
+  color: #812baf;
+}
+
+.navbar-right {
+  position: relative;
+}
+
+/* Profile Section */
+.profile-section {
+  position: relative;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #f8f9fa;
+}
+
+.profile-button:hover {
+  background-color: #e9ecef;
+  border-color: #812baf;
+}
+
+.profile-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #812baf;
+}
+
+.profile-name {
+  font-weight: 500;
+  color: #333;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 280px;
+  max-width: 90vw;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  overflow: hidden;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  /* background: linear-gradient(135deg, #812baf 0%, #764ba2 100%); */
+  color: black;
+  gap: 12px;
+}
+
+.dropdown-profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email {
+  opacity: 0.9;
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-badge {
+  margin-top: 0px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.user-details {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+  flex-wrap: wrap;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #666;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.85rem;
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
+  min-width: 0;
+}
+
+.referral-code {
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  display: inline-block;
+  word-break: break-all;
+}
+
+.login-time {
+  color: #812baf;
+  font-weight: 600;
+}
+
+.onboarding-notice {
+  margin-top: 12px;
+  padding: 8px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.dropdown-actions {
+  padding: 10px 0px;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.logout-btn:hover {
+  background: #ff5252;
+}
+
+.logout-icon {
+  font-size: 1rem;
+}
+
+/* Login Button */
+.login-btn {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #812baf 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 0.9rem;
+}
+
+.login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.login-icon {
+  font-size: 0.9rem;
+}
+
+/* Mobile Small (up to 576px) */
+@media (max-width: 786px) {
+  .navbar {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .navbar-left {
+    gap: 10px;
+  }
+
+  .menu-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+    padding: 4px;
+    display: block;
+  }
+
+  .navlogo1 {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logoa {
+    font-size: 1.2rem;
+  }
+
+  .profile-button {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .profile-image {
+    width: 28px;
+    height: 28px;
+    border-width: 1px;
+  }
+
+  .profile-name {
+    max-width: 80px;
+    font-size: 0.9rem;
+  }
+
+  .user-header {
+    padding: 0px;
+    gap: 10px;
+  }
+
+  .dropdown-profile-image {
+    width: 44px;
+    height: 44px;
+    border-width: 2px;
+  }
+
+  .user-name {
+    font-size: 0.95rem;
+  }
+
+  .user-email {
+    font-size: 0.75rem;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0px;
+  }
+
+  .user-details {
+    padding: 5px;
+  }
+
+  .detail-item {
+    /* flex-direction: column; */
+    align-items: flex-start;
+    gap: 4px;
+    padding: 6px 0;
+  }
+
+  .detail-label {
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+
+  .detail-value {
+    text-align: left;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .referral-code {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+
+  .login-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .login-icon {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .navbar {
+    padding: 0 8px;
+  }
+
+  .menu-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navlogo1 {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logoa {
+    font-size: 1.1rem;
+  }
+
+  .profile-button {
+    padding: 3px 6px;
+  }
+
+  .profile-image {
+    width: 24px;
+    height: 24px;
+  }
+
+  .profile-name {
+    max-width: 60px;
+    font-size: 0.8rem;
+  }
+
+  .user-header {
+    padding: 0px;
+    gap: 8px;
+  }
+
+  .dropdown-profile-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .user-name {
+    font-size: 0.9rem;
+  }
+
+  .user-email {
+    font-size: 0.7rem;
+    margin-bottom: 0px;
+  }
+
+  .detail-label,
+  .detail-value {
+    font-size: 0.75rem;
+  }
+
+  .login-btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mode */
+@media (max-height: 500px) and (orientation: landscape) {
+  .navbar {
+    height: 50px;
+  }
+
+  .profile-dropdown {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+
+  .logoa {
+    color: #333;
+  }
+
+  .logoa:hover {
+    color: #8a9bff;
+  }
+
+  .profile-button {
+    background-color: #fff;
+    border-color: #404040;
+  }
+
+  .profile-button:hover {
+    /* background-color: #3d3d3d; */
+    border-color: #8a9bff;
+  }
+
+  .profile-name {
+    color: #333;
+  }
+
+  .profile-dropdown {
+    background: #fff;
+    color: #333;
+    padding: 10px;
+  }
+
+  .user-details {
+    border-bottom-color: #404040;
+  }
+
+  .detail-item {
+    border-bottom-color: #404040;
+  }
+
+  .detail-label {
+    color: #aaa;
+  }
+
+  .detail-value {
+    color: #fff;
+  }
+
+  .referral-code {
+    background: #fff;
+    color: #333;
+    font-weight: 500;
+  }
+}

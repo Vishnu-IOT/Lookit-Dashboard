@@ -1,0 +1,259 @@
+.postjob-container {
+    background: #f6f6f6;
+    padding: 30px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.postjob-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.postjob-form {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 18px;
+    margin-bottom: 6px;
+    font-weight: bolder;
+    text-align: left;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #e2e2e2;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group textarea {
+    min-height: 110px;
+    resize: none;
+}
+
+.full-width {
+    margin-bottom: 18px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-clear {
+    background: #ff7a7a;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-submit {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-list {
+    background: #333;
+    color: #fff;
+}
+
+.job-list {
+    margin-top: 30px;
+}
+
+.job-card {
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.job-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-edit {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-delete {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: #fff;
+    width: 100%;
+    padding: 10px;
+    /* max-width: 700px; */
+    /* max-height: 80vh; */
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* JOB CARD */
+.job-card {
+    background: #f7f7f7;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.job-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.job-card h4 {
+    text-align: left;
+}
+
+.job-card p {
+    text-align: left;
+}
+
+.btn-edit {
+    background: #1976d2;
+    color: #fff;
+}
+
+.btn-delete {
+    background: #d32f2f;
+    color: #fff;
+}
+
+.btn-list {
+    background: #333;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 24px;
+    border-radius: 6px;
+}
+
+
+/* ===================== */
+/* MOBILE RESPONSIVENESS */
+/* ===================== */
+
+@media (max-width: 992px) {
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .postjob-container {
+        padding: 15px;
+    }
+
+    .postjob-form {
+        padding: 15px;
+        width: 100%;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-clear,
+    .btn-submit {
+        width: 100%;
+    }
+
+    .modal-content {
+        background: #fff;
+        width: 94%;
+        padding: 10px;
+        /* max-width: 700px; */
+        /* max-height: 80vh; */
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+    }
+}
