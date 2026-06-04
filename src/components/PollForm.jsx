@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../styles/PollForm.css";
+import axios from "axios";
 
 const MAX_QUESTION_LENGTH = 200;
 const MIN_OPTIONS = 2;
@@ -10,6 +11,8 @@ export default function PollForm({ onPollCreated }) {
   const [options, setOptions] = useState(["", ""]);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handleQuestionChange = (e) => {
     setQuestion(e.target.value);
@@ -48,10 +51,14 @@ export default function PollForm({ onPollCreated }) {
     if (uniqueOpts.size !== options.filter((o) => o.trim()).length) {
       newErrors.duplicate = "All options must be unique.";
     }
+    if (!startDate) newErrors.startDate = "Start date is required.";
+    if (!endDate) newErrors.endDate = "End date is required.";
+    if (startDate && endDate && endDate < startDate)
+      newErrors.endDate = "End date must be after start date.";
     return newErrors;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -64,13 +71,32 @@ export default function PollForm({ onPollCreated }) {
       createdAt: new Date().toISOString(),
       status: "active",
       creator: { name: "You", avatar: "Y" },
+      startDate,
+      endDate,
     };
-    if (onPollCreated) onPollCreated(newPoll);
-    setQuestion("");
-    setOptions(["", ""]);
-    setErrors({});
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    const newbody = {
+      question: question.trim(),
+      options: options,
+      start_date: startDate,
+      end_date: endDate,
+    };
+
+    try {
+      await axios.post(
+        'https://users.mpdatahub.com/api/poll-create',
+        newbody
+      );
+      if (onPollCreated) onPollCreated(newPoll);
+      setQuestion("");
+      setOptions(["", ""]);
+      setErrors({});
+      setSubmitted(true);
+      setStartDate("");
+      setEndDate("");
+      setTimeout(() => setSubmitted(false), 3000);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const questionRemainder = MAX_QUESTION_LENGTH - question.length;
@@ -189,6 +215,49 @@ export default function PollForm({ onPollCreated }) {
               Add Option
             </button>
           )}
+        </div>
+
+        <div className="poll-form-divider" />
+
+        {/* Date Range */}
+        <div className="poll-form-field">
+          <label className="poll-form-label">
+            Poll Duration <span className="poll-form-required">*</span>
+          </label>
+          <div className="poll-form-date-row">
+            <div className="poll-form-date-group">
+              <span className="poll-form-date-label">Start Date</span>
+              <div className={`poll-form-date-input-wrap ${errors.startDate ? "poll-form-input--error" : startDate ? "poll-form-input--valid" : ""}`}>
+                <input
+                  type="date"
+                  className="poll-form-date-input"
+                  value={startDate}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setErrors((prev) => ({ ...prev, startDate: null }));
+                  }}
+                />
+              </div>
+              {errors.startDate && <span className="poll-form-error-text">{errors.startDate}</span>}
+            </div>
+            <div className="poll-form-date-group">
+              <span className="poll-form-date-label">End Date</span>
+              <div className={`poll-form-date-input-wrap ${errors.endDate ? "poll-form-input--error" : endDate ? "poll-form-input--valid" : ""}`}>
+                <input
+                  type="date"
+                  className="poll-form-date-input"
+                  value={endDate}
+                  min={startDate || new Date().toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setErrors((prev) => ({ ...prev, endDate: null }));
+                  }}
+                />
+              </div>
+              {errors.endDate && <span className="poll-form-error-text">{errors.endDate}</span>}
+            </div>
+          </div>
         </div>
 
         <div className="poll-form-divider" />

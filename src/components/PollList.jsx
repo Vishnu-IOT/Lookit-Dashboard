@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/PollList.css";
+import axios from "axios";
+import PollEditOverlay from "./PollEditOverlay";
 
 const INITIAL_POLLS = [
   {
@@ -51,7 +53,7 @@ function formatDate(iso) {
 }
 
 function getTotalVotes(options) {
-  return options.reduce((sum, o) => sum + o.votes, 0);
+  return options.reduce((sum, o) => sum + o.vote_count, 0);
 }
 
 function getPercent(votes, total) {
@@ -62,22 +64,22 @@ function getPercent(votes, total) {
 function PollCard({ poll, onVote, onEdit, onDelete }) {
   const total = getTotalVotes(poll.options);
   const hasVoted = poll.userVoted !== null && poll.userVoted !== undefined;
-  const isExpired = poll.status === "expired";
+  const isExpired = poll.status === 0;
 
   return (
     <div className="poll-list-card">
       {/* Card Header */}
       <div className="poll-list-card-header">
-        <div className="poll-list-creator">
+        {/* <div className="poll-list-creator">
           <div className="poll-list-avatar">{poll.creator.avatar}</div>
           <div className="poll-list-creator-info">
             <span className="poll-list-creator-name">{poll.creator.name}</span>
             <span className="poll-list-date">{formatDate(poll.createdAt)}</span>
           </div>
-        </div>
+        </div> */}
         <div className="poll-list-header-right">
-          <span className={`poll-list-badge poll-list-badge--${poll.status}`}>
-            {poll.status === "active" ? (
+          <span className={`poll-list-badge poll-list-badge--${poll.status === 1 ? 'active' : 'expired'}`}>
+            {poll.status === 1 ? (
               <><span className="poll-list-badge-dot" />Active</>
             ) : "Expired"}
           </span>
@@ -116,18 +118,19 @@ function PollCard({ poll, onVote, onEdit, onDelete }) {
       {/* Options */}
       <div className="poll-list-options">
         {poll.options.map((option, i) => {
-          const pct = getPercent(option.votes, total);
-          const isWinner = hasVoted && option.votes === Math.max(...poll.options.map((o) => o.votes));
-          const isVoted = poll.userVoted === i;
+          const pct = getPercent(option.vote_count, total);
+          const isWinner = hasVoted && option.vote_count === Math.max(...poll.options.map((o) => o.vote_count));
+          const isVoted = poll.vote_count === i;
+          console.log(pct, isWinner)
 
           return (
             <div
               key={i}
               className={`poll-list-option ${isVoted ? "poll-list-option--voted" : ""} ${!hasVoted && !isExpired ? "poll-list-option--clickable" : ""}`}
-              onClick={() => !hasVoted && !isExpired && onVote(poll.id, i)}
+              // onClick={() => !hasVoted && !isExpired && onVote(poll.id, i)}
               role={!hasVoted && !isExpired ? "button" : undefined}
               tabIndex={!hasVoted && !isExpired ? 0 : undefined}
-              onKeyDown={(e) => e.key === "Enter" && !hasVoted && !isExpired && onVote(poll.id, i)}
+              // onKeyDown={(e) => e.key === "Enter" && !hasVoted && !isExpired && onVote(poll.id, i)}
               aria-label={!hasVoted && !isExpired ? `Vote for ${option.text}` : undefined}
             >
               <div className="poll-list-option-top">
@@ -139,14 +142,14 @@ function PollCard({ poll, onVote, onEdit, onDelete }) {
                       </svg>
                     </span>
                   )}
-                  <span className="poll-list-option-text">{option.text}</span>
+                  <span className="poll-list-option-text">{option.option_text}</span>
                   {isWinner && hasVoted && (
                     <span className="poll-list-winner-tag">Leading</span>
                   )}
                 </div>
-                {hasVoted && (
-                  <span className="poll-list-option-pct">{pct}%</span>
-                )}
+
+                <span className="poll-list-option-pct">{pct}%</span>
+
               </div>
 
               {hasVoted && (
@@ -160,7 +163,7 @@ function PollCard({ poll, onVote, onEdit, onDelete }) {
 
               {hasVoted && (
                 <span className="poll-list-option-votes">
-                  {option.votes.toLocaleString()} votes
+                  {option.vote_count.toLocaleString()} votes
                 </span>
               )}
             </div>
@@ -191,7 +194,18 @@ function PollCard({ poll, onVote, onEdit, onDelete }) {
 }
 
 export default function PollList({ newPolls = [] }) {
-  const [polls, setPolls] = useState([...newPolls, ...INITIAL_POLLS]);
+  const [polls, setPolls] = useState([]);
+  const [editingPoll, setEditingPoll] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get('https://users.mpdatahub.com/api/polls')
+      .then((res) => {
+        setPolls(res.data?.data);
+        console.log(res.data?.data);
+      })
+      .catch((err) => console.error('Question Poll error', err));
+  }, []);
 
   const handleVote = (pollId, optionIndex) => {
     setPolls((prev) =>
@@ -206,7 +220,8 @@ export default function PollList({ newPolls = [] }) {
   };
 
   const handleEdit = (pollId) => {
-    alert(`Edit poll #${pollId} — wire up your edit handler here.`);
+    const poll = polls.find((p) => p.id === pollId);
+    if (poll) setEditingPoll(poll);
   };
 
   const handleDelete = (pollId) => {
@@ -222,7 +237,7 @@ export default function PollList({ newPolls = [] }) {
         <div>
           <h1 className="poll-list-page-title">Poll Management</h1>
           <p className="poll-list-page-subtitle">
-            {polls.length} poll{polls.length !== 1 ? "s" : ""} · {polls.filter((p) => p.status === "active").length} active
+            {polls.length} poll{polls.length !== 1 ? "s" : ""} · {polls.filter((p) => p.status === 1).length} active
           </p>
         </div>
         <div className="poll-list-header-stats">
@@ -234,7 +249,7 @@ export default function PollList({ newPolls = [] }) {
           </div>
           <div className="poll-list-stat-divider" />
           <div className="poll-list-stat">
-            <span className="poll-list-stat-value">{polls.filter((p) => p.status === "active").length}</span>
+            <span className="poll-list-stat-value">{polls.filter((p) => p.status === 1).length}</span>
             <span className="poll-list-stat-label">Active Polls</span>
           </div>
         </div>
@@ -264,6 +279,16 @@ export default function PollList({ newPolls = [] }) {
             />
           ))}
         </div>
+      )}
+      {editingPoll && (
+        <PollEditOverlay
+          poll={editingPoll}
+          onClose={() => setEditingPoll(null)}
+          onSave={(updated) => {
+            setPolls((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+            setEditingPoll(null);
+          }}
+        />
       )}
     </div>
   );

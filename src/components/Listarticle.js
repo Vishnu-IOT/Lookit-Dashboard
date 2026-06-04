@@ -1414,7 +1414,7 @@ const Listarticle = () => {
               <div className="detail-group">
                 <span className="detail-label">Author</span>
                 <p className="detail-value">
-                  {viewingPost.submasteruser?.name || 'N/A'}
+                  {viewingPost.user?.name || 'N/A'}
                 </p>
               </div>
             </div>
