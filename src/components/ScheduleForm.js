@@ -7,6 +7,7 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
   const [message, setMessage] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [typeId, setTypeid] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [type, setType] = useState("DAY-CALENDER"); // New state for types dropdown
@@ -20,8 +21,9 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
       setMessage(editData.message);
       setDate(editData.date);
       setTime(editData.time);
+      setTypeid(editData.type_id)
       setPreview(editData.image || null);
-      setType(editData.type || "DAY-CALENDER"); // Set type from edit data if available
+      setType(editData.type || "DAY-CALENDER");
     }
   }, [editMode, editData]);
 
@@ -38,6 +40,7 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
 
     const formData = new FormData();
     formData.append("id", id)
+    formData.append("type_id", typeId)
     formData.append("title", title);
     formData.append("message", message);
     formData.append("type", "general");

@@ -178,7 +178,7 @@
   cursor: pointer;
 }
 
-.radio-label input[type="radio"] {
+.radio-label input[type='radio'] {
   margin: 0;
 }
 
@@ -212,7 +212,7 @@
 
 /* Disabled submit button look */
 .submit-button[disabled],
-.submit-button[aria-disabled="true"] {
+.submit-button[aria-disabled='true'] {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -370,8 +370,16 @@
   transition: width 0.3s ease;
 }
 
-/* (Your existing CSS remains unchanged) */
+.aart-image-preview {
+  width: 100%;
+  max-width: 250px;
+  margin-top: 10px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
 
+/* (Your existing CSS remains unchanged) */
 
 @media only screen and (max-width: 768px) {
   .add-post-container {

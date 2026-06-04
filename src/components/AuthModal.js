@@ -3,8 +3,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/AuthModal.css";
 import {
-  Mail, Lock, Phone, User, Calendar, Gift,
-  X, ArrowLeft, Shield, CheckCircle
+  Mail, Lock, Phone, User, Calendar, Gift
 } from "lucide-react";
 
 const AuthModal = ({ onClose, onLogin }) => {
@@ -206,13 +205,13 @@ const AuthModal = ({ onClose, onLogin }) => {
               <Lock size={16} />
               Login
             </button>
-            <button
+            {/* <button
               className={`tab1 ${activeTab === "signup" ? "active" : ""}`}
               onClick={() => setActiveTab("signup")}
             >
               <User size={16} />
               Sign Up
-            </button>
+            </button> */}
           </div>
 
           {message.text && (

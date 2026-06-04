@@ -447,7 +447,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-    flex: 1;
+    /* flex: 1; */
 }
 
 .cancel-btn:hover {

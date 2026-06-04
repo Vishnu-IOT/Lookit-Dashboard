@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
@@ -11,8 +17,8 @@ import Listarticle from './components/Listarticle';
 import List from './components/List';
 import NotificationList from './components/NotificationList';
 import ScheduleForm from './components/ScheduleForm';
-import Form from "./CalendarList/duration";
-import Banner from "./CalendarList/Banner";
+import Form from './CalendarList/duration';
+import Banner from './CalendarList/Banner';
 import AddArticleRm from './components/AddArticleRm';
 import ListarticleRm from './components/ListarticleRm';
 import MainCategoryRm from './components/MainCategoryRm';
@@ -28,35 +34,53 @@ import Todayjobsform from './components/Todayjobsform';
 import VegetablePriceList from './components/VegetablePriceList';
 import FuelRates from './components/FuelRates';
 import Thirumanam from './components/Thirumanam';
+import AddNews from './components/AddNews';
+import Listnews from './components/Listnews';
+import { BottomNav } from './components/BottomNav';
+import UpdatePostForm from './components/UpdatePostForm';
+import UpdatePostList from './components/UpdatePostList';
+import PollForm from './components/PollForm';
+import PollList from './components/PollList';
 
 // Dashboard Layout Component
-const DashboardLayout = ({ isLoggedIn, currentUser, onLogout, onMenuToggle }) => {
+const DashboardLayout = ({
+  isLoggedIn,
+  currentUser,
+  onLogout,
+  onMenuToggle,
+}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const getActiveMenuFromPath = () => {
     const path = location.pathname.replace('/', '');
     const pathToMenuMap = {
-      'dashboard': 'Dashboard',
+      dashboard: 'Dashboard',
       'main-category': 'Main-Category',
       'sub-category': 'sub-Category',
       'main-category-rm': 'MainCategoryRm',
       'sub-category-rm': 'subCategoryRm',
       'add-article': 'Add Article',
       'list-articles': 'List & Edit Articles',
+      'add-news': 'Add News',
+      'list-news': 'List News',
       'add-article-rm': 'AddArticlerm',
       'list-articles-rm': 'List and Edit Articles',
       'rasi-upload': 'Rasi Upload Form',
       'rasi-list': 'RasiList',
-      'updates': 'Updates',
+      updates: 'Updates',
+      'add-updates': 'Add Updates',
+      'list-updates': 'List & Edit Updates',
       'notification-update': 'Notification update',
-      'notifications': 'Notifications',
-      'schedule': 'Schedule',
-      'banner': 'Banner',
-      'list': 'List',
-      'article': 'Article'
+      notifications: 'Notifications',
+      schedule: 'Schedule',
+      banner: 'Banner',
+      list: 'List',
+      article: 'Article',
     };
     return pathToMenuMap[path] || 'Dashboard';
   };
+
+  const [showMore, setShowMore] = useState(false);
 
   const activeMenu = getActiveMenuFromPath();
 
@@ -88,18 +112,27 @@ const DashboardLayout = ({ isLoggedIn, currentUser, onLogout, onMenuToggle }) =>
           <Routes>
             <Route path="dashboard" element={<MainContent />} />
             <Route path="main-category" element={<MainCategory />} />
-            <Route path="sub-category" element={<SubCategory />} />
+            <Route
+              path="sub-category/:mainCategoryId"
+              element={<SubCategory />}
+            />
             <Route path="main-category-rm" element={<MainCategoryRm />} />
             <Route path="sub-category-rm" element={<SubCategoryRm />} />
             <Route path="add-article" element={<AddArticle />} />
             <Route path="list-articles" element={<Listarticle />} />
+            <Route path="add-news" element={<AddNews />} />
+            <Route path="list-news" element={<Listnews />} />
             <Route path="add-article-rm" element={<AddArticleRm />} />
             <Route path="list-articles-rm" element={<ListarticleRm />} />
+            <Route path="poll-form" element={<PollForm />} />
+            <Route path="poll-list" element={<PollList />} />
             <Route path="rasi-upload" element={<Form />} />
             <Route path="today-talks" element={<Todaytalksform />} />
             <Route path="today-jobs" element={<Todayjobsform />} />
             <Route path="rasi-list" element={<RasiAllList />} />
             <Route path="updates" element={<Updates />} />
+            <Route path="add-updates" element={<UpdatePostForm />} />
+            <Route path="list-updates" element={<UpdatePostList />} />
             <Route path="notification-update" element={<Notiupdate />} />
             <Route path="notifications" element={<NotificationList />} />
             <Route path="schedule" element={<ScheduleForm />} />
@@ -114,6 +147,69 @@ const DashboardLayout = ({ isLoggedIn, currentUser, onLogout, onMenuToggle }) =>
         </div>
       </div>
       <ScrollToTopButton /> {/* Add this line for the floating button */}
+      <BottomNav
+        onMoreClick={() => setShowMore((s) => !s)}
+        activeMenu={activeMenu}
+        currentUser={currentUser}
+        onLogout={onLogout}
+      />
+      {/* Mobile More Menu */}
+      {/* {showMore && (
+        <>
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '64px',
+              left: 0,
+              right: 0,
+              background: '#ffffff',
+              borderTop: '1px solid #e2e8f0',
+              zIndex: '200',
+              padding: '0.75rem',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3,1fr)',
+              gap: '0.5rem',
+            }}
+          >
+            {MORE_ITEMS.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => {
+                  window.location.hash = item.key;
+                  setShowMore(false);
+                }}
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '8px',
+                  background:
+                    activeMenu === item.key
+                      ? 'var(--primary-light)'
+                      : 'var(--bg-hover)',
+                  color:
+                    activeMenu === item.key
+                      ? 'var(--primary)'
+                      : 'var(--text-primary)',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 'calc(200 - 1)',
+            }}
+            onClick={() => setShowMore(false)}
+          />
+        </>
+      )} */}
     </>
   );
 };
@@ -129,7 +225,8 @@ function App() {
     if (!userData || !userData.loginTime) return false;
 
     const currentTime = Date.now();
-    const hoursSinceLogin = (currentTime - userData.loginTime) / (1000 * 60 * 60);
+    const hoursSinceLogin =
+      (currentTime - userData.loginTime) / (1000 * 60 * 60);
 
     // Logout after 24 hours
     if (hoursSinceLogin > 24) {
@@ -201,7 +298,7 @@ function App() {
   const handleLogin = (userData) => {
     const userWithTime = {
       ...userData,
-      loginTime: Date.now()
+      loginTime: Date.now(),
     };
 
     setIsLoggedIn(true);

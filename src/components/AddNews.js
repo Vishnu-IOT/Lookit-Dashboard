@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import '../styles/Addarticle.css';
+import imageCompression from 'browser-image-compression';
 
-const Uploadarticles = () => {
-  const navigate = useNavigate();
-
+const AddNews = () => {
   const [mainCategories, setMainCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedMain, setSelectedMain] = useState('');
@@ -16,31 +14,46 @@ const Uploadarticles = () => {
   const [imageone, setImageone] = useState(null);
   const [imagetwo, setImagetwo] = useState(null);
   const [contentType, setContentType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+  const resetForm = () => {
+    setSelectedMain('');
+    setSelectedSub('');
+    setTitle('');
+    setDescription('');
+    setYoutubeURL('');
+    setImageone(null);
+    setImagetwo(null);
+    setContentType('');
+    setProgress(0);
+  };
   const [userId, setUserId] = useState('');
-
-  // Fetch Main Categories
+  const [imageOnePreview, setImageOnePreview] = useState('');
+  const [imageTwoPreview, setImageTwoPreview] = useState('');
   useEffect(() => {
     axios
       .get('https://users.mpdatahub.com/api/main-category')
       .then((res) => {
         const allowed = (res.data || []).filter(
-          (cat) => cat.status === 'allow'
+          (cat) => cat.status === 'allow' && cat.name === 'News'
         );
         setMainCategories(allowed);
       })
-      .catch((err) => console.error('Main category error', err));
+      .catch(() => showToast('Failed to load main categories', 'error'));
   }, []);
-
-  // Fetch Sub Categories
   useEffect(() => {
     if (selectedMain) {
       axios
         .get(`https://users.mpdatahub.com/api/sub-category?id=${selectedMain}`)
         .then((res) => setSubCategories(res.data || []))
-        .catch((err) => console.error('Sub category error', err));
+        .catch(() => showToast('Failed to load sub categories', 'error'));
     }
   }, [selectedMain]);
-
   // Get logged in user email from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
@@ -53,48 +66,64 @@ const Uploadarticles = () => {
       }
     }
   }, []);
-
-  // Handle Submit
   const handleSubmit = async () => {
+    if (!title || !description || !selectedSub || !contentType) {
+      showToast('Please fill all required fields!', 'error');
+      return;
+    }
     const formData = new FormData();
-
     formData.append('title', title);
     formData.append('user_id', userId);
     formData.append('message', description);
     formData.append('category_id', selectedSub);
     formData.append('youtube_url', youtubeURL);
     formData.append('content_type', contentType);
-
-    // FILES
     if (imageone) formData.append('app_thumbnail', imageone);
     if (imagetwo) formData.append('web_thumbnail', imagetwo);
     try {
+      setLoading(true);
       await axios.post('https://tnreaders.in/mobile/store-new-post', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round(
+            (progressEvent.loaded / progressEvent.total) * 100
+          );
+          setProgress(percent);
+        },
       });
-
-      alert('Post submitted successfully!');
-      navigate('/list-all');
+      showToast('Post submitted successfully!', 'success');
+      resetForm();
     } catch (err) {
-      console.error('Submission error', err);
-      alert('Error submitting post.');
+      console.error(err);
+      showToast('Submission failed!', 'error');
+    } finally {
+      setLoading(false);
     }
   };
+  const compressImage = async (file) => {
+    if (!file) return null;
 
+    try {
+      const options = {
+        maxSizeMB: 1,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      return compressedFile;
+    } catch (error) {
+      console.error('Image compression error:', error);
+      return file;
+    }
+  };
   return (
     <div className="alignthem">
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+      )}
       <div className="add-post-container">
-        <div className="d-flex justify-content-between align-items-center">
-          <h2 className="form-title">Add Articles</h2>
-          <button
-            className="btn btn-secondary"
-            onClick={() => navigate('/list-all')}
-          >
-            Back to List Articles
-          </button>
-        </div>
-
-        {/* Content Type */}
+        <h2 className="form-title">Add News to LookIt</h2>
         <div className="form-group">
           <label className="form-label">Content Type</label>
           <div className="radio-group">
@@ -113,8 +142,6 @@ const Uploadarticles = () => {
             ))}
           </div>
         </div>
-
-        {/* Main & Sub Category */}
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Main Category</label>
@@ -131,7 +158,6 @@ const Uploadarticles = () => {
               ))}
             </select>
           </div>
-
           <div className="form-group">
             <label className="form-label">Sub Category</label>
             <select
@@ -148,8 +174,6 @@ const Uploadarticles = () => {
             </select>
           </div>
         </div>
-
-        {/* Title */}
         <div className="form-group">
           <label className="form-label">Title</label>
           <input
@@ -159,8 +183,6 @@ const Uploadarticles = () => {
             type="text"
           />
         </div>
-
-        {/* Description */}
         <div className="form-group">
           <label className="form-label">Description</label>
           <textarea
@@ -169,8 +191,6 @@ const Uploadarticles = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-
-        {/* YouTube URL */}
         <div className="form-group">
           <label className="form-label">YouTube URL</label>
           <input
@@ -180,35 +200,67 @@ const Uploadarticles = () => {
             type="text"
           />
         </div>
-
-        {/* File Upload - App Thumbnail */}
         <div className="form-group">
           <label className="form-label">App Thumbnail</label>
           <input
             className="form-input"
             type="file"
             accept="image/*"
-            onChange={(e) => setImageone(e.target.files[0])}
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const compressed = await compressImage(file);
+              setImageone(compressed);
+              setImageOnePreview(URL.createObjectURL(compressed));
+            }}
           />
         </div>
+        {imageOnePreview && (
+          <img
+            src={imageOnePreview}
+            alt="Preview"
+            className="aart-image-preview"
+          />
+        )}
 
-        {/* File Upload - Web Thumbnail */}
         <div className="form-group">
           <label className="form-label">Web Thumbnail</label>
           <input
             className="form-input"
             type="file"
             accept="image/*"
-            onChange={(e) => setImagetwo(e.target.files[0])}
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const compressed = await compressImage(file);
+              setImagetwo(compressed);
+              setImageTwoPreview(URL.createObjectURL(compressed));
+            }}
           />
         </div>
-
-        <button className="submit-button" onClick={handleSubmit}>
-          சமர்ப்பிக்கவும்
+        {imageTwoPreview && (
+          <img
+            src={imageTwoPreview}
+            alt="Preview"
+            className="aart-image-preview"
+          />
+        )}
+        {loading && (
+          <div className="progress-container">
+            <div className="progress-bar" style={{ width: `${progress}%` }}>
+              {progress}%
+            </div>
+          </div>
+        )}
+        <button
+          className="submit-button"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? 'Uploading...' : 'சமர்ப்பிக்கவும்'}
         </button>
       </div>
     </div>
   );
 };
-
-export default Uploadarticles;
+export default AddNews;

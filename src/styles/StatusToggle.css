@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600&display=swap');
+
+/* ── Page ── */
+.toggle-page {
+  /* min-height: 100vh; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ══════════════════════════════════════
+   OUTER PILL BUTTON
+══════════════════════════════════════ */
+.st-btn {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  border-radius: 44px;
+  border: 2px solid none;
+  border: none;
+  background: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.2s ease;
+  box-shadow:
+    0 2px 10px rgba(30, 58, 138, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.st-btn:active {
+  transform: scale(0.96);
+}
+
+/* ══════════════════════════════════════
+   CURVED BLUE ARC — the filled side cap
+   An oval that peeks in from left or right
+══════════════════════════════════════ */
+.st-arc {
+  position: absolute;
+  top: -10%;
+  width: 80%;
+  height: 120%;
+  border-radius: 999px;
+  z-index: 1;
+  /* transition:
+    left 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    right 0.32s cubic-bezier(0.4, 0, 0.2, 1); */
+  transition: all 0.4s ease;
+}
+
+/* Active  → arc on LEFT */
+.st-btn.is-active .st-arc {
+  background: #22c55e;
+  left: -25%;
+  right: auto;
+}
+
+/* Inactive → arc on RIGHT */
+.st-btn.is-inactive .st-arc {
+  background: #ef4444;
+  right: -25%;
+  left: auto;
+}
+
+/* ══════════════════════════════════════
+   INNER WHITE PILL  — center card
+   Sits above the arc, always white
+══════════════════════════════════════ */
+.st-inner {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  border-radius: 34px;
+  border: 2px solid transparent;
+  background: #ffffff;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ══════════════════════════════════════
+   LABEL
+══════════════════════════════════════ */
+.st-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.st-btn.is-active .st-label {
+  font-size: 12px;
+  color: #22c55e;
+}
+.st-btn.is-inactive .st-label {
+  font-size: 11px;
+  color: #ef4444;
+}
+
+/* ══════════════════════════════════════
+   STATUS CHIP
+══════════════════════════════════════ */
+.st-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.st-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+}
+.st-dot.active-dot {
+  background: #22c55e;
+  box-shadow: 0 0 7px #22c55e88;
+}
+.st-dot.inactive-dot {
+  background: #ef4444;
+  box-shadow: 0 0 7px #ef444488;
+}
+
+.st-status-val {
+  font-weight: 700;
+  transition: color 0.3s;
+}
+.st-status-val.active-val {
+  color: #22c55e;
+}
+.st-status-val.inactive-val {
+  color: #ef4444;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 480px) {
+  .st-btn {
+    /* width: 180px;
+    height: 76px; */
+    border-radius: 38px;
+  }
+  .st-inner {
+    /* left: 18px;
+    right: 18px; */
+    border-radius: 28px;
+  }
+  .st-label {
+    font-size: 13px;
+  }
+}

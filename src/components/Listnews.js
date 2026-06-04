@@ -234,7 +234,7 @@ const NotificationModal = ({
 };
 
 // Main Component
-const Listarticle = () => {
+const Listnews = () => {
   // const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
@@ -261,7 +261,7 @@ const Listarticle = () => {
   const [isEditLoading, setIsEditLoading] = useState(false);
   const [postsPerPage] = useState(20);
   const [filters, setFilters] = useState({
-    category: '',
+    category: '224',
     status: '',
     contentType: '',
     trending: '',
@@ -295,7 +295,7 @@ const Listarticle = () => {
 
   const resetFilters = useCallback(() => {
     setFilters({
-      category: '',
+      category: '224',
       status: '',
       contentType: '',
       trending: '',
@@ -392,7 +392,7 @@ const Listarticle = () => {
       } else {
         // Immediate notification - use your existing bulk-send endpoint
         response = await axios.post(
-          'https://users.mpdatahub.com/api/notification/bulk-send',
+          'https://tnreaders.in/api/notification/bulk-send',
           basePayload,
           {
             headers: {
@@ -479,7 +479,7 @@ const Listarticle = () => {
       });
   }, []);
 
-  // ... (keep all your existing functions: handleEdit, handleView, handleImageOneChange, handleImageTwoChange, handleSubmit, togglePostStatus, updateFlag, pagination functions)
+  // ... (keep all your existing functions: handleEdit, handleView, handleImageOneChange, handleImageTwoChange, handleSubmit, togglePostStatus, toggleTrendingStatus, pagination functions)
 
   const handleEdit = useCallback(async (post) => {
     setIsEditLoading(true);
@@ -786,7 +786,7 @@ const Listarticle = () => {
       .get('https://users.mpdatahub.com/api/main-category')
       .then((res) => {
         const allowedCategories = (res.data || []).filter(
-          (cat) => cat.status === 'allow'
+          (cat) => cat.status === 'allow' && cat.name === 'Updates'
         );
         setMainCategories(allowedCategories);
       })
@@ -864,12 +864,12 @@ const Listarticle = () => {
       ) : !editingPost && !viewingPost ? (
         <>
           <h1 style={{ textAlign: 'left', marginBottom: '20px' }}>
-            List & Edit LookIt Articles
+            List LookIt News
           </h1>
 
           <div className="filters-section">
             <div className="filters-grid">
-              <div className="filter-group">
+              {/* <div className="filter-group">
                 <label className="filter-label">Category</label>
                 <select
                   className="filter-select"
@@ -885,7 +885,7 @@ const Listarticle = () => {
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
               <div className="filter-group">
                 <label className="filter-label">Status</label>
                 <select
@@ -942,7 +942,7 @@ const Listarticle = () => {
           <div className="posts-grid">
             {posts.length > 0 ? (
               posts
-                .filter((post) => post.category_id !== 225)
+                .filter((post) => post.category_id === 225)
                 .map((post) => (
                   <div className="post-cardss" key={post.id}>
                     <div className="post-author">
@@ -954,7 +954,9 @@ const Listarticle = () => {
                             <IoPersonCircleOutline />
                           )}
                         </span>
-                        <small>{post.user?.name || 'Unknown Author'}</small>
+                        <small>
+                          {post.user?.name || 'Unknown Author'}
+                        </small>
                       </div>
                       <div className="post-actions-icons">
                         <button
@@ -1029,7 +1031,7 @@ const Listarticle = () => {
                               post.istrending === 1 ? 'trending-active' : ''
                             }`}
                             onChange={(e) =>
-                              updateFlag(post.id, 'istrending', e.target.value)
+                              updateFlag(post.id, 'istrending', post.istrending)
                             }
                           >
                             <input
@@ -1414,10 +1416,11 @@ const Listarticle = () => {
               <div className="detail-group">
                 <span className="detail-label">Author</span>
                 <p className="detail-value">
-                  {viewingPost.submasteruser?.name || 'N/A'}
+                  {viewingPost.user?.name || 'N/A'}
                 </p>
               </div>
             </div>
+
             <div className="detail-grid">
               <div className="detail-group">
                 <span className="detail-label">Created At</span>
@@ -1692,4 +1695,4 @@ const Listarticle = () => {
   );
 };
 
-export default Listarticle;
+export default Listnews;

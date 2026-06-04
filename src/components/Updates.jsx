@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Updates.css';
 import { Bell, Send } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 
 const Updates = () => {
   const [categories, setCategories] = useState([]);
@@ -112,6 +113,24 @@ const Updates = () => {
     }
   };
 
+  const compressImage = async (file) => {
+    if (!file) return null;
+
+    try {
+      const options = {
+        maxSizeMB: 1,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      return compressedFile;
+    } catch (error) {
+      console.error('Image compression error:', error);
+      return file;
+    }
+  };
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -131,10 +150,12 @@ const Updates = () => {
   };
 
   // Handle image file selection
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFile(file);
+      // setImageFile(file);
+      const compressed = await compressImage(file);
+      setImageFile(compressed);
       setImagePreview(URL.createObjectURL(file));
       setFormData({
         ...formData,
