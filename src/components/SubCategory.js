@@ -25,6 +25,7 @@ const SubCategory = () => {
   const [addForm, setAddForm] = useState({
     parentCategory: '',
     subCategoryName: '',
+    subCategoryTamName: '',
     subcategoryImage: '',
     subcategoryStatus: 'disable',
   });
@@ -141,6 +142,7 @@ const SubCategory = () => {
     setAddForm({
       parentCategory: mainCategoryId || '',
       subCategoryName: '',
+      subCategoryTamName: '',
       subcategoryImage: '',
       subcategoryStatus: 'disable',
     });
@@ -155,6 +157,7 @@ const SubCategory = () => {
     setAddForm({
       parentCategory: String(category.parent_id),
       subCategoryName: category.name,
+      subCategoryTamName: category.tamil_name,
       subcategoryImage: '',
       subcategoryStatus: 'disable',
     });
@@ -169,6 +172,7 @@ const SubCategory = () => {
     setAddForm({
       parentCategory: '',
       subCategoryName: '',
+      subCategoryTamName: '',
       subcategoryImage: '',
       subcategoryStatus: 'disable',
     });
@@ -209,6 +213,7 @@ const SubCategory = () => {
       formData.append('category_id', subCategoriesId);
       formData.append('parent_id', addForm.parentCategory);
       formData.append('name', addForm.subCategoryName.trim());
+      formData.append('tamil_name', addForm.subCategoryTamName.trim());
       formData.append('status', addForm.subcategoryStatus);
 
       if (addForm.subcategoryImage) {
@@ -391,6 +396,28 @@ const SubCategory = () => {
                 />
               </div>
 
+              {/* Sub Category name */}
+              <div className="subcategory-form-group">
+                <label
+                  className="subcategory-form-label"
+                  htmlFor="subCategoryTamName"
+                >
+                  Sub Category Tamil Name{' '}
+                  <span className="subcategory-required">*</span>
+                </label>
+                <input
+                  id="subCategoryTamName"
+                  name="subCategoryTamName"
+                  type="text"
+                  className="subcategory-form-input"
+                  placeholder="Enter sub category name"
+                  value={addForm.subCategoryTamName}
+                  onChange={handleAddFormChange}
+                  required
+                  autoComplete="off"
+                />
+              </div>
+
               {/* Sub Category Image */}
               <div className="subcategory-form-group">
                 <label
@@ -477,7 +504,7 @@ const SubCategory = () => {
 
       {/* ── Main Dashboard Grid (identical to original) ───────────────────── */}
       <div className="dashboard-maindash">
-        {posts.trending.length > 0 && (
+        {/* {posts.trending.length > 0 && (
           <div className="section-carddash trending-sectiondash">
             <div className="section-headerdash">
               <div className="section-titledash">
@@ -518,10 +545,10 @@ const SubCategory = () => {
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Statistics */}
-        <div className="stats-sectiondash">
+        {/* <div className="stats-sectiondash">
           <div className="stats-griddash">
             <div className="stat-carddash">
               <div className="stat-icondash totaldash">
@@ -563,7 +590,7 @@ const SubCategory = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Categories Grid — each card now has an Edit button */}
         <div className="sub-category-grid">

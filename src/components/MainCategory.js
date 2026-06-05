@@ -33,6 +33,7 @@ function MainCategory() {
   const [editTarget, setEditTarget] = useState(null); // null = add mode, object = edit mode
   const [addForm, setAddForm] = useState({
     categoryName: '',
+    categoryTamName: '',
     categoryImage: '',
     categoryStatus: 'disable',
   });
@@ -121,6 +122,7 @@ function MainCategory() {
     setEditTarget(null);
     setAddForm({
       categoryName: '',
+      categoryTamName: '',
       categoryImage: '',
       categoryStatus: 'disable',
     });
@@ -134,6 +136,7 @@ function MainCategory() {
     setEditTarget(category);
     setAddForm({
       categoryName: category.name,
+      categoryTamName: category.tamil_name,
       categoryImage: '',
       categoryStatus: category.status,
     });
@@ -147,6 +150,7 @@ function MainCategory() {
     setEditTarget(null);
     setAddForm({
       categoryName: '',
+      categoryTamName: '',
       categoryImage: '',
       categoryStatus: 'disable',
     });
@@ -177,6 +181,7 @@ function MainCategory() {
 
       formData.append('category_id', categoriesId);
       formData.append('name', addForm.categoryName.trim());
+      formData.append('tamil_name', addForm.categoryTamName.trim());
       formData.append('status', addForm.categoryStatus);
 
       if (addForm.categoryImage) {
@@ -304,6 +309,28 @@ function MainCategory() {
                   className="subcategory-form-input"
                   placeholder="Enter category name"
                   value={addForm.categoryName}
+                  onChange={handleAddFormChange}
+                  required
+                  autoComplete="off"
+                />
+              </div>
+
+              {/* Category Name */}
+              <div className="subcategory-form-group">
+                <label
+                  className="subcategory-form-label"
+                  htmlFor="categoryTamName"
+                >
+                  Category Tamil Name{' '}
+                  <span className="subcategory-required">*</span>
+                </label>
+                <input
+                  id="categoryTamName"
+                  name="categoryTamName"
+                  type="text"
+                  className="subcategory-form-input"
+                  placeholder="Enter category name"
+                  value={addForm.categoryTamName}
                   onChange={handleAddFormChange}
                   required
                   autoComplete="off"

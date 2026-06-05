@@ -273,7 +273,7 @@
 }
 .sub-category-grid {
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: repeat(3, 1fr);
   padding: 15px 0;
   gap: 25px;
 }
@@ -987,7 +987,7 @@
   }
 
   .sub-category-grid {
-    grid-template-columns: auto;
+    grid-template-columns: 1fr;
   }
 
   .post-carddash {
