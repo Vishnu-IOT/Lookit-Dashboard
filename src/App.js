@@ -41,6 +41,9 @@ import UpdatePostForm from './components/UpdatePostForm';
 import UpdatePostList from './components/UpdatePostList';
 import PollForm from './components/PollForm';
 import PollList from './components/PollList';
+import CreatorList from './components/CreatorList';
+import CreatorDetails from './components/CreatorDetails';
+import AccountSettings from './components/AccountSettings';
 
 // Dashboard Layout Component
 const DashboardLayout = ({
@@ -56,13 +59,18 @@ const DashboardLayout = ({
     const pathToMenuMap = {
       dashboard: 'Dashboard',
       'main-category': 'Main-Category',
-      'sub-category': 'sub-Category',
+      'sub-category/:mainCategoryId': 'Sub-Category',
       'main-category-rm': 'MainCategoryRm',
       'sub-category-rm': 'subCategoryRm',
       'add-article': 'Add Article',
       'list-articles': 'List & Edit Articles',
       'add-news': 'Add News',
       'list-news': 'List News',
+      'poll-form': 'Poll Form',
+      'poll-list': 'Poll List',
+      'content-creator': 'Content Creator',
+      'creator-details/:creator': 'Creator Details',
+      'content-settings/:creator/settings': 'Account Settings',
       'add-article-rm': 'AddArticlerm',
       'list-articles-rm': 'List and Edit Articles',
       'rasi-upload': 'Rasi Upload Form',
@@ -127,6 +135,15 @@ const DashboardLayout = ({
             <Route path="poll-form" element={<PollForm />} />
             <Route path="poll-list" element={<PollList />} />
             <Route path="rasi-upload" element={<Form />} />
+            <Route path="content-creator" element={<CreatorList />} />
+            <Route
+              path="creator-details/:creator"
+              element={<CreatorDetails />}
+            />
+            <Route
+              path="content-settings/:creator/settings"
+              element={<AccountSettings />}
+            />
             <Route path="today-talks" element={<Todaytalksform />} />
             <Route path="today-jobs" element={<Todayjobsform />} />
             <Route path="rasi-list" element={<RasiAllList />} />

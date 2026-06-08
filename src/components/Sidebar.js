@@ -169,12 +169,17 @@ const Sidebar = ({ isOpen, onClose, activeMenu }) => {
       submenus: [
         { name: 'Poll Form', path: '/poll-form', icon: '/assets/add.png' },
         {
-          name: 'List Form',
+          name: 'Poll List',
           path: '/poll-list',
           icon: '/assets/list.png',
         },
       ],
       icon: '/assets/poll.png',
+    },
+    {
+      name: 'Content Creator',
+      path: '/content-creator',
+      icon: '/assets/creator.jpg',
     },
     {
       name: 'Astrology',
