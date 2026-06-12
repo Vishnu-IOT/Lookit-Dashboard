@@ -69,7 +69,7 @@ const DashboardLayout = ({
       'poll-form': 'Poll Form',
       'poll-list': 'Poll List',
       'content-creator': 'Content Creator',
-      'creator-details/:creator': 'Creator Details',
+      'creator-details/:channelId': 'Creator Details',
       'content-settings/:creator/settings': 'Account Settings',
       'add-article-rm': 'AddArticlerm',
       'list-articles-rm': 'List and Edit Articles',
@@ -137,7 +137,7 @@ const DashboardLayout = ({
             <Route path="rasi-upload" element={<Form />} />
             <Route path="content-creator" element={<CreatorList />} />
             <Route
-              path="creator-details/:creator"
+              path="creator-details/:channelId"
               element={<CreatorDetails />}
             />
             <Route

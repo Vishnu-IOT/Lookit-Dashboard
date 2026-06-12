@@ -1,6 +1,7 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/CreatorDetails.css";
+import axios from "axios";
 
 const postsData = [
   {
@@ -81,13 +82,23 @@ function ContentCard({ item }) {
         className="cd-content-thumb"
         style={{ backgroundColor: item.thumb }}
       >
-        <span className="cd-thumb-icon">▶</span>
+        <img
+          style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: 8,
+            objectFit: 'cover',
+          }}
+          src={item.web_thumbnail}
+          alt={item.title}
+        />
+        {/* <span className="cd-thumb-icon">▶</span> */}
       </div>
       <div className="cd-content-info">
         <p className="cd-content-title">{item.title}</p>
         <div className="cd-content-stats">
-          <span>👁 {item.views}</span>
-          <span>♥ {item.likes}</span>
+          <span>👁 {item.view_count}</span>
+          <span>♥ {item.likes_count}</span>
         </div>
       </div>
     </div>
@@ -112,18 +123,33 @@ function ContentSection({ title, items, icon }) {
 }
 
 const statusClass = {
-  Active: "cd-status--active",
-  Pending: "cd-status--pending",
-  Rejected: "cd-status--rejected",
-  Suspended: "cd-status--suspended",
+  approved: "cd-status--active",
+  pending: "cd-status--pending",
+  rejected: "cd-status--rejected",
+  suspended: "cd-status--suspended",
 };
 
 export default function CreatorDetails() {
-  const location = useLocation();
+  const { channelId } = useParams();
   const navigate = useNavigate();
-  const creator = location.state;
+  const [creatorChannel, setCreatorChannel] = useState();
+  const [trendingPosts, setTrendingPosts] = useState([]);
 
-  if (!creator) {
+  useEffect(() => {
+    // if (!channelId) return;
+    axios
+      .get(`https://users.mpdatahub.com/api/channel-post?id=${channelId}`)
+      .then((res) => {
+        setCreatorChannel(res.data);
+        setTrendingPosts(Array.isArray(res?.data?.trending_posts) ? res?.data?.trending_posts : []);
+      })
+      .catch((err) => {
+        console.error(err);
+        setCreatorChannel([]);
+      });
+  }, [channelId]);
+
+  if (!creatorChannel) {
     return (
       <div className="cd-error">
         <p>No creator data found.</p>
@@ -146,31 +172,37 @@ export default function CreatorDetails() {
         <div className="cd-header-left">
           <div
             className="cd-avatar"
-            style={{ backgroundColor: creator.logoColor || "#4f8ef7" }}
+            style={{ backgroundColor: creatorChannel.logoColor || "#4f8ef7" }}
           >
-            {creator.logo || creator.channel_name?.slice(0, 2).toUpperCase()}
+            {creatorChannel?.user?.profile_image ?
+              <img
+                style={{ objectFit: 'fill', width: '100%', height: '100%', borderRadius: 8 }}
+                src={creatorChannel?.user?.profile_image}
+                alt={creatorChannel?.channel?.channel_name}
+              />
+              : creatorChannel?.channel?.channel_name?.slice(0, 2).toUpperCase()}
           </div>
           <div className="cd-header-info">
             <div className="cd-name-row">
-              <h1 className="cd-channel-name">{creator.channel_name}</h1>
-              {creator.verified && (
+              <h1 className="cd-channel-name">{creatorChannel?.channel?.channel_name}</h1>
+              {creatorChannel?.channel?.status === 'approved' && (
                 <span className="cd-verified" title="Verified">
                   ✓
                 </span>
               )}
-              <span className={`cd-status-badge ${statusClass[creator.status]}`}>
-                {creator.status}
+              <span className={`cd-status-badge ${statusClass[creatorChannel?.channel?.status]}`}>
+                {creatorChannel?.channel?.status}
               </span>
             </div>
-            <p className="cd-username">@{creator.name}</p>
-            <p className="cd-owner">Owner: {creator.name}</p>
+            <p className="cd-username">@{creatorChannel?.channel?.name}</p>
+            <p className="cd-owner">Owner: {creatorChannel?.channel?.name}</p>
           </div>
         </div>
 
         <button
           className="cd-settings-btn"
           onClick={() =>
-            navigate(`/content-settings/${creator.id}/settings`, { state: creator })
+            navigate(`/content-settings/${creatorChannel?.channel?.id}/settings`, { state: creatorChannel })
           }
         >
           ⚙ Account Settings
@@ -180,12 +212,12 @@ export default function CreatorDetails() {
       {/* Description */}
       <div className="cd-desc-card">
         <h3 className="cd-desc-label">Channel Description</h3>
-        <p className="cd-desc-text">{creator.bio}</p>
+        <p className="cd-desc-text">{creatorChannel?.channel?.bio}</p>
       </div>
 
       {/* Stats Row */}
-      <div className="cd-stats-row">
-        {Object.entries(creator.postCounts || {}).map(([key, val]) => (
+      {/* <div className="cd-stats-row">
+        {Object.entries(creatorChannel.postCounts || {}).map(([key, val]) => (
           <div className="cd-stat-card" key={key}>
             <span className="cd-stat-val">{val}</span>
             <span className="cd-stat-key">
@@ -193,12 +225,12 @@ export default function CreatorDetails() {
             </span>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Content Sections */}
-      <ContentSection title="Posts" items={postsData} icon="📝" />
-      <ContentSection title="Articles" items={articlesData} icon="📄" />
-      <ContentSection title="News" items={newsData} icon="📰" />
+      <ContentSection title="Posts" items={trendingPosts} icon="📝" />
+      {/* <ContentSection title="Articles" items={articlesData} icon="📄" /> */}
+      {/* <ContentSection title="News" items={newsData} icon="📰" /> */}
     </div>
   );
 }

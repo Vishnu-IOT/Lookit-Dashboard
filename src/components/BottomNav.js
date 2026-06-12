@@ -25,7 +25,12 @@ const NAV_ITEMS = [
     icon: <img src="/assets/lookit.webp" alt="LookIt" className="nav-logo" />,
     // label: 'LookIt',
   },
-  { key: '/list-updates', icon: <CgFeed />, label: 'Updates', menu: 'Updates' },
+  {
+    key: '/list-updates',
+    icon: <CgFeed />,
+    label: 'Updates',
+    menu: 'List & Edit Updates',
+  },
   {
     key: 'more',
     icon: <BsPersonBoundingBox />,

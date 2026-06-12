@@ -786,7 +786,7 @@ const Listnews = () => {
       .get('https://users.mpdatahub.com/api/main-category')
       .then((res) => {
         const allowedCategories = (res.data || []).filter(
-          (cat) => cat.status === 'allow' && cat.name === 'Updates'
+          (cat) => cat.status === 'allow' && cat.name === 'News'
         );
         setMainCategories(allowedCategories);
       })
@@ -942,7 +942,7 @@ const Listnews = () => {
           <div className="posts-grid">
             {posts.length > 0 ? (
               posts
-                .filter((post) => post.category_id === 225)
+                .filter((post) => post.category.parent_id === 224)
                 .map((post) => (
                   <div className="post-cardss" key={post.id}>
                     <div className="post-author">
@@ -954,9 +954,7 @@ const Listnews = () => {
                             <IoPersonCircleOutline />
                           )}
                         </span>
-                        <small>
-                          {post.user?.name || 'Unknown Author'}
-                        </small>
+                        <small>{post.user?.name || 'Unknown Author'}</small>
                       </div>
                       <div className="post-actions-icons">
                         <button

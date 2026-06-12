@@ -942,7 +942,7 @@ const Listarticle = () => {
           <div className="posts-grid">
             {posts.length > 0 ? (
               posts
-                .filter((post) => post.category_id !== 225)
+                .filter((post) => post.category.parent_id !== 224)
                 .map((post) => (
                   <div className="post-cardss" key={post.id}>
                     <div className="post-author">
