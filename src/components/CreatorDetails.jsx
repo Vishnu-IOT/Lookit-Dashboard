@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/CreatorDetails.css";
 import axios from "axios";
+import { IoIosEye } from "react-icons/io";
+import { FaHeart } from "react-icons/fa6";
 
 const postsData = [
   {
@@ -97,8 +99,8 @@ function ContentCard({ item }) {
       <div className="cd-content-info">
         <p className="cd-content-title">{item.title}</p>
         <div className="cd-content-stats">
-          <span>👁 {item.view_count}</span>
-          <span>♥ {item.likes_count}</span>
+          <span><IoIosEye size={'25px'} color="#1DA1F2" /> {item.view_count}</span>
+          <span><FaHeart size={'20px'} style={{ color: "#f44747" }} /> {item.likes_count}</span>
         </div>
       </div>
     </div>
@@ -177,7 +179,7 @@ export default function CreatorDetails() {
             {creatorChannel?.user?.profile_image ?
               <img
                 style={{ objectFit: 'fill', width: '100%', height: '100%', borderRadius: 8 }}
-                src={creatorChannel?.user?.profile_image}
+                src={creatorChannel?.channel?.profile_image}
                 alt={creatorChannel?.channel?.channel_name}
               />
               : creatorChannel?.channel?.channel_name?.slice(0, 2).toUpperCase()}

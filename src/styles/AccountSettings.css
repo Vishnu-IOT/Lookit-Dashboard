@@ -270,14 +270,16 @@
 
 .as-tag-input {
   background: none;
-  border: none;
+  border: 1px solid gray;
   outline: none;
   color: #303030;
   font-family: "DM Sans", sans-serif;
   font-size: 12px;
-  min-width: 100px;
+  min-width: 300px;
   flex: 1;
-  padding: 4px 0;
+  padding: 4px;
+  border-radius: 6px;
+  margin-bottom: 10px;
 }
 
 .as-tag-input::placeholder {

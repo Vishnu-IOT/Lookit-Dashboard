@@ -602,7 +602,8 @@ const Listnews = () => {
 
   const togglePostStatus = useCallback(
     async (postId, currentStatus) => {
-      const newStatus = currentStatus === 'yes' ? 'no' : 'yes';
+      // const newStatus = currentStatus === 'yes' ? 'no' : 'yes';
+      const newStatus = currentStatus;
       setIsProcessing(true);
       try {
         await axios.post('https://users.mpdatahub.com/api/update-status', {
@@ -1006,23 +1007,7 @@ const Listnews = () => {
                       </div>
                       <h3 className="post-title">{post.title}</h3>
 
-                      <div className="post-actions la-post-actions">
-                        <div className="action-buttons">
-                          <button
-                            className="edit-btn"
-                            onClick={() => handleEdit(post)}
-                            type="button"
-                          >
-                            <MdOutlineEdit /> Edit
-                          </button>
-                          <button
-                            className="view-btn"
-                            onClick={() => handleView(post)}
-                            type="button"
-                          >
-                            <LuEye /> View
-                          </button>
-                        </div>
+                      <div className="la-post-actions">
                         <div className="status-controls">
                           <div
                             className={`toggle-group ${
@@ -1032,6 +1017,15 @@ const Listnews = () => {
                               updateFlag(post.id, 'istrending', post.istrending)
                             }
                           >
+                            <span
+                              style={{
+                                color: 'black',
+                                fontWeight: 300,
+                                fontSize: 16,
+                              }}
+                            >
+                              Trending:
+                            </span>
                             <input
                               className="toggle-switch"
                               type="checkbox"
@@ -1043,7 +1037,7 @@ const Listnews = () => {
                               {post.istrending === 1 ? 'Trending' : 'Normal'}
                             </span>
                           </div>
-                          <div
+                          {/* <div
                             className={`toggle-group ${
                               post.isActive === 'yes'
                                 ? 'status-active'
@@ -1063,7 +1057,56 @@ const Listnews = () => {
                             <span className="toggle-label">
                               {post.isActive === 'yes' ? 'Active' : 'Disabled'}
                             </span>
+                          </div> */}
+                          <div
+                            className={`toggle-group ${
+                              post.isActive === 'yes'
+                                ? 'status-active'
+                                : post.isActive === 'reject'
+                                  ? 'status-rejected'
+                                  : 'status-inactive'
+                            }`}
+                          >
+                            <span
+                              style={{
+                                color: 'black',
+                                fontWeight: 300,
+                                fontSize: 16,
+                              }}
+                            >
+                              Status:
+                            </span>
+                            <select
+                              value={post.isActive || ''}
+                              onChange={(e) =>
+                                togglePostStatus(post.id, e.target.value)
+                              }
+                            >
+                              {/* <option value="">Select Status</option> */}
+                              <option className="toggle-label" value="yes">
+                                Active
+                              </option>
+                              <option value="no">Disabled</option>
+                              <option value="reject">Rejected</option>
+                            </select>
                           </div>
+                        </div>
+
+                        <div className="action-buttons">
+                          <button
+                            className="edit-btn"
+                            onClick={() => handleEdit(post)}
+                            type="button"
+                          >
+                            <MdOutlineEdit /> Edit
+                          </button>
+                          <button
+                            className="view-btn"
+                            onClick={() => handleView(post)}
+                            type="button"
+                          >
+                            <LuEye /> View
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -1239,28 +1282,51 @@ const Listnews = () => {
                         <div className="processing-text">Updating...</div>
                       </div>
                     ) : (
+                      // <div
+                      //   className={`toggle-group ${
+                      //     viewingPost.isActive === 'yes'
+                      //       ? 'status-active'
+                      //       : 'status-inactive'
+                      //   }`}
+                      //   onClick={() =>
+                      //     togglePostStatus(viewingPost.id, viewingPost.isActive)
+                      //   }
+                      // >
+                      //   <input
+                      //     className="toggle-switch"
+                      //     type="checkbox"
+                      //     role="switch"
+                      //     checked={viewingPost.isActive === 'yes'}
+                      //     readOnly
+                      //   />
+                      //   <span className="toggle-label">
+                      //     {viewingPost.isActive === 'yes'
+                      //       ? 'Active'
+                      //       : 'Disabled'}
+                      //   </span>
+                      // </div>
                       <div
                         className={`toggle-group ${
                           viewingPost.isActive === 'yes'
                             ? 'status-active'
-                            : 'status-inactive'
+                            : viewingPost.isActive === 'reject'
+                              ? 'status-rejected'
+                              : 'status-inactive'
                         }`}
-                        onClick={() =>
-                          togglePostStatus(viewingPost.id, viewingPost.isActive)
-                        }
                       >
-                        <input
-                          className="toggle-switch"
-                          type="checkbox"
-                          role="switch"
-                          checked={viewingPost.isActive === 'yes'}
-                          readOnly
-                        />
-                        <span className="toggle-label">
-                          {viewingPost.isActive === 'yes'
-                            ? 'Active'
-                            : 'Disabled'}
-                        </span>
+                        <select
+                          value={viewingPost.isActive || ''}
+                          onChange={(e) =>
+                            togglePostStatus(viewingPost.id, e.target.value)
+                          }
+                        >
+                          {/* <option value="">Select Status</option> */}
+                          <option className="toggle-label" value="yes">
+                            Active
+                          </option>
+                          <option value="no">Disabled</option>
+                          <option value="reject">Rejected</option>
+                        </select>
                       </div>
                     )}
                   </div>

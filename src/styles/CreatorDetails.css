@@ -394,6 +394,13 @@
   font-weight: 500;
 }
 
+.cd-content-stats span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ---- Error State ---- */
 .cd-error {
   font-family: "DM Sans", sans-serif;

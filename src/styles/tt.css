@@ -754,7 +754,7 @@
   }
 
   .toggle-group {
-    flex-direction: column;
+    /* flex-direction: column; */
     gap: 5px;
   }
 

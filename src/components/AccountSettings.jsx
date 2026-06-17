@@ -16,7 +16,7 @@ export default function AccountSettings() {
   const navigate = useNavigate();
   const creator = location.state;
 
-  const [interests, setInterests] = useState(creator?.interests || []);
+  const [interests, setInterests] = useState((creator?.channel?.category || '').split(',').filter(Boolean) || []);
   const [selectedStatus, setSelectedStatus] = useState(creator?.channel?.status);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [newInterest, setNewInterest] = useState("");
@@ -39,6 +39,7 @@ export default function AccountSettings() {
   }
 
   const handleRemoveInterest = (tag) => {
+    console.log(tag)
     setInterests((prev) => prev.filter((t) => t !== tag));
   };
 
@@ -66,6 +67,28 @@ export default function AccountSettings() {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
       alert("Status updated successfully");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update status");
+    }
+  };
+
+  const handleCategorySave = async () => {
+    try {
+
+      const newCategory = interests.join(',');
+
+      const response = await axios.post(
+        "https://users.mpdatahub.com/api/update-channel",
+        {
+          id: creator.channel.id,
+          category: newCategory,
+        }
+      );
+      console.log(response.data);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      alert("Content Interest updated successfully");
     } catch (error) {
       console.error(error);
       alert("Failed to update status");
@@ -168,31 +191,41 @@ export default function AccountSettings() {
             Press Enter to add a new interest tag
           </p>
 
-          <div className="as-tags-container">
-            {(creator?.channel?.category || "")
-              .split(",")
-              .filter(Boolean)
-              .map((tag) => (
-                <span className="as-tag" key={tag}>
-                  {tag}
-                  <button
-                    className="as-tag-remove"
-                    onClick={() => handleRemoveInterest(tag)}
-                    aria-label={`Remove ${tag}`}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
+          <input
+            className="as-tag-input"
+            name="interest"
+            type="text"
+            placeholder="Add interest..."
+            value={newInterest}
+            onChange={(e) => setNewInterest(e.target.value)}
+            onKeyDown={handleAddInterest}
+          />
 
-            <input
-              className="as-tag-input"
-              type="text"
-              placeholder="Add interest..."
-              value={newInterest}
-              onChange={(e) => setNewInterest(e.target.value)}
-              onKeyDown={handleAddInterest}
-            />
+          <div className="as-tags-container">
+            {interests.map((tag) => (
+              <span className="as-tag" key={tag}>
+                {tag}
+                <button
+                  className="as-tag-remove"
+                  onClick={() => handleRemoveInterest(tag)}
+                  aria-label={`Remove ${tag}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+
+          <div className="as-save-row">
+            <button className="as-save-btn" onClick={handleCategorySave}>
+              Save Changes
+            </button>
+
+            {saveSuccess && (
+              <div className="as-success-msg">
+                <span>✓</span> Changes saved successfully
+              </div>
+            )}
           </div>
         </div>
 

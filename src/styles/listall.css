@@ -271,16 +271,17 @@
   color: var(--text-dark);
 }
 
-.post-actions {
+.la-post-actions {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  /* margin-top: auto; */
+  /* align-items: center; */
+  gap: 10px;
+  margin: 8px 0;
 }
 
 .action-buttons {
   display: flex;
-  flex-direction: column-reverse;
   gap: 10px;
 }
 
@@ -298,6 +299,7 @@
   cursor: pointer;
   transition: var(--transition);
   font-size: 0.9rem;
+  width: 100%;
 }
 
 .edit-btn:hover {
@@ -318,6 +320,7 @@
   cursor: pointer;
   transition: var(--transition);
   font-size: 0.9rem;
+  width: 100%;
 }
 
 .view-btn:hover {
@@ -328,6 +331,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  align-items: flex-start;
 }
 
 .toggle-group {
@@ -488,7 +492,7 @@
 .status-controls-group {
   display: grid;
   grid-template-columns: auto auto auto;
-    gap: 30px;
+  gap: 30px;
   align-items: center;
 }
 
@@ -995,6 +999,25 @@
   background-color: #d97706;
 }
 
+/* Schedule button in detail view */
+.schedule-btn-detail {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.schedule-btn-detail:hover {
+  background-color: #d97706;
+}
+
 /* Form help text */
 .form-help {
   color: #6b7280;
@@ -1144,11 +1167,12 @@
   .action-buttons {
     justify-content: center;
     flex-direction: row;
+    width: 100%;
   }
 
   .status-controls {
-    flex-direction: row;
     justify-content: flex-end;
+    align-items: start;
   }
 
   .form-actions {
@@ -1250,6 +1274,7 @@
   .post-cardss {
     position: relative;
   }
+
   .post-category {
     /* position: absolute; */
     top: 6px;
@@ -1259,10 +1284,13 @@
     padding: 0.1rem 0.3rem;
     font-size: 0.8rem;
   }
+
   .la-post-actions {
-    flex-direction: column-reverse !important;
+    flex-direction: column;
     width: 100%;
+    margin: 0;
   }
+
   /* .post-actions-icons {
     position: absolute;
     top: 10px;
@@ -1271,6 +1299,7 @@
   .notification-btn {
     background: rgb(255, 255, 255);
   }
+
   .post-author {
     border-top: none;
     position: absolute;
@@ -1279,6 +1308,7 @@
     padding: 4px 8px;
     width: 100%;
   }
+
   .sub-post-author {
     background: #812baf;
     padding: 4px 6px;
@@ -1288,20 +1318,24 @@
     border-top: none;
     display: flex;
   }
+
   .user-initial {
     width: 20px;
     height: 20px;
     font-size: 0.7rem;
     font-weight: 500;
   }
+
   .edit-btn,
   .view-btn {
     width: 100%;
   }
+
   .modal-overlay {
     align-items: flex-start !important;
   }
-  .status-controls-group{
+
+  .status-controls-group {
     grid-template-columns: auto auto;
   }
 }
@@ -1354,6 +1388,7 @@ textarea:focus {
 
 /* Print styles */
 @media print {
+
   .actions-bar,
   .filters-section,
   .form-actions,

@@ -117,9 +117,9 @@ export default function CreatorList() {
               <div className="cl-card__top">
                 <div
                   className="cl-logo"
-                  style={{ backgroundColor: creator.logoColor || "#B18FCF" }}
+                // style={{ backgroundColor: creator.logoColor || "#B18FCF" }}
                 >
-                  {creator.logo || creator.channel_name?.slice(0, 2).toUpperCase()}
+                  {<img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 10 }} src={creator.profile_image} alt={creator.channel_name} /> || creator.channel_name?.slice(0, 2).toUpperCase()}
                 </div>
                 <span className={`cl-badge ${statusClass[creator.status]} `}>
                   {creator.status}
@@ -166,13 +166,13 @@ export default function CreatorList() {
           <div className="cl-page-numbers">
             {getPageNumbers().map((page, idx) =>
               page === "..." ? (
-                <span key={`ellipsis - ${idx} `} className="cl-page-ellipsis">
+                <span key={`ellipsis-${idx} `} className="cl-page-ellipsis">
                   ...
                 </span>
               ) : (
                 <button
                   key={page}
-                  className={`cl - page - num ${currentPage === page ? "cl-page-num--active" : ""} `}
+                  className={`cl-page-num ${currentPage === page ? "cl-page-num--active" : ""} `}
                   onClick={() => setCurrentPage(page)}
                 >
                   {page}
