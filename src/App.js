@@ -44,6 +44,7 @@ import PollList from './components/PollList';
 import CreatorList from './components/CreatorList';
 import CreatorDetails from './components/CreatorDetails';
 import AccountSettings from './components/AccountSettings';
+import CreatorPostList from './components/CreatorPostList';
 
 // Dashboard Layout Component
 const DashboardLayout = ({
@@ -71,6 +72,7 @@ const DashboardLayout = ({
       'content-creator': 'Content Creator',
       'creator-details/:channelId': 'Creator Details',
       'content-settings/:creator/settings': 'Account Settings',
+      'creator-post-list/:userId': 'Creator Post List',
       'add-article-rm': 'AddArticlerm',
       'list-articles-rm': 'List and Edit Articles',
       'rasi-upload': 'Rasi Upload Form',
@@ -143,6 +145,10 @@ const DashboardLayout = ({
             <Route
               path="content-settings/:creator/settings"
               element={<AccountSettings />}
+            />
+            <Route
+              path="creator-post-list/:userId"
+              element={<CreatorPostList />}
             />
             <Route path="today-talks" element={<Todaytalksform />} />
             <Route path="today-jobs" element={<Todayjobsform />} />

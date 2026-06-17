@@ -107,13 +107,24 @@ function ContentCard({ item }) {
   );
 }
 
-function ContentSection({ title, items, icon }) {
+function ContentSection({ title, items, icon, userId }) {
+  const navigate = useNavigate();
   return (
     <div className="cd-section">
       <div className="cd-section-header">
         <span className="cd-section-icon">{icon}</span>
         <h2 className="cd-section-title">{title}</h2>
-        <span className="cd-section-count">{items.length} items</span>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20,
+          marginLeft: 'auto'
+        }}>
+          <span className="cd-section-count">{items.length} items</span>
+          <button className="cd-view-all-btn" onClick={() =>
+            navigate(`/creator-post-list/${userId}`)
+          }>View All →</button>
+        </div>
       </div>
       <div className="cd-section-grid">
         {items.map((item) => (
@@ -230,7 +241,7 @@ export default function CreatorDetails() {
       </div> */}
 
       {/* Content Sections */}
-      <ContentSection title="Posts" items={trendingPosts} icon="📝" />
+      <ContentSection title="Posts" items={trendingPosts} icon="📝" userId={creatorChannel?.user?.id} />
       {/* <ContentSection title="Articles" items={articlesData} icon="📄" /> */}
       {/* <ContentSection title="News" items={newsData} icon="📰" /> */}
     </div>

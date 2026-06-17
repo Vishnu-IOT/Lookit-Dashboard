@@ -227,6 +227,36 @@
   margin: 0;
 }
 
+/* creator post list  */
+.cd-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.cd-page-numbers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cd-page-number,
+.cd-page-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cd-page-number--active {
+  background: #6f42c1;
+  color: #fff;
+}
+
 /* ---- Stats Row ---- */
 .cd-stats-row {
   display: grid;
@@ -314,6 +344,19 @@
   border-radius: var(--radius-xl);
   padding: 3px 10px;
   font-weight: 500;
+}
+
+.cd-view-all-btn {
+  border: none;
+  border-bottom: 2px solid black;
+  cursor: pointer;
+  font-weight: 700;
+  background: transparent;
+}
+
+.cd-view-all-btn:hover {
+  color: #003eaa;
+  border-bottom: 2px solid #003eaa;
 }
 
 .cd-section-grid {
