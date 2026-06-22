@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { BsPersonBoundingBox } from 'react-icons/bs';
-import { IoNewspaperOutline } from 'react-icons/io5';
-import { PiNewspaperClippingDuotone } from 'react-icons/pi';
-import { CgFeed } from 'react-icons/cg';
-import '../styles/BottomNav.css';
-import LoggedInUser from './LoggedInUser';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { BsPersonBoundingBox } from "react-icons/bs";
+import { IoNewspaperOutline } from "react-icons/io5";
+import { PiNewspaperClippingDuotone } from "react-icons/pi";
+import { CgFeed } from "react-icons/cg";
+import "../styles/BottomNav.css";
+import LoggedInUser from "./LoggedInUser";
 
 const NAV_ITEMS = [
   {
-    key: '/list-news',
+    key: "/list-news",
     icon: <IoNewspaperOutline />,
-    label: 'News',
-    menu: 'List News',
+    label: "News",
+    menu: "List News",
   },
   {
-    key: '/list-articles',
+    key: "/list-articles",
     icon: <PiNewspaperClippingDuotone />,
-    label: 'Articles',
-    menu: 'List & Edit Articles',
+    label: "Articles",
+    menu: "List & Edit Articles",
   },
   {
-    key: '/dashboard',
+    key: "/dashboard",
     icon: <img src="/assets/lookit.webp" alt="LookIt" className="nav-logo" />,
     // label: 'LookIt',
   },
   {
-    key: '/list-updates',
+    key: "/list-updates",
     icon: <CgFeed />,
-    label: 'Updates',
-    menu: 'List & Edit Updates',
+    label: "Updates",
+    menu: "List & Edit Updates",
   },
   {
-    key: 'more',
+    key: "more",
     icon: <BsPersonBoundingBox />,
-    label: 'Account',
-    menu: 'Updates',
+    label: "Account",
+    menu: "Updates",
   },
 ];
 
@@ -49,10 +49,10 @@ export function BottomNav({ onMoreClick, activeMenu, currentUser, onLogout }) {
         <LoggedInUser currentUser={currentUser} onLogout={onLogout} />
       )}
       {NAV_ITEMS.map((item) =>
-        item.key === 'more' ? (
+        item.key === "more" ? (
           <button
             key="more"
-            className={`bottom-nav__item ${showUser ? 'active' : ''}`}
+            className={`bottom-nav__item ${showUser ? "active" : ""}`}
             onClick={() => setShowUser(!showUser)}
           >
             <span className="nav-icon">{item.icon}</span>
@@ -61,7 +61,7 @@ export function BottomNav({ onMoreClick, activeMenu, currentUser, onLogout }) {
         ) : (
           <button
             key={item.key}
-            className={`bottom-nav__item ${activeMenu === item.menu ? 'active' : ''}`}
+            className={`bottom-nav__item ${activeMenu === item.menu ? "active" : ""}`}
             onClick={() => {
               navigate(item.key);
               setShowUser(false);
@@ -70,7 +70,7 @@ export function BottomNav({ onMoreClick, activeMenu, currentUser, onLogout }) {
             <span className="nav-icon">{item.icon}</span>
             {item.label}
           </button>
-        )
+        ),
       )}
       <svg
         className="nav-shape"

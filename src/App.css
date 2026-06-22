@@ -2,11 +2,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   color: #333;
 }
 
@@ -140,7 +140,7 @@ body {
 
 .content-header h1 {
   font-size: 2rem;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   border-bottom: 1px solid gray;
   padding-bottom: 10px;
   margin-bottom: 10px;
@@ -340,7 +340,7 @@ body {
 
 .categories-container h2 {
   font-size: 2rem;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .category-section {
@@ -622,7 +622,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
   }
-  .sub-content-btn{
+  .sub-content-btn {
     display: flex;
     justify-content: flex-end;
     width: 100%;

@@ -8,7 +8,7 @@
 
 .schedule-container h1 {
   font-size: 2rem !important;
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: "Montserrat", sans-serif !important;
   border-bottom: 1px solid gray;
   padding-bottom: 10px;
 }
@@ -84,7 +84,7 @@ textarea {
 
   .schedule-container h1 {
     font-size: 1.6rem !important;
-    font-family: 'Montserrat', sans-serif !important;
+    font-family: "Montserrat", sans-serif !important;
     border-bottom: 1px solid gray;
     padding-bottom: 10px;
   }

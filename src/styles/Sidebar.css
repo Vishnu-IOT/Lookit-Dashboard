@@ -343,7 +343,7 @@
 
 /* Add a small arrow/connector to popout */
 .submenu-popout::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -6px;
   top: 20px;

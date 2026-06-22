@@ -42,9 +42,9 @@ export default function Banner() {
         {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-          }
-        }
+            "Content-Type": "application/json",
+          },
+        },
       );
       const json = await res.json();
 
@@ -75,7 +75,7 @@ export default function Banner() {
     try {
       const res = await fetch(
         `https://tnreaders.in/mobile/banners-update/${editingBanner.id}`,
-        { method: "POST", body: formData }
+        { method: "POST", body: formData },
       );
       const json = await res.json();
 
@@ -101,7 +101,7 @@ export default function Banner() {
       const res = await fetch("https://tnreaders.in/mobile/list-main-selected");
       const json = await res.json();
       console.log(json);
-      
+
       setCategories(json.filter((cat) => cat.status === "allow"));
     } catch (err) {
       console.log(err);
@@ -113,7 +113,7 @@ export default function Banner() {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://tnreaders.in/mobile/banners?category_id=${categoryId}`
+        `https://tnreaders.in/mobile/banners?category_id=${categoryId}`,
       );
       const json = await res.json();
       if (json.status && Array.isArray(json.data.data)) {
@@ -142,7 +142,7 @@ export default function Banner() {
     const newStatus = isActive ? 0 : 1;
     try {
       const res = await fetch(
-        `https://tnreaders.in/mobile/banners-chnage-status?id=${banner.id}&status=${newStatus}`
+        `https://tnreaders.in/mobile/banners-chnage-status?id=${banner.id}&status=${newStatus}`,
       );
       const json = await res.json();
       if (json.status) loadBanners();
@@ -219,7 +219,9 @@ export default function Banner() {
           />
           <label>Upload Banner Image</label>
           <input type="file" accept="image/*" onChange={handleImageChange} />
-          {previewImage && <img src={previewImage} className="preview-img" alt="Preview" />}
+          {previewImage && (
+            <img src={previewImage} className="preview-img" alt="Preview" />
+          )}
           <button type="submit" className="upload-btn" disabled={uploading}>
             {uploading ? "Uploading..." : "Upload Banner"}
           </button>
@@ -249,13 +251,23 @@ export default function Banner() {
 
         {/* ACTIVE BANNERS */}
         <div className="banner-column">
-          <h2 className="section-title active">Active Banners ({activeBanners.length})</h2>
+          <h2 className="section-title active">
+            Active Banners ({activeBanners.length})
+          </h2>
           <div className="banner-grid">
             {activeBanners.map((banner) => (
               <div key={banner.id} className="banner-card">
                 <h3>{banner.category}</h3>
-                <a href={banner.url_link} target="_blank" rel="noopener noreferrer">
-                  <img src={banner.banner_link} className="banner-image" alt={banner.category} />
+                <a
+                  href={banner.url_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={banner.banner_link}
+                    className="banner-image"
+                    alt={banner.category}
+                  />
                 </a>
                 <div className="button-group">
                   <button
@@ -284,13 +296,23 @@ export default function Banner() {
 
         {/* INACTIVE BANNERS */}
         <div className="banner-column">
-          <h2 className="section-title inactive">Inactive Banners ({inactiveBanners.length})</h2>
+          <h2 className="section-title inactive">
+            Inactive Banners ({inactiveBanners.length})
+          </h2>
           <div className="banner-grid">
             {inactiveBanners.map((banner) => (
               <div key={banner.id} className="banner-card inactive-card">
                 <h3>{banner.category}</h3>
-                <a href={banner.url_link} target="_blank" rel="noopener noreferrer">
-                  <img src={banner.banner_link} className="banner-image" alt={banner.category} />
+                <a
+                  href={banner.url_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={banner.banner_link}
+                    className="banner-image"
+                    alt={banner.category}
+                  />
                 </a>
                 <div className="button-group">
                   <button
@@ -382,9 +404,17 @@ export default function Banner() {
 
             {previewImage && (
               <div className="delete-preview">
-                <img src={deletingBanner.banner_link} className="preview-img" alt="Banner to delete" />
-                <p><strong>Category:</strong> {deletingBanner.category}</p>
-                <p><strong>URL:</strong> {deletingBanner.url_link || "No URL"}</p>
+                <img
+                  src={deletingBanner.banner_link}
+                  className="preview-img"
+                  alt="Banner to delete"
+                />
+                <p>
+                  <strong>Category:</strong> {deletingBanner.category}
+                </p>
+                <p>
+                  <strong>URL:</strong> {deletingBanner.url_link || "No URL"}
+                </p>
               </div>
             )}
 

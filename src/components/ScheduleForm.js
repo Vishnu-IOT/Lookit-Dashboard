@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/schedule.css";
 
 const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
-  const [id, setId] = useState("")
+  const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [date, setDate] = useState("");
@@ -16,12 +16,12 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
   // Prefill data when editing
   useEffect(() => {
     if (editMode && editData) {
-      setId(editData.id)
+      setId(editData.id);
       setTitle(editData.title);
       setMessage(editData.message);
       setDate(editData.date);
       setTime(editData.time);
-      setTypeid(editData.type_id)
+      setTypeid(editData.type_id);
       setPreview(editData.image || null);
       setType(editData.type || "DAY-CALENDER");
     }
@@ -39,8 +39,8 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("id", id)
-    formData.append("type_id", typeId)
+    formData.append("id", id);
+    formData.append("type_id", typeId);
     formData.append("title", title);
     formData.append("message", message);
     formData.append("type", "general");
@@ -57,7 +57,7 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
       try {
         const res = await fetch(
           "https://users.mpdatahub.com/api/notification/date-time",
-          { method: "POST", body: formData }
+          { method: "POST", body: formData },
         );
 
         const text = await res.text();
@@ -79,7 +79,7 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
       try {
         const res = await fetch(
           `https://users.mpdatahub.com/api/update-notification/${editData.id}`,
-          { method: "POST", body: formData }
+          { method: "POST", body: formData },
         );
 
         const text = await res.text();
@@ -99,22 +99,36 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
 
   return (
     <div className="schedule-container">
-      <h1 style={{ textAlign: 'left', marginBottom: '20px' }}>Schedule Notifications</h1>
+      <h1 style={{ textAlign: "left", marginBottom: "20px" }}>
+        Schedule Notifications
+      </h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Title</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </div>
 
         <div className="form-group">
           <label>Message</label>
-          <textarea value={message} onChange={(e) => setMessage(e.target.value)} required />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            required
+          />
         </div>
 
         {/* New Types dropdown */}
         <div className="form-group">
           <label>Types</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} required>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            required
+          >
             <option value="DAY-CALENDER">DAY-CALENDER</option>
             <option value="RASIPAGE">RASIPAGE</option>
             <option value="MARRIAGE-ASPECT">MARRIAGE-ASPECT</option>
@@ -124,12 +138,22 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
 
         <div className="form-group">
           <label>Date</label>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
         </div>
 
         <div className="form-group">
           <label>Time</label>
-          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            required
+          />
         </div>
 
         <div className="form-group">

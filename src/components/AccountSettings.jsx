@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "../styles/AccountSettings.css";
 import axios from "axios";
 import StatusToggle from "./StatusToggle";
+import Loder from "./Loder";
 
 const STATUS_OPTIONS = [
   { label: "Pending", value: "pending" },
@@ -12,14 +13,25 @@ const STATUS_OPTIONS = [
 ];
 
 export default function AccountSettings() {
-  const location = useLocation();
+  const { ascreator } = useParams();
   const navigate = useNavigate();
-  const creator = location.state;
+  // const location = useLocation();
+  // const creator = location.state;
 
-  const [interests, setInterests] = useState((creator?.channel?.category || '').split(',').filter(Boolean) || []);
-  const [selectedStatus, setSelectedStatus] = useState(creator?.channel?.status);
+  const [interests, setInterests] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState();
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveContentSuccess, setSaveContentSuccess] = useState(false);
   const [newInterest, setNewInterest] = useState("");
+  const [creator, setCreatorData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [contentAccess, setContentAccess] = useState({
+    content_articles: "no",
+    content_news: "no",
+    content_poster: "no",
+    content_poll: "no",
+    content_video: "no",
+  });
 
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const showToast = (message, type = 'success') => {
@@ -27,15 +39,44 @@ export default function AccountSettings() {
     setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
   };
 
-  if (!creator) {
+  useEffect(() => {
+    setLoading(true);
+    // if (!channelId) return;
+    axios
+      .get(`https://users.mpdatahub.com/api/channel-post?id=${ascreator}`)
+      .then((res) => {
+        setCreatorData(res.data);
+        setInterests((res.data?.channel?.category || '').split(',').map(item => item.trim()).filter(Boolean) || []);
+        setSelectedStatus(res.data?.channel?.status);
+        setContentAccess({
+          content_articles: res.data?.channel?.content_articles || "no",
+          content_news: res.data?.channel?.content_news || "no",
+          content_poster: res.data?.channel?.content_poster || "no",
+          content_poll: res.data?.channel?.content_poll || "no",
+          content_video: res.data?.channel?.content_video || "no",
+        });
+      })
+
+      .catch((err) => {
+        console.error(err);
+        setCreatorData(null);
+      }).finally(() => {
+        setLoading(false);
+      });
+  }, [ascreator]);
+
+  if (!creator && !loading) {
     return (
-      <div className="as-error">
+      <div className="cd-error">
         <p>No creator data found.</p>
-        <button onClick={() => navigate(-1)} className="as-back-btn">
+        <button onClick={() => navigate(-1)} className="cd-back-btn">
           ← Go Back
         </button>
       </div>
     );
+  }
+  else if (loading) {
+    return <Loder />;
   }
 
   const handleRemoveInterest = (tag) => {
@@ -44,10 +85,15 @@ export default function AccountSettings() {
   };
 
   const handleAddInterest = (e) => {
-    if (e.key === "Enter" && newInterest.trim()) {
+    // if (e.key === "Enter" && newInterest.trim()) {
+    if (newInterest.trim()) {
       const trimmed = newInterest.trim();
+      console.log(interests, trimmed);
       if (!interests.includes(trimmed)) {
         setInterests((prev) => [...prev, trimmed]);
+      }
+      else {
+        alert('Content Interest Already Exists!');
       }
       setNewInterest("");
     }
@@ -86,8 +132,8 @@ export default function AccountSettings() {
         }
       );
       console.log(response.data);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setSaveContentSuccess(true);
+      setTimeout(() => setSaveContentSuccess(false), 3000);
       alert("Content Interest updated successfully");
     } catch (error) {
       console.error(error);
@@ -95,49 +141,83 @@ export default function AccountSettings() {
     }
   };
 
-  const postCounts = creator.postCounts || {
-    articles: 0,
-    posts: 0,
-    news: 0,
-    posters: 0,
+  const updateContentAccess = (field, currentvalue) => {
+    setContentAccess((prev) => ({
+      ...prev,
+      [field]: currentvalue
+    }));
   };
 
-  const statIcons = {
-    articles: "📄",
-    posts: "📝",
-    news: "📰",
-    posters: "🖼",
-  };
-
-  const handleStatusUpdateSubmit = async (category, status) => {
+  const handleContentAccess = async (field, currentvalue) => {
     try {
-      const formData = new FormData();
+      console.log(contentAccess);
+      const payload = {
+        id: creator.channel.id,
+        content_articles: contentAccess.content_articles,
+        content_poster: contentAccess.content_poster,
+        content_poll: contentAccess.content_poll,
+        content_news: contentAccess.content_news,
+        content_video: contentAccess.content_video,
+      };
 
-      formData.append('category_id', category.id);
-      formData.append('name', category.name);
-      formData.append('status', status);
+      payload[field] = currentvalue;
 
-      const url = `https://users.mpdatahub.com/api/update-channel`;
-
-      const response = await fetch(url, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        showToast('Main Category Status updated successfully!', 'success');
-      } else {
-        const errData = await response.json();
-        showToast(
-          errData.message || 'Failed to update status. Please try again.',
-          'error'
-        );
-      }
+      const response = await axios.post(
+        "https://users.mpdatahub.com/api/update-Content-Settings",
+        payload
+      );
+      console.log(response.data);
+      // setSaveContentSuccess(true);
+      // setTimeout(() => setSaveContentSuccess(false), 3000);
+      alert("Content Access updated successfully");
     } catch (error) {
-      console.error('Error updating main category:', error);
-      showToast('Network error. Please try again.', 'error');
+      console.error(error);
+      alert("Failed to update Content Access");
     }
   };
+
+  const postStatus = [
+    {
+      label: "Articles",
+      field: "content_articles",
+      // status: creator?.channel?.content_articles,
+      icon: "📄",
+    },
+    {
+      label: "News",
+      field: "content_news",
+      // status: creator?.channel?.content_news,
+      icon: "📰",
+    },
+    {
+      label: "Posters",
+      field: "content_poster",
+      // status: creator?.channel?.content_poster,
+      icon: "🖼",
+    },
+    {
+      label: "Poll",
+      field: "content_poll",
+      // status: creator?.channel?.content_poll,
+      icon: "📝",
+    },
+    {
+      label: "Video",
+      field: "content_video",
+      // status: creator?.channel?.content_video,
+      icon: "🎥",
+    },
+  ];
+
+  const categories = [
+    "NEWS",
+    "Article",
+    "Update",
+    "Local News",
+    "Political",
+    "Cinema",
+    "Tech",
+  ];
 
   return (
     <div className="as-page">
@@ -167,7 +247,7 @@ export default function AccountSettings() {
               {creator?.user?.profile_image ?
                 <img
                   style={{ objectFit: 'fill', width: '100%', height: '100%', borderRadius: 8 }}
-                  src={creator?.user?.profile_image}
+                  src={creator?.channel?.profile_image}
                   alt={creator?.channel?.channel_name}
                 />
                 : creator?.channel?.channel_name?.slice(0, 2).toUpperCase()}
@@ -191,7 +271,7 @@ export default function AccountSettings() {
             Press Enter to add a new interest tag
           </p>
 
-          <input
+          {/* <input
             className="as-tag-input"
             name="interest"
             type="text"
@@ -199,7 +279,26 @@ export default function AccountSettings() {
             value={newInterest}
             onChange={(e) => setNewInterest(e.target.value)}
             onKeyDown={handleAddInterest}
-          />
+          /> */}
+
+          <div className="as-dpdn-btn">
+            <select
+              className="as-tag-select"
+              value={newInterest}
+              onChange={(e) => setNewInterest(e.target.value)}
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            <button className="as-add-btn" onClick={handleAddInterest}>
+              Add
+            </button>
+          </div>
 
           <div className="as-tags-container">
             {interests.map((tag) => (
@@ -218,10 +317,10 @@ export default function AccountSettings() {
 
           <div className="as-save-row">
             <button className="as-save-btn" onClick={handleCategorySave}>
-              Save Changes
+              Save Content
             </button>
 
-            {saveSuccess && (
+            {saveContentSuccess && (
               <div className="as-success-msg">
                 <span>✓</span> Changes saved successfully
               </div>
@@ -234,23 +333,24 @@ export default function AccountSettings() {
         <div className="as-card">
           <h3 className="as-card-title">Content Summary</h3>
           <div className="as-stats-grid">
-            {Object.entries(postCounts).map(([key, val]) => (
-              <div className="as-stat-item" key={key}>
-                <span className="as-stat-icon">{statIcons[key] || "📊"}</span>
+            {postStatus.map((item) => (
+              <div className="as-stat-item" key={item.label}>
+                <span className="as-stat-icon">{item.icon || "📊"}</span>
                 <div className="as-stat-text">
-                  <span className="as-stat-val">{val}</span>
+                  {/* <span className="as-stat-val">{val}</span> */}
                   <span className="as-stat-label">
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                    {item.label.toUpperCase()}
                   </span>
                 </div>
                 <StatusToggle
                   defaultActive={
-                    val === 'allow' ? true : false
+                    creator?.channel?.[item?.field] === 'yes' ? true : false
                   }
                   onChange={(isActive) => {
-                    handleStatusUpdateSubmit(
-                      val,
-                      isActive ? 'allow' : 'disable'
+                    updateContentAccess(item.field, isActive ? 'yes' : 'no');
+                    handleContentAccess(
+                      item.field,
+                      isActive ? 'yes' : 'no'
                     );
                   }}
                 />
@@ -296,7 +396,7 @@ export default function AccountSettings() {
 
           <div className="as-save-row">
             <button className="as-save-btn" onClick={handleSave}>
-              Save Changes
+              Save Status
             </button>
 
             {saveSuccess && (

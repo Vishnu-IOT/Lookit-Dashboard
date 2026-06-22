@@ -23,8 +23,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Title Styles */
@@ -75,7 +81,7 @@
   width: 80px;
   height: 80px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 .dursec button {
@@ -207,7 +213,7 @@
 }
 
 .fetch-btn {
-  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   color: white;
   border: none;
   padding: 16px 28px;
@@ -270,7 +276,7 @@
 }
 
 .results-count {
-  background: linear-gradient(135deg, #2196F3 0%, #0D47A1 100%);
+  background: linear-gradient(135deg, #2196f3 0%, #0d47a1 100%);
   color: white;
   padding: 12px 20px;
   border-radius: 12px;
@@ -312,7 +318,7 @@
 }
 
 .duration-badge {
-  background: linear-gradient(135deg, #9C27B0 0%, #6A1B9A 100%);
+  background: linear-gradient(135deg, #9c27b0 0%, #6a1b9a 100%);
   color: white;
   padding: 6px 16px;
   border-radius: 20px;
@@ -416,67 +422,68 @@
     padding: 20px;
     margin-bottom: 15px;
   }
-  
+
   .title {
     font-size: 2rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .paneltitle {
     font-size: 1.6rem;
   }
-  
+
   .paneltitle1 {
     font-size: 1.5rem;
   }
-  
+
   .duration-row {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
-  
+
   .dursec img {
     width: 70px;
     height: 70px;
   }
-  
+
   .dursec button {
     padding: 12px 16px;
     font-size: 1rem;
   }
-  
+
   .grid.cards {
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
   }
-  
+
   .card {
     padding: 15px;
   }
-  
+
   .card img {
     width: 80px;
     height: 80px;
   }
-  
+
   .cardtitle {
     font-size: 1rem;
   }
-  
+
   .button-group {
     flex-direction: column;
   }
-  
-  .fetch-btn, .reset-btn {
+
+  .fetch-btn,
+  .reset-btn {
     min-width: 100%;
   }
-  
+
   .rasi-date {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .created-at {
     text-align: left;
     font-size: 0.85rem;
@@ -487,105 +494,106 @@
   body {
     padding: 12px;
   }
-  
+
   .panel {
     padding: 16px;
     border-radius: 20px;
   }
-  
+
   .title {
     font-size: 1.8rem;
   }
-  
+
   .paneltitle {
     font-size: 1.4rem;
   }
-  
+
   .paneltitle1 {
     font-size: 1.3rem;
   }
-  
+
   .duration-row {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .dursec img {
     width: 60px;
     height: 60px;
   }
-  
+
   .dursec button {
     padding: 14px;
     font-size: 1rem;
   }
-  
+
   .panelbtn {
     padding: 10px 20px;
     font-size: 0.95rem;
   }
-  
+
   .grid.cards {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-  
+
   .card {
     padding: 12px;
   }
-  
+
   .card img {
     width: 70px;
     height: 70px;
   }
-  
+
   .cardtitle {
     font-size: 0.95rem;
   }
-  
+
   .date-controls {
     padding: 16px;
   }
-  
+
   .date-input {
     padding: 14px;
     font-size: 0.95rem;
   }
-  
-  .fetch-btn, .reset-btn {
+
+  .fetch-btn,
+  .reset-btn {
     padding: 14px;
     font-size: 1rem;
   }
-  
+
   .rasi-card {
     padding: 20px;
   }
-  
+
   .rasi-date strong {
     font-size: 1.1rem;
   }
-  
+
   .rasi-greeting {
     font-size: 1.2rem;
   }
-  
+
   .section {
     padding: 16px;
   }
-  
+
   .section h4 {
     font-size: 1rem;
   }
-  
+
   .section p {
     font-size: 0.95rem;
   }
-  
+
   .rasi-summary {
     font-size: 1rem;
     padding: 16px;
   }
-  
+
   .results-count {
     font-size: 1rem;
     padding: 10px 16px;
@@ -598,16 +606,16 @@
     min-height: auto;
     padding: 15px;
   }
-  
+
   .title {
     font-size: 1.6rem;
     margin-bottom: 1rem;
   }
-  
+
   .duration-row {
     margin-top: 1rem;
   }
-  
+
   .grid.cards {
     max-height: 200px;
     overflow-y: auto;
@@ -619,65 +627,69 @@
   .panel {
     color: #333;
   }
-  
-  .title, .paneltitle, .paneltitle1, .rasi-greeting {
+
+  .title,
+  .paneltitle,
+  .paneltitle1,
+  .rasi-greeting {
     color: #333;
   }
-  
+
   .title {
     background: #812baf;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  
+
   .card {
     background: #fff;
     border-color: #404040;
   }
-  
+
   .cardtitle {
     color: #333;
   }
-  
+
   .date-input {
     background: #fff;
     border-color: #404040;
     color: #333;
   }
-  
+
   .date-input:focus {
     border-color: #812baf;
   }
-  
+
   .rasi-card {
     background: #fff;
     border-color: #404040;
   }
-  
+
   .rasi-header {
     border-color: #404040;
   }
-  
+
   .rasi-date strong {
     color: #333;
   }
-  
+
   .created-at {
     color: #333;
   }
-  
+
   .section {
     background: #fff;
   }
-  
+
   .section h4 {
     color: #333;
   }
-  
-  .section p, .rasi-summary {
+
+  .section p,
+  .rasi-summary {
     color: #333;
   }
-  
+
   .no-data {
     background: #2d2d2d;
     color: #b0b0b0;
@@ -690,20 +702,20 @@
     background: white;
     padding: 0;
   }
-  
+
   .panel {
     box-shadow: none;
     border: 1px solid #ddd;
   }
-  
+
   button {
     display: none;
   }
-  
+
   .date-controls {
     display: none;
   }
-  
+
   .rasi-card {
     break-inside: avoid;
   }

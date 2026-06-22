@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AlarmClock, Bell } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 import '../styles/Updates.css';
@@ -10,6 +10,7 @@ import { MdSportsVolleyball, MdTravelExplore } from "react-icons/md";
 import { RiHealthBookLine } from "react-icons/ri";
 import { GiMaterialsScience, GiTravelDress } from "react-icons/gi";
 import { FaLandmarkDome } from "react-icons/fa6";
+import axios from 'axios';
 
 
 const categoryOptions = [
@@ -76,12 +77,17 @@ const UpdatePostList = () => {
   const [notificationLoading, setNotificationLoading] = useState(false);
   const [notificationForm, setNotificationForm] = useState(defaultNotificationForm);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 15;
+  const [totalPosts, setTotalPosts] = useState(0);
+
   const dateTimeInputRef = useRef(null);
 
   useEffect(() => {
     fetchCategories();
     getUserFromLocalStorage();
-  }, []);
+  }, [currentPage]);
 
   // ── User ───────────────────────────────────────────────────────────────
   const getUserFromLocalStorage = () => {
@@ -109,15 +115,34 @@ const UpdatePostList = () => {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://users.mpdatahub.com/api/update-post-index');
+      const response = await fetch(`https://users.mpdatahub.com/api/update-post-index?perpage=${ITEMS_PER_PAGE}&currentpage=${currentPage}`);
       const data = await response.json();
       setCategories(data.data);
+      setTotalPages(Math.ceil((data?.total || 0) / ITEMS_PER_PAGE));
+      setTotalPosts(data?.total || 0);
     } catch (error) {
       console.error('Error fetching categories:', error);
       alert('Failed to load categories');
     } finally {
       setLoading(false);
     }
+  };
+
+  const notificationMessage = {
+    NEWS: "தினசரி முக்கிய செய்திகள் மற்றும் நடப்பு நிகழ்வுகள்.",
+    ENTERTAINMENT: "சினிமா, தொலைக்காட்சி மற்றும் பொழுதுபோக்கு தகவல்கள்.",
+    SPORTS: "விளையாட்டு செய்திகள், போட்டிகள் மற்றும் வீரர் தகவல்கள்.",
+    TECHNOLOGY: "புதிய தொழில்நுட்பங்கள் மற்றும் டிஜிட்டல் புதுமைகள்.",
+    LIFESTYLE: "வாழ்க்கை முறை, உறவுகள் மற்றும் தனிநபர் மேம்பாடு.",
+    EDUCATION: "கல்வி, தேர்வுகள் மற்றும் கற்றல் வளங்கள்.",
+    HEALTH: "உடல்நலம், மருத்துவம் மற்றும் ஆரோக்கிய குறிப்புகள்.",
+    TRAVEL: "சுற்றுலா இடங்கள் மற்றும் பயண அனுபவங்கள்.",
+    FOOD: "உணவு வகைகள், சமையல் குறிப்புகள் மற்றும் உணவக தகவல்கள்.",
+    FASHION: "ஆடை, அழகு மற்றும் நவநாகரிக போக்குகள்.",
+    BUSINESS: "வணிகம், சந்தை மற்றும் முதலீட்டு தகவல்கள்.",
+    SCIENCE: "அறிவியல் கண்டுபிடிப்புகள் மற்றும் ஆய்வுகள்.",
+    ARTS: "கலை, இலக்கியம் மற்றும் படைப்பாற்றல் நிகழ்வுகள்.",
+    POLITICS: "அரசியல் செய்திகள் மற்றும் பொது நிர்வாக தகவல்கள்.",
   };
 
   // ── Image compression ──────────────────────────────────────────────────
@@ -308,10 +333,7 @@ const UpdatePostList = () => {
     setNotificationForm({
       user_id: type === 'schedule' ? (post.user_id || currentUserId).toString() : '',
       title: post.title || post.category || 'New Update',
-      message:
-        type === 'schedule'
-          ? 'Check out this new content! Tap to view now. 🔥'
-          : 'Check out this amazing content! Tap to explore now. 🚀',
+      message: notificationMessage[post?.category_name],
       image: post.image || '',
       type: 'POSTERS',
       type_id: post.id.toString(),
@@ -363,23 +385,27 @@ const UpdatePostList = () => {
         };
 
     try {
-      const scheduledDateTime = new Date(notificationForm.scheduled_time);
       console.log(notificationPayload);
+      if (notificationType === 'schedule') {
+        const scheduledDateTime = new Date(notificationForm.scheduled_time);
 
-      // Format date as YYYY-MM-DD
-      scheduledDate = scheduledDateTime.toISOString().split('T')[0];
+        if (isNaN(scheduledDateTime.getTime())) {
+          alert("Please select a valid scheduled time");
+          setNotificationLoading(false);
+          return;
+        }
 
-      // Format time as HH:MM (24-hour format)
-      scheduledTime = scheduledDateTime
-        .toTimeString()
-        .split(' ')[0]
-        .substring(0, 5);
-      console.log(scheduledDate, scheduledTime);
+        scheduledDate = scheduledDateTime.toISOString().split('T')[0];
+        scheduledTime = scheduledDateTime
+          .toTimeString()
+          .split(' ')[0]
+          .substring(0, 5);
+      }
 
       const apiUrl =
         notificationType === 'schedule'
           ? 'https://users.mpdatahub.com/api/notification/date-time'
-          : 'https://users.mpdatahub.com/api/notification/bulk-send';
+          : 'https://users.mpdatahub.com/api/bulk-send';
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -432,6 +458,71 @@ const UpdatePostList = () => {
 
     return categoryItem?.icon || <HiOutlineNewspaper />;
   };
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+  };
+
+  const goToFirst = () => {
+    setCurrentPage((prev) => Math.max(1));
+  };
+
+  const goToPrevious = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const goToNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const goToLast = () => {
+    setCurrentPage((prev) => Math.min(totalPages));
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 6) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
+    pages.push(1, 2);
+    pages.push("...");
+    const start = Math.max(3, currentPage - 1);
+    const end = Math.min(totalPages - 2, currentPage + 1);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    if (currentPage < totalPages - 3) {
+      pages.push("...");
+    }
+    pages.push(totalPages - 1, totalPages);
+    return [...new Set(pages)];
+  };
+
+  const togglePostStatus =
+    async (postId, currentStatus) => {
+      // const newStatus = currentStatus === 'yes' ? 'no' : 'yes';
+      const newStatus = currentStatus;
+      try {
+        await axios.post("https://users.mpdatahub.com/api/article/change-status", {
+          id: postId,
+          isActive: newStatus,
+        });
+        alert(
+          `Post status updated to ${newStatus === "yes" ? "Active" : "Disabled"}`,
+        );
+        setCategories((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, isActive: newStatus } : post,
+          ),
+        );
+      } catch (err) {
+        console.error("Status update error", err);
+        alert("Error updating post status");
+      }
+    };
 
   return (
     <div className="article-categories-container">
@@ -792,82 +883,179 @@ const UpdatePostList = () => {
                 <p>No posts found. Add your first post!</p>
               </div>
             ) : (
-              <div className="categories-grid">
-                {categories.map((category) => (
-                  <div key={category.id} className="category-card">
-                    <div className="card-header">
-                      <div className='uf-card'>
-                        <span className="uf-user-initial">
-                          {category.category_name ? (
-                            // initials(category.category_name)
-                            getCategoryIcon(category.category_name)
+              <>
+                <div className="categories-grid">
+                  {categories.map((category) => (
+                    <div key={category.id} className="category-card">
+                      <div className="card-header">
+                        <div className='uf-card'>
+                          <span className="uf-user-initial">
+                            {category.category_name ? (
+                              // initials(category.category_name)
+                              getCategoryIcon(category.category_name)
 
-                          ) : (
-                            <IoPersonCircleOutline />
-                          )}
-                        </span>
-                        <div className="card-title-row">
-                          <h3>{category.category_name || category.title || category.name || 'Unnamed Post'}</h3>
-                          <span className="category-badge">{category.category}</span>
-                          <span className="media-type-badge">{category.type}</span>
-                        </div>
-                      </div>
-                      <div className="notification-icons">
-                        <div className={`status-badges ${category.isActive === 'yes' ? 'active' : 'inactive'}`}>
-                          {category.isActive === 'yes' ? <FiCheckCircle /> : <PiXCircleLight />}
+                            ) : (
+                              <IoPersonCircleOutline />
+                            )}
+                          </span>
+                          <div className="card-title-row">
+                            <h3>{category.category_name || category.title || category.name || 'Unnamed Post'}</h3>
+                            <span className="category-badge">{category.category}</span>
+                            <span className="media-type-badge">{category.type}</span>
+                          </div>
                         </div>
                         <div className="notification-icons">
-                          <button
-                            className="notification-bell-btn single"
-                            onClick={() => openNotificationModal(category, 'bulk')}
-                            title="Send Bulk Notification to All Users"
-                          >
-                            <Bell size={18} />
-                          </button>
-                          <button
-                            className="notification-bell-btn bulk"
-                            onClick={() => openNotificationModal(category, 'schedule')}
-                            title="Schedule Notification"
-                          >
-                            <AlarmClock size={18} />
-                          </button>
+                          <div className={`status-badges ${category.isActive === 'yes' ? 'active' : 'inactive'}`}>
+                            {category.isActive === 'yes' ? <FiCheckCircle /> : <PiXCircleLight />}
+                          </div>
+                          <div className="notification-icons">
+                            <button
+                              className="notification-bell-btn single"
+                              onClick={() => openNotificationModal(category, 'bulk')}
+                              title="Send Bulk Notification to All Users"
+                            >
+                              <Bell size={18} />
+                            </button>
+                            <button
+                              className="notification-bell-btn bulk"
+                              onClick={() => openNotificationModal(category, 'schedule')}
+                              title="Schedule Notification"
+                            >
+                              <AlarmClock size={18} />
+                            </button>
+                          </div>
                         </div>
                       </div>
+
+                      {category.image && (
+                        <div className="card-image">
+                          <img
+                            src={`${category.image}`}
+                            alt={category.title || category.category_name || 'Post'}
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        </div>
+                      )}
+
+                      {category.video_url && category.type === 'VIDEO' && (
+                        <div className="card-video-indicator">
+                          <video controls preload="metadata" width="100%" style={{ borderRadius: '10px' }}>
+                            <source src={category.video_url} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      )}
+
+                      <div
+                        className={`toggle-group ${category.isActive === "yes"
+                          ? "status-active"
+                          : category.isActive === "reject"
+                            ? "status-rejected"
+                            : "status-inactive"
+                          }`}
+                      >
+                        <span
+                          style={{
+                            color: "black",
+                            fontWeight: 300,
+                            fontSize: 16,
+                          }}
+                        >
+                          Status:
+                        </span>
+                        <select
+                          value={category.isActive || ""}
+                          onChange={(e) =>
+                            togglePostStatus(category.id, e.target.value)
+                          }
+                        >
+                          {/* <option value="">Select Status</option> */}
+                          <option className="toggle-label" value="yes">
+                            Active
+                          </option>
+                          <option value="no">Disabled</option>
+                          <option value="reject">Rejected</option>
+                        </select>
+                      </div>
+
+                      <div className="card-actions">
+                        <button className="btn btn-edit" onClick={() => handleEdit(category)}>
+                          Edit
+                        </button>
+                        <button className="btn btn-delete" onClick={() => handleDelete(category.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <>
+                    <div className="cd-pagination" style={{ marginBottom: '20px' }}>
+                      <button
+                        onClick={goToFirst}
+                        disabled={currentPage === 1}
+                        className="cd-page-btn"
+                      >
+                        First
+                      </button>
+
+                      <button
+                        onClick={goToPrevious}
+                        disabled={currentPage === 1}
+                        className="cd-page-btn"
+                      >
+                        ← Previous
+                      </button>
+
+                      <div className="cd-page-numbers">
+                        {getPageNumbers().map((page, index) =>
+                          page === "..." ? (
+                            <span key={`ellipsis-${index}`}>...</span>
+                          ) : (
+                            <button
+                              key={page}
+                              onClick={() => setCurrentPage(page)}
+                              className={
+                                currentPage === page
+                                  ? "cd-page-number cd-page-number--active"
+                                  : "cd-page-number"
+                              }
+                            >
+                              {page}
+                            </button>
+                          ),
+                        )}
+                      </div>
+
+                      <button
+                        onClick={goToNext}
+                        disabled={currentPage === totalPages}
+                        className="cd-page-btn"
+                      >
+                        Next →
+                      </button>
+                      <button
+                        onClick={goToLast}
+                        disabled={currentPage === totalPages}
+                        className="cd-page-btn"
+                      >
+                        Last
+                      </button>
                     </div>
 
-                    {category.image && (
-                      <div className="card-image">
-                        <img
-                          src={`${category.image}`}
-                          alt={category.title || category.category_name || 'Post'}
-                          onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                      </div>
-                    )}
-
-                    {category.video_url && category.type === 'VIDEO' && (
-                      <div className="card-video-indicator">
-                        <video controls preload="metadata" width="100%" style={{ borderRadius: '10px' }}>
-                          <source src={category.video_url} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      </div>
-                    )}
-
-                    <div className="card-actions">
-                      <button className="btn btn-edit" onClick={() => handleEdit(category)}>
-                        Edit
-                      </button>
-                      <button className="btn btn-delete" onClick={() => handleDelete(category.id)}>
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {/* <div className="results-info">
+                      Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                      {Math.min(currentPage * ITEMS_PER_PAGE, totalPosts)} of {totalPosts}{" "}
+                      {title}
+                    </div> */}
+                  </>
+                )}
+              </>
             )}
             <footer className="app-footer">
-              <p>Total Posts: {categories.length}</p>
+              <p>Total Posts: {totalPosts}</p>
               {editingId && <p className="editing-notice">Editing Mode Active</p>}
               <p className="user-id-info">User ID: {currentUserId || 'Not loaded'}</p>
             </footer>

@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const LoggedInUser = ({ currentUser, onLogout }) => {
   const [userData, setUserData] = useState(currentUser);
-  
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('currentUser');
+      const storedUser = localStorage.getItem("currentUser");
 
       if (storedUser) {
         setUserData(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error("Error loading user data:", error);
     }
   }, [currentUser]);
 
   // Format DOB
   const formatDOB = (dobString) => {
-    if (!dobString) return 'Not provided';
+    if (!dobString) return "Not provided";
 
     try {
       const dob = new Date(dobString);
 
-      return dob.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
+      return dob.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
       });
     } catch {
       return dobString;
@@ -35,7 +34,7 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
 
   // Format login time
   const formatLoginTime = (timestamp) => {
-    if (!timestamp) return 'Recently';
+    if (!timestamp) return "Recently";
 
     try {
       const loginTime = new Date(timestamp);
@@ -44,7 +43,7 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
       const diffMs = now - loginTime;
       const diffMins = Math.floor(diffMs / (1000 * 60));
 
-      if (diffMins < 1) return 'Just now';
+      if (diffMins < 1) return "Just now";
       if (diffMins < 60) return `${diffMins} minutes ago`;
 
       const diffHours = Math.floor(diffMins / 60);
@@ -55,7 +54,7 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
 
       return `${diffDays} days ago`;
     } catch {
-      return 'Recently';
+      return "Recently";
     }
   };
 
@@ -65,21 +64,21 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
         <img
           src={
             userData?.image ||
-            'https://ui-avatars.com/api/?name=User&background=667eea&color=fff'
+            "https://ui-avatars.com/api/?name=User&background=667eea&color=fff"
           }
           alt="Profile"
           className="dropdown-profile-image"
         />
 
         <div className="user-info">
-          <strong className="user-name">{userData?.name || 'User'}</strong>
+          <strong className="user-name">{userData?.name || "User"}</strong>
 
           <small className="user-email">
-            {userData?.email || 'user@example.com'}
+            {userData?.email || "user@example.com"}
           </small>
 
           <div className="user-badge">
-            <span className="badge">ID: {userData?.id || 'N/A'}</span>
+            <span className="badge">ID: {userData?.id || "N/A"}</span>
           </div>
         </div>
       </div>
@@ -88,15 +87,15 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
         <div className="detail-item">
           <span className="detail-label">Mobile:</span>
 
-          <span className="detail-value" style={{ textAlign: 'right' }}>
-            {userData?.mobile || 'Not provided'}
+          <span className="detail-value" style={{ textAlign: "right" }}>
+            {userData?.mobile || "Not provided"}
           </span>
         </div>
 
         <div className="detail-item">
           <span className="detail-label">Date of Birth:</span>
 
-          <span className="detail-value" style={{ textAlign: 'right' }}>
+          <span className="detail-value" style={{ textAlign: "right" }}>
             {formatDOB(userData?.dob)}
           </span>
         </div>
@@ -106,9 +105,9 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
 
           <span
             className="detail-value referral-code"
-            style={{ textAlign: 'right' }}
+            style={{ textAlign: "right" }}
           >
-            {userData?.referal_code || 'N/A'}
+            {userData?.referal_code || "N/A"}
           </span>
         </div>
 
@@ -117,7 +116,7 @@ const LoggedInUser = ({ currentUser, onLogout }) => {
 
           <span
             className="detail-value login-time"
-            style={{ textAlign: 'right' }}
+            style={{ textAlign: "right" }}
           >
             {formatLoginTime(userData?.loginTime)}
           </span>

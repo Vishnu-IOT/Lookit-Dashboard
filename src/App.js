@@ -1,50 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
   useLocation,
-} from 'react-router-dom';
-import './App.css';
-import Sidebar from './components/Sidebar';
-import Navbar from './components/Navbar';
-import MainContent from './components/MainContent';
-import AuthModal from './components/AuthModal';
-import SubCategory from './components/SubCategory';
-import AddArticle from './components/AddArticle';
-import Listarticle from './components/Listarticle';
-import List from './components/List';
-import NotificationList from './components/NotificationList';
-import ScheduleForm from './components/ScheduleForm';
-import Form from './CalendarList/duration';
-import Banner from './CalendarList/Banner';
-import AddArticleRm from './components/AddArticleRm';
-import ListarticleRm from './components/ListarticleRm';
-import MainCategoryRm from './components/MainCategoryRm';
-import SubCategoryRm from './components/SubCategoryRm';
-import RasiAllList from './components/RasiAllList';
-import Updates from './components/Updates';
-import Notiupdate from './components/Notiupdate';
-import ScrollToTopButton from './components/ScrollToTopButton';
-import ScrollToo from './components/ScrollToo';
-import MainCategory from './components/MainCategory';
-import Todaytalksform from './components/Todaytalksform';
-import Todayjobsform from './components/Todayjobsform';
-import VegetablePriceList from './components/VegetablePriceList';
-import FuelRates from './components/FuelRates';
-import Thirumanam from './components/Thirumanam';
-import AddNews from './components/AddNews';
-import Listnews from './components/Listnews';
-import { BottomNav } from './components/BottomNav';
-import UpdatePostForm from './components/UpdatePostForm';
-import UpdatePostList from './components/UpdatePostList';
-import PollForm from './components/PollForm';
-import PollList from './components/PollList';
-import CreatorList from './components/CreatorList';
-import CreatorDetails from './components/CreatorDetails';
-import AccountSettings from './components/AccountSettings';
-import CreatorPostList from './components/CreatorPostList';
+} from "react-router-dom";
+import "./App.css";
+import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
+import MainContent from "./components/MainContent";
+import AuthModal from "./components/AuthModal";
+import SubCategory from "./components/SubCategory";
+import AddArticle from "./components/AddArticle";
+import Listarticle from "./components/Listarticle";
+import List from "./components/List";
+import NotificationList from "./components/NotificationList";
+import ScheduleForm from "./components/ScheduleForm";
+import Form from "./CalendarList/duration";
+import Banner from "./CalendarList/Banner";
+import AddArticleRm from "./components/AddArticleRm";
+import ListarticleRm from "./components/ListarticleRm";
+import MainCategoryRm from "./components/MainCategoryRm";
+import SubCategoryRm from "./components/SubCategoryRm";
+import RasiAllList from "./components/RasiAllList";
+import Updates from "./components/Updates";
+import Notiupdate from "./components/Notiupdate";
+import ScrollToTopButton from "./components/ScrollToTopButton";
+import ScrollToo from "./components/ScrollToo";
+import MainCategory from "./components/MainCategory";
+import Todaytalksform from "./components/Todaytalksform";
+import Todayjobsform from "./components/Todayjobsform";
+import VegetablePriceList from "./components/VegetablePriceList";
+import FuelRates from "./components/FuelRates";
+import Thirumanam from "./components/Thirumanam";
+import AddNews from "./components/AddNews";
+import Listnews from "./components/Listnews";
+import { BottomNav } from "./components/BottomNav";
+import UpdatePostForm from "./components/UpdatePostForm";
+import UpdatePostList from "./components/UpdatePostList";
+import PollForm from "./components/PollForm";
+import PollList from "./components/PollList";
+import CreatorList from "./components/CreatorList";
+import CreatorDetails from "./components/CreatorDetails";
+import AccountSettings from "./components/AccountSettings";
+import CreatorPostList from "./components/CreatorPostList";
 
 // Dashboard Layout Component
 const DashboardLayout = ({
@@ -56,38 +56,38 @@ const DashboardLayout = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const getActiveMenuFromPath = () => {
-    const path = location.pathname.replace('/', '');
+    const path = location.pathname.replace("/", "");
     const pathToMenuMap = {
-      dashboard: 'Dashboard',
-      'main-category': 'Main-Category',
-      'sub-category/:mainCategoryId': 'Sub-Category',
-      'main-category-rm': 'MainCategoryRm',
-      'sub-category-rm': 'subCategoryRm',
-      'add-article': 'Add Article',
-      'list-articles': 'List & Edit Articles',
-      'add-news': 'Add News',
-      'list-news': 'List News',
-      'poll-form': 'Poll Form',
-      'poll-list': 'Poll List',
-      'content-creator': 'Content Creator',
-      'creator-details/:channelId': 'Creator Details',
-      'content-settings/:creator/settings': 'Account Settings',
-      'creator-post-list/:userId': 'Creator Post List',
-      'add-article-rm': 'AddArticlerm',
-      'list-articles-rm': 'List and Edit Articles',
-      'rasi-upload': 'Rasi Upload Form',
-      'rasi-list': 'RasiList',
-      updates: 'Updates',
-      'add-updates': 'Add Updates',
-      'list-updates': 'List & Edit Updates',
-      'notification-update': 'Notification update',
-      notifications: 'Notifications',
-      schedule: 'Schedule',
-      banner: 'Banner',
-      list: 'List',
-      article: 'Article',
+      dashboard: "Dashboard",
+      "main-category": "Main-Category",
+      "sub-category/:mainCategoryId": "Sub-Category",
+      "main-category-rm": "MainCategoryRm",
+      "sub-category-rm": "subCategoryRm",
+      "add-article": "Add Article",
+      "list-articles": "List & Edit Articles",
+      "add-news": "Add News",
+      "list-news": "List News",
+      "poll-form": "Poll Form",
+      "poll-list": "Poll List",
+      "content-creator": "Content Creator",
+      "creator-details/:channelId": "Creator Details",
+      "content-settings/:ascreator/settings": "Account Settings",
+      "creator-post-list/:userId": "Creator Post List",
+      "add-article-rm": "AddArticlerm",
+      "list-articles-rm": "List and Edit Articles",
+      "rasi-upload": "Rasi Upload Form",
+      "rasi-list": "RasiList",
+      updates: "Updates",
+      "add-updates": "Add Updates",
+      "list-updates": "List & Edit Updates",
+      "notification-update": "Notification update",
+      notifications: "Notifications",
+      schedule: "Schedule",
+      banner: "Banner",
+      list: "List",
+      article: "Article",
     };
-    return pathToMenuMap[path] || 'Dashboard';
+    return pathToMenuMap[path] || "Dashboard";
   };
 
   const [showMore, setShowMore] = useState(false);
@@ -143,7 +143,7 @@ const DashboardLayout = ({
               element={<CreatorDetails />}
             />
             <Route
-              path="content-settings/:creator/settings"
+              path="content-settings/:ascreator/settings"
               element={<AccountSettings />}
             />
             <Route
@@ -261,7 +261,7 @@ function App() {
 
   // Auto logout function
   const autoLogout = () => {
-    const storedUser = localStorage.getItem('currentUser');
+    const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser);
@@ -269,7 +269,7 @@ function App() {
           handleLogout();
         }
       } catch (error) {
-        console.error('Error checking login time:', error);
+        console.error("Error checking login time:", error);
         handleLogout();
       }
     }
@@ -277,10 +277,10 @@ function App() {
 
   // Check for existing login on component mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    const storedLogin = localStorage.getItem('isLoggedIn');
+    const storedUser = localStorage.getItem("currentUser");
+    const storedLogin = localStorage.getItem("isLoggedIn");
 
-    if (storedUser && storedLogin === 'true') {
+    if (storedUser && storedLogin === "true") {
       try {
         const user = JSON.parse(storedUser);
 
@@ -291,14 +291,14 @@ function App() {
           setShowAuthModal(false);
         } else {
           // Token expired, logout
-          localStorage.removeItem('currentUser');
-          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("isLoggedIn");
           setShowAuthModal(true);
         }
       } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('isLoggedIn');
+        console.error("Error parsing stored user:", error);
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("isLoggedIn");
         setShowAuthModal(true);
       }
     } else {
@@ -329,8 +329,8 @@ function App() {
     setShowAuthModal(false);
 
     // Store in localStorage
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('currentUser', JSON.stringify(userWithTime));
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("currentUser", JSON.stringify(userWithTime));
   };
 
   const handleLogout = () => {
@@ -339,8 +339,8 @@ function App() {
     setShowAuthModal(true);
 
     // Clear localStorage
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
   };
 
   return (

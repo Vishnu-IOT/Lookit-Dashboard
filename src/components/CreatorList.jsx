@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreatorList.css";
 import axios from "axios";
+import Loder from "./Loder";
 
 const STATUS_FILTERS = [
   { label: "All", value: "All" },
@@ -25,8 +26,10 @@ export default function CreatorList() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [creatorList, setCreatorList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get("https://users.mpdatahub.com/api/channel-list")
       .then((res) => {
@@ -35,6 +38,9 @@ export default function CreatorList() {
       .catch((err) => {
         console.error(err);
         setCreatorList([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -77,6 +83,10 @@ export default function CreatorList() {
     }
     return pages;
   };
+
+  if (loading) {
+    return <Loder />;
+  }
 
   return (
     <div className="cl-page">

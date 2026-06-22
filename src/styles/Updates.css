@@ -63,7 +63,7 @@
   padding-bottom: 0.75rem;
   text-align: left;
   font-size: 2rem !important;
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: "Montserrat", sans-serif !important;
   border-bottom: 1px solid gray;
 }
 
@@ -86,7 +86,7 @@
   font-size: 0.95rem;
 }
 
-.form-group input[type='text'],
+.form-group input[type="text"],
 .form-group select {
   padding: 0.75rem;
   border: 1px solid var(--border-color);
@@ -95,7 +95,7 @@
   transition: border-color 0.3s;
 }
 
-.form-group input[type='text']:focus,
+.form-group input[type="text"]:focus,
 .form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
@@ -482,7 +482,7 @@
   color: #555;
 }
 
-.notification-form input[type='text'],
+.notification-form input[type="text"],
 .notification-form textarea,
 .notification-form select {
   width: 100%;
@@ -493,7 +493,7 @@
   transition: border-color 0.3s;
 }
 
-.notification-form input[type='text']:focus,
+.notification-form input[type="text"]:focus,
 .notification-form textarea:focus,
 .notification-form select:focus {
   outline: none;
@@ -730,7 +730,7 @@
   color: #555;
 }
 
-.notification-form input[type='text'],
+.notification-form input[type="text"],
 .notification-form textarea,
 .notification-form select {
   width: 100%;
@@ -741,7 +741,7 @@
   transition: border-color 0.3s;
 }
 
-.notification-form input[type='text']:focus,
+.notification-form input[type="text"]:focus,
 .notification-form textarea:focus,
 .notification-form select:focus {
   outline: none;
@@ -854,7 +854,7 @@
 }
 
 .loading-spinner::after {
-  content: '';
+  content: "";
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -1025,7 +1025,7 @@
     grid-template-columns: auto;
   }
 
-  .form-group input[type='text'],
+  .form-group input[type="text"],
   .form-group select,
   .file-input {
     padding: 0.625rem;

@@ -316,8 +316,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error State */
@@ -368,31 +372,31 @@
   .category-pagecat {
     padding: 15px;
   }
-  
+
   .category-headercat {
     padding: 20px;
   }
-  
+
   .category-metacat {
     flex-direction: column;
     text-align: center;
     gap: 20px;
   }
-  
+
   .filter-sectioncat {
     flex-direction: column;
     gap: 20px;
     align-items: stretch;
   }
-  
+
   .filter-buttonscat {
     justify-content: center;
   }
-  
+
   .posts-gridcat {
     grid-template-columns: 1fr;
   }
-  
+
   .category-detailscat h1 {
     font-size: 2rem;
   }
@@ -402,15 +406,15 @@
   .category-pagecat {
     padding: 10px;
   }
-  
+
   .filter-buttonscat {
     flex-direction: column;
   }
-  
+
   .post-contentcat {
     padding: 20px;
   }
-  
+
   .category-detailscat h1 {
     font-size: 1.8rem;
   }

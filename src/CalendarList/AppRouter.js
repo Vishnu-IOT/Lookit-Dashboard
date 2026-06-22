@@ -7,13 +7,11 @@ import "../styles/RasiStyles.css";
 
 export default function AppRouter() {
   return (
-  
-   <Routes>
-        <Route path="/" element={<SelectDuration />} />
-        <Route path="/rasi-list" element={<RasiList />} />
-        <Route path="/rasi-details" element={<ViewRasiForm/>} />
-        <Route path="/banner" element={<Banner />} />
-      </Routes>
-    
+    <Routes>
+      <Route path="/" element={<SelectDuration />} />
+      <Route path="/rasi-list" element={<RasiList />} />
+      <Route path="/rasi-details" element={<ViewRasiForm />} />
+      <Route path="/banner" element={<Banner />} />
+    </Routes>
   );
 }

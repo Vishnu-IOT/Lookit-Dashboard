@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/AuthModal.css";
-import {
-  Mail, Lock, Phone, User, Calendar, Gift
-} from "lucide-react";
+import { Mail, Lock, Phone, User, Calendar, Gift } from "lucide-react";
 
 const AuthModal = ({ onClose, onLogin }) => {
   const [activeTab, setActiveTab] = useState("login");
@@ -74,7 +72,7 @@ const AuthModal = ({ onClose, onLogin }) => {
           mobile: form.mobile,
           referal_name: form.referal_name || "",
           dob: form.dob || "",
-        }
+        },
       );
 
       showMessage("Account created successfully! Please login.", "success");
@@ -97,9 +95,9 @@ const AuthModal = ({ onClose, onLogin }) => {
     } catch (err) {
       showMessage(
         err.response?.data?.message ||
-        err.response?.data?.errors?.email?.[0] ||
-        "Registration failed. Please check your details.",
-        "error"
+          err.response?.data?.errors?.email?.[0] ||
+          "Registration failed. Please check your details.",
+        "error",
       );
     } finally {
       setLoading(false);
@@ -117,7 +115,7 @@ const AuthModal = ({ onClose, onLogin }) => {
         {
           email: email,
           password: password,
-        }
+        },
       );
 
       const userData = response.data.user || response.data;
@@ -150,9 +148,8 @@ const AuthModal = ({ onClose, onLogin }) => {
       }, 1000);
     } catch (err) {
       showMessage(
-        err.response?.data?.message ||
-        "Invalid email or password.",
-        "error"
+        err.response?.data?.message || "Invalid email or password.",
+        "error",
       );
     } finally {
       setLoading(false);
@@ -278,7 +275,7 @@ const AuthModal = ({ onClose, onLogin }) => {
                         className="strength-bar1"
                         style={{
                           width: `${passwordStrength}%`,
-                          backgroundColor: getPasswordStrengthColor()
+                          backgroundColor: getPasswordStrengthColor(),
                         }}
                       />
                     </div>

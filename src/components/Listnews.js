@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import axios from 'axios';
-import '../styles/listall.css';
-import Loder from './Loder';
-import { AiFillBell } from 'react-icons/ai';
-import { FcAlarmClock } from 'react-icons/fc';
-import { IoPersonCircleOutline } from 'react-icons/io5';
-import { LuEye } from 'react-icons/lu';
-import { MdOutlineEdit } from 'react-icons/md';
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import axios from "axios";
+import "../styles/listall.css";
+import Loder from "./Loder";
+import { AiFillBell } from "react-icons/ai";
+import { FcAlarmClock } from "react-icons/fc";
+import { IoPersonCircleOutline } from "react-icons/io5";
+import { LuEye } from "react-icons/lu";
+import { MdOutlineEdit } from "react-icons/md";
 
 const NotificationModal = ({
   showNotificationModal,
@@ -40,14 +40,14 @@ const NotificationModal = ({
       setNotificationData((prev) => ({
         ...prev,
         [field]:
-          field === 'type'
+          field === "type"
             ? e.target.value.toUpperCase()
-            : field === 'image'
+            : field === "image"
               ? e.target.value // Make sure image field updates correctly
               : e.target.value,
       }));
     },
-    [setNotificationData]
+    [setNotificationData],
   );
 
   const handleSelectChange = useCallback(
@@ -57,7 +57,7 @@ const NotificationModal = ({
         topic: e.target.value,
       }));
     },
-    [setNotificationData]
+    [setNotificationData],
   );
 
   const handleDateTimeChange = useCallback(
@@ -67,7 +67,7 @@ const NotificationModal = ({
         scheduled_time: e.target.value,
       }));
     },
-    [setNotificationData]
+    [setNotificationData],
   );
 
   if (!showNotificationModal) return null;
@@ -78,8 +78,8 @@ const NotificationModal = ({
         <div className="modal-header">
           <h2 className="modal-title">
             {isScheduled
-              ? 'Schedule Push Notification'
-              : 'Send Push Notification'}
+              ? "Schedule Push Notification"
+              : "Send Push Notification"}
           </h2>
           <button
             className="modal-close-btn"
@@ -97,9 +97,9 @@ const NotificationModal = ({
               ref={typeInputRef}
               className="form-input"
               value={notificationData.type}
-              onChange={handleInputChange('type')}
+              onChange={handleInputChange("type")}
               type="text"
-              style={{ textTransform: 'uppercase' }}
+              style={{ textTransform: "uppercase" }}
             />
             <small className="form-help">
               Content type (ARTICLE, VIDEO, etc.)
@@ -111,7 +111,7 @@ const NotificationModal = ({
               ref={titleInputRef}
               className="form-input"
               value={notificationData.title}
-              onChange={handleInputChange('title')}
+              onChange={handleInputChange("title")}
               type="text"
             />
           </div>
@@ -121,7 +121,7 @@ const NotificationModal = ({
               ref={messageInputRef}
               className="form-textarea"
               value={notificationData.message}
-              onChange={handleInputChange('message')}
+              onChange={handleInputChange("message")}
               rows="4"
             />
           </div>
@@ -130,8 +130,8 @@ const NotificationModal = ({
             <input
               ref={imageInputRef}
               className="form-input"
-              value={notificationData.image || ''} // Add fallback empty string
-              onChange={handleInputChange('image')}
+              value={notificationData.image || ""} // Add fallback empty string
+              onChange={handleInputChange("image")}
               type="text"
               placeholder="Enter image URL or path"
             />
@@ -142,7 +142,7 @@ const NotificationModal = ({
                   alt="Notification Preview"
                   className="preview-image-small"
                   onError={(e) => {
-                    e.target.style.display = 'none';
+                    e.target.style.display = "none";
                   }}
                 />
               </div>
@@ -157,7 +157,7 @@ const NotificationModal = ({
                 ref={dateTimeInputRef}
                 className="form-input"
                 type="datetime-local"
-                value={notificationData.scheduled_time || ''}
+                value={notificationData.scheduled_time || ""}
                 onChange={handleDateTimeChange}
                 min={new Date().toISOString().slice(0, 16)}
                 required={isScheduled}
@@ -168,7 +168,7 @@ const NotificationModal = ({
               {notificationData.scheduled_time && (
                 <div className="schedule-preview">
                   <p>
-                    Selected:{' '}
+                    Selected:{" "}
                     {new Date(notificationData.scheduled_time).toLocaleString()}
                   </p>
                 </div>
@@ -219,12 +219,12 @@ const NotificationModal = ({
                   role="status"
                   aria-hidden="true"
                 ></span>
-                {isScheduled ? 'Scheduling...' : 'Sending...'}
+                {isScheduled ? "Scheduling..." : "Sending..."}
               </>
             ) : isScheduled ? (
-              'Schedule Notification'
+              "Schedule Notification"
             ) : (
-              'Send Notification'
+              "Send Notification"
             )}
           </button>
         </div>
@@ -247,24 +247,24 @@ const Listnews = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [selectedMain, setSelectedMain] = useState('');
-  const [selectedSub, setSelectedSub] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [youtubeURL, setYoutubeURL] = useState('');
+  const [selectedMain, setSelectedMain] = useState("");
+  const [selectedSub, setSelectedSub] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [youtubeURL, setYoutubeURL] = useState("");
   const [imageone, setImageone] = useState(null);
   const [imagetwo, setImagetwo] = useState(null);
-  const [imageonePreview, setImageonePreview] = useState('');
-  const [imagetwoPreview, setImagetwoPreview] = useState('');
+  const [imageonePreview, setImageonePreview] = useState("");
+  const [imagetwoPreview, setImagetwoPreview] = useState("");
   const [isSubCategoriesLoaded, setIsSubCategoriesLoaded] = useState(false);
-  const [contentType, setContentType] = useState('');
+  const [contentType, setContentType] = useState("");
   const [isEditLoading, setIsEditLoading] = useState(false);
   const [postsPerPage] = useState(20);
   const [filters, setFilters] = useState({
-    category: '224',
-    status: '',
-    contentType: '',
-    trending: '',
+    category: "224",
+    status: "",
+    contentType: "",
+    trending: "",
   });
   const [allPosts, setAllPosts] = useState([]);
 
@@ -274,16 +274,16 @@ const Listnews = () => {
     useState(null);
   const [isScheduledNotification, setIsScheduledNotification] = useState(false);
   const [notificationData, setNotificationData] = useState({
-    type: '',
-    title: '',
-    message: '',
-    image: '',
-    topic: 'MPeoplesNEWS',
-    detailed_content: '',
-    scheduled_time: '',
+    type: "",
+    title: "",
+    message: "",
+    image: "",
+    topic: "MPeoplesNEWS",
+    detailed_content: "",
+    scheduled_time: "",
   });
   const [isSendingNotification, setIsSendingNotification] = useState(false);
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState("");
 
   const handleFilterChange = useCallback((filterName, value) => {
     setFilters((prev) => ({
@@ -295,10 +295,10 @@ const Listnews = () => {
 
   const resetFilters = useCallback(() => {
     setFilters({
-      category: '224',
-      status: '',
-      contentType: '',
-      trending: '',
+      category: "224",
+      status: "",
+      contentType: "",
+      trending: "",
     });
     setCurrentPage(1);
   }, []);
@@ -308,13 +308,13 @@ const Listnews = () => {
     setSelectedPostForNotification(null);
     setIsScheduledNotification(false);
     setNotificationData({
-      type: '',
-      title: '',
-      message: '',
-      image: '',
-      topic: 'MPeoplesNEWS',
-      detailed_content: '',
-      scheduled_time: '',
+      type: "",
+      title: "",
+      message: "",
+      image: "",
+      topic: "MPeoplesNEWS",
+      detailed_content: "",
+      scheduled_time: "",
     });
     setIsSendingNotification(false);
   }, []);
@@ -324,23 +324,23 @@ const Listnews = () => {
 
     // Validate scheduled time if it's a scheduled notification
     if (isScheduledNotification && !notificationData.scheduled_time) {
-      alert('Please select a schedule date and time');
+      alert("Please select a schedule date and time");
       return;
     }
 
     setIsSendingNotification(true);
 
     // Declare variables outside try block so they can be used in alert
-    let scheduledDate = '';
-    let scheduledTime = '';
+    let scheduledDate = "";
+    let scheduledTime = "";
 
-    console.log('Selected Post:', selectedPostForNotification);
-    console.log('Notification Data:', notificationData);
+    console.log("Selected Post:", selectedPostForNotification);
+    console.log("Notification Data:", notificationData);
 
     try {
       // FIXED: Use notificationData.image which contains the web_thumbnail
       const basePayload = {
-        type: notificationData.type || 'ARTICLE',
+        type: notificationData.type || "ARTICLE",
         type_id:
           notificationData.type_id || selectedPostForNotification.id.toString(),
         post_id: selectedPostForNotification.id.toString(),
@@ -349,15 +349,15 @@ const Listnews = () => {
         image:
           notificationData.image ||
           selectedPostForNotification.web_thumbnail ||
-          '', // Changed to web_thumbnail
-        topics: 'MPeoplesNEWS',
+          "", // Changed to web_thumbnail
+        topics: "MPeoplesNEWS",
         detailed_content:
           notificationData.detailed_content ||
           selectedPostForNotification.app_thumbnail ||
-          '',
+          "",
       };
 
-      console.log('Base Payload:', basePayload);
+      console.log("Base Payload:", basePayload);
 
       let response;
 
@@ -366,17 +366,17 @@ const Listnews = () => {
         const scheduledDateTime = new Date(notificationData.scheduled_time);
 
         // Format date as YYYY-MM-DD
-        scheduledDate = scheduledDateTime.toISOString().split('T')[0];
+        scheduledDate = scheduledDateTime.toISOString().split("T")[0];
 
         // Format time as HH:MM (24-hour format)
         scheduledTime = scheduledDateTime
           .toTimeString()
-          .split(' ')[0]
+          .split(" ")[0]
           .substring(0, 5);
 
         // Send to the schedule API with separate date and time fields
         response = await axios.post(
-          'https://users.mpdatahub.com/api/notification/date-time',
+          "https://users.mpdatahub.com/api/notification/date-time",
           {
             ...basePayload,
             date: scheduledDate,
@@ -384,22 +384,22 @@ const Listnews = () => {
           },
           {
             headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
-          }
+          },
         );
       } else {
         // Immediate notification - use your existing bulk-send endpoint
         response = await axios.post(
-          'https://tnreaders.in/api/notification/bulk-send',
+          "https://users.mpdatahub.com/api/bulk-send",
           basePayload,
           {
             headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
-          }
+          },
         );
       }
 
@@ -407,22 +407,22 @@ const Listnews = () => {
         alert(
           isScheduledNotification
             ? `Notification scheduled successfully for ${scheduledDate} at ${scheduledTime}!`
-            : 'Notification sent successfully!'
+            : "Notification sent successfully!",
         );
         handleCloseNotificationModal();
       } else {
         alert(
           response.data.message ||
-            `Failed to ${isScheduledNotification ? 'schedule' : 'send'} notification`
+          `Failed to ${isScheduledNotification ? "schedule" : "send"} notification`,
         );
       }
     } catch (err) {
-      console.error('Notification error:', err);
+      console.error("Notification error:", err);
 
       // More specific error message for 405 errors
       if (err.response?.status === 405) {
         alert(
-          'The scheduling API endpoint exists but may need to be configured correctly on the server. Please check with your backend team.'
+          "The scheduling API endpoint exists but may need to be configured correctly on the server. Please check with your backend team.",
         );
       } else {
         alert(`Error: ${err.response?.data?.message || err.message}`);
@@ -445,36 +445,40 @@ const Listnews = () => {
       setIsScheduledNotification(isScheduled);
       const contentTypeUpper = post.content_type
         ? post.content_type.toUpperCase()
-        : 'ARTICLE';
+        : "ARTICLE";
       setNotificationData({
         type: contentTypeUpper,
         type_id: post.id.toString(),
-        title: post.title || '',
-        message: post.description || '',
-        image: post.web_thumbnail || '', // This sets the image field
+        title: post.title || "",
+        message: (() => {
+          const temp = document.createElement("div");
+          temp.innerHTML = post.description;
+          return temp.textContent || temp.innerText || "";
+        })() || "",
+        image: post.web_thumbnail || "", // This sets the image field
         // web_thumbnail: post.web_thumbnail || "", // Also store separately if needed
-        app_thumbnail: post.app_thumbnail || '',
-        topics: 'MPeoplesNEWS',
-        detailed_content: post.app_thumbnail || '',
-        scheduled_time: '', // Reset scheduled time
+        app_thumbnail: post.app_thumbnail || "",
+        topics: "MPeoplesNEWS",
+        detailed_content: post.app_thumbnail || "",
+        scheduled_time: "", // Reset scheduled time
       });
       setShowNotificationModal(true);
     },
-    []
+    [],
   );
 
   const fetchPosts = useCallback(() => {
     setIsLoading(true);
     axios
       .get(
-        `https://users.mpdatahub.com/api/view-post-sub?currentPage=1&perPage=200`
+        `https://users.mpdatahub.com/api/view-post-sub?currentPage=1&perPage=200`,
       )
       .then((response) => {
         setAllPosts(response.data.data || []);
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error('API fetch error:', error);
+        console.error("API fetch error:", error);
         setIsLoading(false);
       });
   }, []);
@@ -485,30 +489,30 @@ const Listnews = () => {
     setIsEditLoading(true);
     try {
       const [mainCatRes, subCatRes] = await Promise.all([
-        axios.get('https://users.mpdatahub.com/api/main-category'),
+        axios.get("https://users.mpdatahub.com/api/main-category"),
         axios.get(
-          `https://users.mpdatahub.com/api/sub-category?id=${post.category?.parent_id || ''}`
+          `https://users.mpdatahub.com/api/sub-category?id=${post.category?.parent_id || ""}`,
         ),
       ]);
       setEditingPost(post);
-      setTitle(post.title || '');
-      setDescription(post.description || '');
-      setYoutubeURL(post.youtube_url || '');
-      setContentType(post.content_type || '');
-      setImageonePreview(post.app_thumbnail || '');
-      setImagetwoPreview(post.web_thumbnail || '');
+      setTitle(post.title || "");
+      setDescription(post.description || "");
+      setYoutubeURL(post.youtube_url || "");
+      setContentType(post.content_type || "");
+      setImageonePreview(post.app_thumbnail || "");
+      setImagetwoPreview(post.web_thumbnail || "");
       setImageone(null);
       setImagetwo(null);
       const allowedCategories = (mainCatRes.data || []).filter(
-        (cat) => cat.status === 'allow'
+        (cat) => cat.status === "allow",
       );
       setMainCategories(allowedCategories);
       setSubCategories(subCatRes.data || []);
-      setSelectedMain(post.category?.parent_id?.toString() || '');
-      setSelectedSub(post.category_id?.toString() || '');
+      setSelectedMain(post.category?.parent_id?.toString() || "");
+      setSelectedSub(post.category_id?.toString() || "");
     } catch (err) {
-      console.error('Edit load error:', err);
-      alert('Failed to load edit data');
+      console.error("Edit load error:", err);
+      alert("Failed to load edit data");
     } finally {
       setIsEditLoading(false);
     }
@@ -540,49 +544,49 @@ const Listnews = () => {
   const handleSubmit = useCallback(async () => {
     if (isSubmitting) return;
     if (editingPost && !editingPost.id) {
-      alert('Error: Post ID is missing for editing');
+      alert("Error: Post ID is missing for editing");
       return;
     }
     setIsSubmitting(true);
     const formData = new FormData();
-    formData.append('user_id', userId);
-    formData.append('category_id', selectedSub ? String(selectedSub) : '');
-    formData.append('title', title || '');
-    formData.append('message', description || '');
-    formData.append('youtube_url', youtubeURL || '');
-    formData.append('content_type', contentType || '');
+    formData.append("user_id", userId);
+    formData.append("category_id", selectedSub ? String(selectedSub) : "");
+    formData.append("title", title || "");
+    formData.append("message", description || "");
+    formData.append("youtube_url", youtubeURL || "");
+    formData.append("content_type", contentType || "");
     if (imageone) {
-      formData.append('app_thumbnail', imageone);
+      formData.append("app_thumbnail", imageone);
     }
     if (imagetwo) {
-      formData.append('web_thumbnail', imagetwo);
+      formData.append("web_thumbnail", imagetwo);
     }
     const endpoint = editingPost
-      ? 'https://users.mpdatahub.com/api/store-new-post'
-      : 'https://users.mpdatahub.com/api/upload-post';
+      ? "https://users.mpdatahub.com/api/store-new-post"
+      : "https://users.mpdatahub.com/api/upload-post";
     if (editingPost) {
-      formData.append('post_id', editingPost.id.toString());
+      formData.append("post_id", editingPost.id.toString());
     }
     try {
       const response = await axios.post(endpoint, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       if (response.data.success) {
-        alert(editingPost ? 'Post updated!' : 'Post submitted!');
+        alert(editingPost ? "Post updated!" : "Post submitted!");
         setEditingPost(null);
         setImageone(null);
         setImagetwo(null);
-        setImageonePreview('');
-        setImagetwoPreview('');
+        setImageonePreview("");
+        setImagetwoPreview("");
         fetchPosts();
       } else {
-        alert(response.data.message || 'Operation failed');
+        alert(response.data.message || "Operation failed");
       }
     } catch (err) {
-      console.error('Submission error', err);
-      alert(err.response?.data?.message || 'Error during submission.');
+      console.error("Submission error", err);
+      alert(err.response?.data?.message || "Error during submission.");
     } finally {
       setIsSubmitting(false);
     }
@@ -606,17 +610,17 @@ const Listnews = () => {
       const newStatus = currentStatus;
       setIsProcessing(true);
       try {
-        await axios.post('https://users.mpdatahub.com/api/update-status', {
+        await axios.post("https://users.mpdatahub.com/api/update-status", {
           postId,
           isActive: newStatus,
         });
         alert(
-          `Post status updated to ${newStatus === 'yes' ? 'Active' : 'Disabled'}`
+          `Post status updated to ${newStatus === "yes" ? "Active" : "Disabled"}`,
         );
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
-            post.id === postId ? { ...post, isActive: newStatus } : post
-          )
+            post.id === postId ? { ...post, isActive: newStatus } : post,
+          ),
         );
         if (viewingPost?.id === postId) {
           setViewingPost((prev) => ({
@@ -625,13 +629,13 @@ const Listnews = () => {
           }));
         }
       } catch (err) {
-        console.error('Status update error', err);
-        alert('Error updating post status');
+        console.error("Status update error", err);
+        alert("Error updating post status");
       } finally {
         setIsProcessing(false);
       }
     },
-    [viewingPost]
+    [viewingPost],
   );
 
   const updateFlag = useCallback(
@@ -641,30 +645,30 @@ const Listnews = () => {
       try {
         const payload = {
           id: postId,
-          istrending: '',
-          isBreaking: '',
-          is_entertainment: '',
-          is_spotlight: '',
+          istrending: "",
+          isBreaking: "",
+          is_entertainment: "",
+          is_spotlight: "",
         };
 
         payload[field] = newValue;
 
         const response = await axios.post(
-          'https://users.mpdatahub.com/api/update-flags',
+          "https://users.mpdatahub.com/api/update-flags",
           payload,
           {
             headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
-          }
+          },
         );
 
         const storeValue =
-          field === 'isBreaking'
+          field === "isBreaking"
             ? newValue === 1
-              ? 'yes'
-              : 'no'
+              ? "yes"
+              : "no"
             : newValue === 1
               ? 1
               : 0;
@@ -672,8 +676,8 @@ const Listnews = () => {
         if (response.data.success) {
           setPosts((prevPosts) =>
             prevPosts.map((post) =>
-              post.id === postId ? { ...post, [field]: storeValue } : post
-            )
+              post.id === postId ? { ...post, [field]: storeValue } : post,
+            ),
           );
 
           if (viewingPost?.id === postId) {
@@ -684,10 +688,10 @@ const Listnews = () => {
           }
         }
       } catch (err) {
-        console.error('Flag update error', err);
+        console.error("Flag update error", err);
       }
     },
-    [viewingPost]
+    [viewingPost],
   );
 
   // Pagination functions
@@ -727,21 +731,21 @@ const Listnews = () => {
         for (let i = 1; i <= 4; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = totalPages - 3; i <= totalPages; i++) {
           pageNumbers.push(i);
         }
       } else {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       }
     }
@@ -758,7 +762,7 @@ const Listnews = () => {
 
     if (filters.category) {
       filtered = filtered.filter(
-        (post) => post.category?.parent_id?.toString() === filters.category
+        (post) => post.category?.parent_id?.toString() === filters.category,
       );
     }
     if (filters.status) {
@@ -766,12 +770,12 @@ const Listnews = () => {
     }
     if (filters.contentType) {
       filtered = filtered.filter(
-        (post) => post.content_type === filters.contentType
+        (post) => post.content_type === filters.contentType,
       );
     }
-    if (filters.trending !== '') {
+    if (filters.trending !== "") {
       filtered = filtered.filter(
-        (post) => post.istrending?.toString() === filters.trending
+        (post) => post.istrending?.toString() === filters.trending,
       );
     }
     const startIndex = (currentPage - 1) * postsPerPage;
@@ -784,14 +788,14 @@ const Listnews = () => {
 
   useEffect(() => {
     axios
-      .get('https://users.mpdatahub.com/api/main-category')
+      .get("https://users.mpdatahub.com/api/main-category")
       .then((res) => {
         const allowedCategories = (res.data || []).filter(
-          (cat) => cat.status === 'allow' && cat.name === 'News'
+          (cat) => cat.status === "allow" && cat.name === "News",
         );
         setMainCategories(allowedCategories);
       })
-      .catch((err) => console.error('Main category error', err));
+      .catch((err) => console.error("Main category error", err));
   }, []);
 
   useEffect(() => {
@@ -806,7 +810,7 @@ const Listnews = () => {
           setIsEditLoading(false);
         })
         .catch((err) => {
-          console.error('Sub category error', err);
+          console.error("Sub category error", err);
           setIsEditLoading(false);
         });
     }
@@ -825,13 +829,13 @@ const Listnews = () => {
 
   // Get logged in user email from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
+    const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
-        setUserId(userData.id || '');
+        setUserId(userData.id || "");
       } catch (error) {
-        console.error('Error parsing user data:', error);
+        console.error("Error parsing user data:", error);
       }
     }
   }, []);
@@ -839,10 +843,10 @@ const Listnews = () => {
   const initials = (name) => {
     return name
       .trim()
-      .split(' ')
+      .split(" ")
       .map((word) => word.charAt(0))
       .slice(0, 2)
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
@@ -864,7 +868,7 @@ const Listnews = () => {
         <Loader />
       ) : !editingPost && !viewingPost ? (
         <>
-          <h1 style={{ textAlign: 'left', marginBottom: '20px' }}>
+          <h1 style={{ textAlign: "left", marginBottom: "20px" }}>
             List LookIt News
           </h1>
 
@@ -892,7 +896,7 @@ const Listnews = () => {
                 <select
                   className="filter-select"
                   value={filters.status}
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                  onChange={(e) => handleFilterChange("status", e.target.value)}
                 >
                   <option value="">All Statuses</option>
                   <option value="yes">Active</option>
@@ -905,7 +909,7 @@ const Listnews = () => {
                   className="filter-select"
                   value={filters.contentType}
                   onChange={(e) =>
-                    handleFilterChange('contentType', e.target.value)
+                    handleFilterChange("contentType", e.target.value)
                   }
                 >
                   <option value="">All Content Types</option>
@@ -920,7 +924,7 @@ const Listnews = () => {
                   className="filter-select"
                   value={filters.trending}
                   onChange={(e) =>
-                    handleFilterChange('trending', e.target.value)
+                    handleFilterChange("trending", e.target.value)
                   }
                 >
                   <option value="">All Trending</option>
@@ -955,7 +959,7 @@ const Listnews = () => {
                             <IoPersonCircleOutline />
                           )}
                         </span>
-                        <small>{post.user?.name || 'Unknown Author'}</small>
+                        <small>{post.user?.name || "Unknown Author"}</small>
                       </div>
                       <div className="post-actions-icons">
                         <button
@@ -983,9 +987,9 @@ const Listnews = () => {
                       </div>
                     </div>
                     <img
-                      src={post.web_thumbnail || '/assets/no-img.jpeg'}
+                      src={post.web_thumbnail || "/assets/no-img.jpeg"}
                       className="post-image"
-                      alt={post.title || 'Post'}
+                      alt={post.title || "Post"}
                       loading="lazy"
                       decoding="async"
                     />
@@ -994,7 +998,7 @@ const Listnews = () => {
                         <div className="post-meta">
                           <div>
                             <div className="post-category">
-                              {post.category?.name || 'Uncategorized'}
+                              {post.category?.name || "Uncategorized"}
                             </div>
                           </div>
                           <div className="post-date">
@@ -1010,16 +1014,15 @@ const Listnews = () => {
                       <div className="la-post-actions">
                         <div className="status-controls">
                           <div
-                            className={`toggle-group ${
-                              post.istrending === 1 ? 'trending-active' : ''
-                            }`}
+                            className={`toggle-group ${post.istrending === 1 ? "trending-active" : ""
+                              }`}
                             onChange={(e) =>
-                              updateFlag(post.id, 'istrending', post.istrending)
+                              updateFlag(post.id, "istrending", post.istrending)
                             }
                           >
                             <span
                               style={{
-                                color: 'black',
+                                color: "black",
                                 fontWeight: 300,
                                 fontSize: 16,
                               }}
@@ -1034,7 +1037,7 @@ const Listnews = () => {
                               readOnly
                             />
                             <span className="toggle-label">
-                              {post.istrending === 1 ? 'Trending' : 'Normal'}
+                              {post.istrending === 1 ? "Trending" : "Normal"}
                             </span>
                           </div>
                           {/* <div
@@ -1059,17 +1062,16 @@ const Listnews = () => {
                             </span>
                           </div> */}
                           <div
-                            className={`toggle-group ${
-                              post.isActive === 'yes'
-                                ? 'status-active'
-                                : post.isActive === 'reject'
-                                  ? 'status-rejected'
-                                  : 'status-inactive'
-                            }`}
+                            className={`toggle-group ${post.isActive === "yes"
+                                ? "status-active"
+                                : post.isActive === "reject"
+                                  ? "status-rejected"
+                                  : "status-inactive"
+                              }`}
                           >
                             <span
                               style={{
-                                color: 'black',
+                                color: "black",
                                 fontWeight: 300,
                                 fontSize: 16,
                               }}
@@ -1077,7 +1079,7 @@ const Listnews = () => {
                               Status:
                             </span>
                             <select
-                              value={post.isActive || ''}
+                              value={post.isActive || ""}
                               onChange={(e) =>
                                 togglePostStatus(post.id, e.target.value)
                               }
@@ -1125,7 +1127,7 @@ const Listnews = () => {
               <nav aria-label="Page navigation">
                 <ul className="pagination">
                   <li
-                    className={`pagination-item ${currentPage === 1 ? 'disabled' : ''}`}
+                    className={`pagination-item ${currentPage === 1 ? "disabled" : ""}`}
                   >
                     <button
                       className="pagination-link pagination-first"
@@ -1137,7 +1139,7 @@ const Listnews = () => {
                     </button>
                   </li>
                   <li
-                    className={`pagination-item ${currentPage === 1 ? 'disabled' : ''}`}
+                    className={`pagination-item ${currentPage === 1 ? "disabled" : ""}`}
                   >
                     <button
                       className="pagination-link pagination-prev"
@@ -1151,11 +1153,10 @@ const Listnews = () => {
                   {getPageNumbers().map((pageNum, index) => (
                     <li
                       key={index}
-                      className={`pagination-item ${pageNum === '...' ? 'pagination-ellipsis' : ''} ${
-                        currentPage === pageNum ? 'active' : ''
-                      }`}
+                      className={`pagination-item ${pageNum === "..." ? "pagination-ellipsis" : ""} ${currentPage === pageNum ? "active" : ""
+                        }`}
                     >
-                      {pageNum === '...' ? (
+                      {pageNum === "..." ? (
                         <span className="pagination-ellipsis">...</span>
                       ) : (
                         <button
@@ -1169,7 +1170,7 @@ const Listnews = () => {
                     </li>
                   ))}
                   <li
-                    className={`pagination-item ${currentPage === totalPages ? 'disabled' : ''}`}
+                    className={`pagination-item ${currentPage === totalPages ? "disabled" : ""}`}
                   >
                     <button
                       className="pagination-link pagination-next"
@@ -1181,7 +1182,7 @@ const Listnews = () => {
                     </button>
                   </li>
                   <li
-                    className={`pagination-item ${currentPage === totalPages ? 'disabled' : ''}`}
+                    className={`pagination-item ${currentPage === totalPages ? "disabled" : ""}`}
                   >
                     <button
                       className="pagination-link pagination-last"
@@ -1198,8 +1199,8 @@ const Listnews = () => {
           )}
 
           <div className="results-info">
-            Showing {(currentPage - 1) * postsPerPage + 1} to{' '}
-            {Math.min(currentPage * postsPerPage, totalPosts)} of {totalPosts}{' '}
+            Showing {(currentPage - 1) * postsPerPage + 1} to{" "}
+            {Math.min(currentPage * postsPerPage, totalPosts)} of {totalPosts}{" "}
             posts
           </div>
         </>
@@ -1221,13 +1222,13 @@ const Listnews = () => {
               <div className="detail-group">
                 <span className="detail-label">Main Category</span>
                 <p className="detail-value">
-                  {viewingPost.category?.name || 'N/A'}
+                  {viewingPost.category?.name || "N/A"}
                 </p>
               </div>
               <div className="detail-group">
                 <span className="detail-label">Sub Category</span>
                 <p className="detail-value">
-                  {viewingPost.sub_category?.name || 'N/A'}
+                  {viewingPost.sub_category?.name || "N/A"}
                 </p>
               </div>
             </div>
@@ -1306,16 +1307,15 @@ const Listnews = () => {
                       //   </span>
                       // </div>
                       <div
-                        className={`toggle-group ${
-                          viewingPost.isActive === 'yes'
-                            ? 'status-active'
-                            : viewingPost.isActive === 'reject'
-                              ? 'status-rejected'
-                              : 'status-inactive'
-                        }`}
+                        className={`toggle-group ${viewingPost.isActive === "yes"
+                            ? "status-active"
+                            : viewingPost.isActive === "reject"
+                              ? "status-rejected"
+                              : "status-inactive"
+                          }`}
                       >
                         <select
-                          value={viewingPost.isActive || ''}
+                          value={viewingPost.isActive || ""}
                           onChange={(e) =>
                             togglePostStatus(viewingPost.id, e.target.value)
                           }
@@ -1340,14 +1340,13 @@ const Listnews = () => {
                       </div>
                     ) : (
                       <div
-                        className={`toggle-group ${
-                          viewingPost.istrending === 1 ? 'trending-active' : ''
-                        }`}
+                        className={`toggle-group ${viewingPost.istrending === 1 ? "trending-active" : ""
+                          }`}
                         onChange={(e) =>
                           updateFlag(
                             viewingPost.id,
-                            'istrending',
-                            viewingPost.istrending
+                            "istrending",
+                            viewingPost.istrending,
                           )
                         }
                       >
@@ -1359,7 +1358,7 @@ const Listnews = () => {
                           readOnly
                         />
                         <span className="toggle-label">
-                          {viewingPost.istrending === 1 ? 'Trending' : 'Normal'}
+                          {viewingPost.istrending === 1 ? "Trending" : "Normal"}
                         </span>
                       </div>
                     )}
@@ -1374,16 +1373,15 @@ const Listnews = () => {
                       </div>
                     ) : (
                       <div
-                        className={`toggle-group ${
-                          viewingPost.isBreaking === 'yes'
-                            ? 'status-active'
-                            : ''
-                        }`}
+                        className={`toggle-group ${viewingPost.isBreaking === "yes"
+                            ? "status-active"
+                            : ""
+                          }`}
                         onChange={(e) =>
                           updateFlag(
                             viewingPost.id,
-                            'isBreaking',
-                            viewingPost.isBreaking === 'yes' ? 1 : 0
+                            "isBreaking",
+                            viewingPost.isBreaking === "yes" ? 1 : 0,
                           )
                         }
                       >
@@ -1391,13 +1389,13 @@ const Listnews = () => {
                           className="toggle-switch"
                           type="checkbox"
                           role="switch"
-                          checked={viewingPost.isBreaking === 'yes'}
+                          checked={viewingPost.isBreaking === "yes"}
                           readOnly
                         />
                         <span className="toggle-label">
-                          {viewingPost.isBreaking === 'yes'
-                            ? 'Breaking'
-                            : 'Normal'}
+                          {viewingPost.isBreaking === "yes"
+                            ? "Breaking"
+                            : "Normal"}
                         </span>
                       </div>
                     )}
@@ -1411,16 +1409,15 @@ const Listnews = () => {
                       </div>
                     ) : (
                       <div
-                        className={`toggle-group ${
-                          viewingPost.is_entertainment === 1
-                            ? 'status-active'
-                            : ''
-                        }`}
+                        className={`toggle-group ${viewingPost.is_entertainment === 1
+                            ? "status-active"
+                            : ""
+                          }`}
                         onChange={(e) =>
                           updateFlag(
                             viewingPost.id,
-                            'is_entertainment',
-                            viewingPost.is_entertainment
+                            "is_entertainment",
+                            viewingPost.is_entertainment,
                           )
                         }
                       >
@@ -1433,8 +1430,8 @@ const Listnews = () => {
                         />
                         <span className="toggle-label">
                           {viewingPost.is_entertainment === 1
-                            ? 'Entertainment'
-                            : 'Normal'}
+                            ? "Entertainment"
+                            : "Normal"}
                         </span>
                       </div>
                     )}
@@ -1449,14 +1446,13 @@ const Listnews = () => {
                       </div>
                     ) : (
                       <div
-                        className={`toggle-group ${
-                          viewingPost.is_spotlight === 1 ? 'status-active' : ''
-                        }`}
+                        className={`toggle-group ${viewingPost.is_spotlight === 1 ? "status-active" : ""
+                          }`}
                         onChange={(e) =>
                           updateFlag(
                             viewingPost.id,
-                            'is_spotlight',
-                            viewingPost.is_spotlight
+                            "is_spotlight",
+                            viewingPost.is_spotlight,
                           )
                         }
                       >
@@ -1469,8 +1465,8 @@ const Listnews = () => {
                         />
                         <span className="toggle-label">
                           {viewingPost.is_spotlight === 1
-                            ? 'Spotlighted'
-                            : 'Normal'}
+                            ? "Spotlighted"
+                            : "Normal"}
                         </span>
                       </div>
                     )}
@@ -1480,7 +1476,7 @@ const Listnews = () => {
               <div className="detail-group">
                 <span className="detail-label">Author</span>
                 <p className="detail-value">
-                  {viewingPost.user?.name || 'N/A'}
+                  {viewingPost.user?.name || "N/A"}
                 </p>
               </div>
             </div>
@@ -1541,7 +1537,7 @@ const Listnews = () => {
           ) : (
             <>
               <h2 className="form-title">
-                {editingPost ? 'Edit Article' : 'Add Article'}
+                {editingPost ? "Edit Article" : "Add Article"}
               </h2>
               {isSubmitting && (
                 <div className="processing-overlay">
@@ -1558,8 +1554,8 @@ const Listnews = () => {
                       name="contentType"
                       value="article"
                       className="radio-input"
-                      checked={contentType === 'article'}
-                      onChange={() => setContentType('article')}
+                      checked={contentType === "article"}
+                      onChange={() => setContentType("article")}
                     />
                     Article
                   </label>
@@ -1568,8 +1564,8 @@ const Listnews = () => {
                       type="radio"
                       name="contentType"
                       value="shorts"
-                      checked={contentType === 'shorts'}
-                      onChange={() => setContentType('shorts')}
+                      checked={contentType === "shorts"}
+                      onChange={() => setContentType("shorts")}
                       className="radio-input"
                     />
                     Shorts
@@ -1580,8 +1576,8 @@ const Listnews = () => {
                       name="contentType"
                       value="video"
                       className="radio-input"
-                      checked={contentType === 'video'}
-                      onChange={() => setContentType('video')}
+                      checked={contentType === "video"}
+                      onChange={() => setContentType("video")}
                     />
                     Video
                   </label>
@@ -1664,7 +1660,7 @@ const Listnews = () => {
                       className="preview-image"
                     />
                     <p className="preview-text">
-                      Selected: {imageone?.name || 'Current Image'}
+                      Selected: {imageone?.name || "Current Image"}
                     </p>
                   </div>
                 )}
@@ -1697,7 +1693,7 @@ const Listnews = () => {
                       className="preview-image"
                     />
                     <p className="preview-text">
-                      Selected: {imagetwo?.name || 'Current Image'}
+                      Selected: {imagetwo?.name || "Current Image"}
                     </p>
                   </div>
                 )}
@@ -1731,9 +1727,9 @@ const Listnews = () => {
                       Processing...
                     </>
                   ) : editingPost ? (
-                    'Update Article'
+                    "Update Article"
                   ) : (
-                    'Submit Article'
+                    "Submit Article"
                   )}
                 </button>
                 <button
@@ -1742,8 +1738,8 @@ const Listnews = () => {
                     setEditingPost(null);
                     setImageone(null);
                     setImagetwo(null);
-                    setImageonePreview('');
-                    setImagetwoPreview('');
+                    setImageonePreview("");
+                    setImagetwoPreview("");
                   }}
                   disabled={isSubmitting}
                   type="button"

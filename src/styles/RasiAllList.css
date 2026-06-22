@@ -105,7 +105,7 @@
 }
 
 .btn-add-row {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -178,7 +178,7 @@
 }
 
 .btn-add-column {
-  background: #2196F3;
+  background: #2196f3;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -606,7 +606,6 @@ select {
 @media (min-width: 1024px) {
   .year-group {
     margin-bottom: 20px;
-
   }
 
   .rasi-grid {
