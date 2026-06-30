@@ -259,7 +259,7 @@ const Listnews = () => {
   const [isSubCategoriesLoaded, setIsSubCategoriesLoaded] = useState(false);
   const [contentType, setContentType] = useState("");
   const [isEditLoading, setIsEditLoading] = useState(false);
-  const [postsPerPage] = useState(20);
+  const [postsPerPage] = useState(15);
   const [filters, setFilters] = useState({
     category: "224",
     status: "",
@@ -471,17 +471,20 @@ const Listnews = () => {
     setIsLoading(true);
     axios
       .get(
-        `https://users.mpdatahub.com/api/view-post-sub?currentPage=1&perPage=200`,
+        `https://users.mpdatahub.com/api/view-new-Postsub?currentPage=${currentPage}&perPage=${postsPerPage}`,
       )
       .then((response) => {
         setAllPosts(response.data.data || []);
+        setPosts(response.data.data || []);
+        setTotalPages(response.data.last_page);
+        setTotalPosts(response.data.total);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error("API fetch error:", error);
         setIsLoading(false);
       });
-  }, []);
+  }, [currentPage, postsPerPage]);
 
   // ... (keep all your existing functions: handleEdit, handleView, handleImageOneChange, handleImageTwoChange, handleSubmit, togglePostStatus, toggleTrendingStatus, pagination functions)
 
@@ -756,35 +759,35 @@ const Listnews = () => {
     fetchPosts();
   }, [fetchPosts]);
 
-  useEffect(() => {
-    if (allPosts.length === 0) return;
-    let filtered = [...allPosts];
+  // useEffect(() => {
+  //   if (allPosts.length === 0) return;
+  //   let filtered = [...allPosts];
 
-    if (filters.category) {
-      filtered = filtered.filter(
-        (post) => post.category?.parent_id?.toString() === filters.category,
-      );
-    }
-    if (filters.status) {
-      filtered = filtered.filter((post) => post.isActive === filters.status);
-    }
-    if (filters.contentType) {
-      filtered = filtered.filter(
-        (post) => post.content_type === filters.contentType,
-      );
-    }
-    if (filters.trending !== "") {
-      filtered = filtered.filter(
-        (post) => post.istrending?.toString() === filters.trending,
-      );
-    }
-    const startIndex = (currentPage - 1) * postsPerPage;
-    const endIndex = startIndex + postsPerPage;
-    const paginatedPosts = filtered.slice(startIndex, endIndex);
-    setPosts(paginatedPosts);
-    setTotalPosts(filtered.length);
-    setTotalPages(Math.ceil(filtered.length / postsPerPage));
-  }, [allPosts, currentPage, filters, postsPerPage]);
+  //   if (filters.category) {
+  //     filtered = filtered.filter(
+  //       (post) => post.category?.parent_id?.toString() === filters.category,
+  //     );
+  //   }
+  //   if (filters.status) {
+  //     filtered = filtered.filter((post) => post.isActive === filters.status);
+  //   }
+  //   if (filters.contentType) {
+  //     filtered = filtered.filter(
+  //       (post) => post.content_type === filters.contentType,
+  //     );
+  //   }
+  //   if (filters.trending !== "") {
+  //     filtered = filtered.filter(
+  //       (post) => post.istrending?.toString() === filters.trending,
+  //     );
+  //   }
+  //   const startIndex = (currentPage - 1) * postsPerPage;
+  //   const endIndex = startIndex + postsPerPage;
+  //   const paginatedPosts = filtered.slice(startIndex, endIndex);
+  //   setPosts(paginatedPosts);
+  //   setTotalPosts(filtered.length);
+  //   setTotalPages(Math.ceil(filtered.length / postsPerPage));
+  // }, [allPosts, currentPage, filters, postsPerPage]);
 
   useEffect(() => {
     axios
@@ -1063,10 +1066,10 @@ const Listnews = () => {
                           </div> */}
                           <div
                             className={`toggle-group ${post.isActive === "yes"
-                                ? "status-active"
-                                : post.isActive === "reject"
-                                  ? "status-rejected"
-                                  : "status-inactive"
+                              ? "status-active"
+                              : post.isActive === "reject"
+                                ? "status-rejected"
+                                : "status-inactive"
                               }`}
                           >
                             <span
@@ -1308,10 +1311,10 @@ const Listnews = () => {
                       // </div>
                       <div
                         className={`toggle-group ${viewingPost.isActive === "yes"
-                            ? "status-active"
-                            : viewingPost.isActive === "reject"
-                              ? "status-rejected"
-                              : "status-inactive"
+                          ? "status-active"
+                          : viewingPost.isActive === "reject"
+                            ? "status-rejected"
+                            : "status-inactive"
                           }`}
                       >
                         <select
@@ -1374,8 +1377,8 @@ const Listnews = () => {
                     ) : (
                       <div
                         className={`toggle-group ${viewingPost.isBreaking === "yes"
-                            ? "status-active"
-                            : ""
+                          ? "status-active"
+                          : ""
                           }`}
                         onChange={(e) =>
                           updateFlag(
@@ -1410,8 +1413,8 @@ const Listnews = () => {
                     ) : (
                       <div
                         className={`toggle-group ${viewingPost.is_entertainment === 1
-                            ? "status-active"
-                            : ""
+                          ? "status-active"
+                          : ""
                           }`}
                         onChange={(e) =>
                           updateFlag(

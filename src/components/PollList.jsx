@@ -224,9 +224,17 @@ export default function PollList({ newPolls = [] }) {
     if (poll) setEditingPoll(poll);
   };
 
-  const handleDelete = (pollId) => {
+
+  const handleDelete = async (pollId) => {
     if (window.confirm("Delete this poll? This action cannot be undone.")) {
       setPolls((prev) => prev.filter((p) => p.id !== pollId));
+    }
+    try {
+      const res = await axios.get(
+        `https://users.mpdatahub.com/api/poll/delete/${pollId}`
+      );
+    } catch (err) {
+      console.error("Poll update error", err);
     }
   };
 
