@@ -204,7 +204,7 @@ export default function SelectDuration() {
     setFilteredData([]);
 
     try {
-      const response = await fetch("https://tnreaders.in/mobile/listWeekly");
+      const response = await fetch("https://users.mpdatahub.com/api/listWeekly");
       const json = await response.json();
 
       if (json.success && json.data) {
@@ -254,7 +254,7 @@ export default function SelectDuration() {
     setFilteredData([]);
 
     try {
-      const response = await fetch("https://tnreaders.in/mobile/listemonthly");
+      const response = await fetch("https://users.mpdatahub.com/api/listemonthly");
       const json = await response.json();
 
       if (json.success && json.data) {
@@ -312,7 +312,7 @@ export default function SelectDuration() {
       let result = [];
 
       if (type === "daily") {
-        const url = "https://tnreaders.in/mobile/rasi-daily-date";
+        const url = "https://users.mpdatahub.com/api/rasi-daily-date";
         const response = await fetch(url);
         const json = await response.json();
 

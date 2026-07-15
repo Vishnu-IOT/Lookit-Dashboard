@@ -35,6 +35,7 @@ const AddArticle = () => {
     setContentType('');
     setProgress(0);
   };
+
   useEffect(() => {
     axios
       .get('https://users.mpdatahub.com/api/main-category')
@@ -46,6 +47,7 @@ const AddArticle = () => {
       })
       .catch(() => showToast('Failed to load main categories', 'error'));
   }, []);
+
   useEffect(() => {
     if (selectedMain) {
       axios
@@ -116,7 +118,7 @@ const AddArticle = () => {
           },
         }
       );
-      showToast('Post submitted successfully!', 'success');
+      showToast('Article submitted successfully!', 'success');
       resetForm();
     } catch (err) {
       console.error(err);
@@ -270,13 +272,15 @@ const AddArticle = () => {
             </div>
           </div>
         )}
-        <button
-          className="submit-button"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Uploading...' : 'சமர்ப்பிக்கவும்'}
-        </button>
+        <div className='submit-btn-actions'>
+          <button
+            className="submit-button"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? 'Uploading...' : 'Upload Article'}
+          </button>
+        </div>
       </div>
     </div>
   );

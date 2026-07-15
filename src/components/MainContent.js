@@ -12,7 +12,7 @@ const MainContent = () => {
   const fetchDashboardData = async () => {
     try {
       setDashboardLoading(true);
-      const response = await fetch('https://tnreaders.in/api/dashboard');
+      const response = await fetch('https://users.mpdatahub.com/api/dashboard');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

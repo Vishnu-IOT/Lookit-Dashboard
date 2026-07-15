@@ -45,61 +45,61 @@ function MainCategory() {
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 4000);
   };
 
   const [mainCategory, setMainCategory] = useState([]);
 
   // ── Fetch ──────────────────────────────────────────────────────────────
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(
-        'https://tnreaders.in/api/user/mainhomepost'
-      );
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
+  // const fetchPosts = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     const response = await fetch(
+  //       'https://tnreaders.in/api/user/mainhomepost'
+  //     );
+  //     if (!response.ok)
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     const data = await response.json();
 
-      const processedCategories = {};
-      if (data.homepageposts && typeof data.homepageposts === 'object') {
-        Object.keys(data.homepageposts).forEach((categoryId) => {
-          const categoryData = data.homepageposts[categoryId];
-          if (
-            categoryData &&
-            categoryData.posts &&
-            Array.isArray(categoryData.posts) &&
-            categoryData.posts.length > 0
-          ) {
-            const posts = categoryData.posts;
-            const categoryName =
-              categoryTitles[categoryId] ||
-              posts[0]?.category?.name ||
-              `Category ${categoryId}`;
-            const categoryImage = posts[0]?.category?.FullImgPath;
-            processedCategories[categoryId] = {
-              id: categoryId,
-              name: categoryName,
-              image: categoryImage,
-              posts: posts,
-              categoryInfo: posts[0]?.category,
-            };
-          }
-        });
-      }
-      setCategories(processedCategories);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const processedCategories = {};
+  //     if (data.homepageposts && typeof data.homepageposts === 'object') {
+  //       Object.keys(data.homepageposts).forEach((categoryId) => {
+  //         const categoryData = data.homepageposts[categoryId];
+  //         if (
+  //           categoryData &&
+  //           categoryData.posts &&
+  //           Array.isArray(categoryData.posts) &&
+  //           categoryData.posts.length > 0
+  //         ) {
+  //           const posts = categoryData.posts;
+  //           const categoryName =
+  //             categoryTitles[categoryId] ||
+  //             posts[0]?.category?.name ||
+  //             `Category ${categoryId}`;
+  //           const categoryImage = posts[0]?.category?.FullImgPath;
+  //           processedCategories[categoryId] = {
+  //             id: categoryId,
+  //             name: categoryName,
+  //             image: categoryImage,
+  //             posts: posts,
+  //             categoryInfo: posts[0]?.category,
+  //           };
+  //         }
+  //       });
+  //     }
+  //     setCategories(processedCategories);
+  //   } catch (err) {
+  //     console.error('Fetch error:', err);
+  //     setError(err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  // useEffect(() => {
+  //   fetchPosts();
+  // }, []);
 
   const fetchMainCategories = async () => {
     axios
@@ -110,7 +110,8 @@ function MainCategory() {
         // );
         setMainCategory(res.data);
       })
-      .catch(() => showToast('Failed to load main categories', 'error'));
+      .catch(() => showToast('Failed to load main categories', 'error'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -170,8 +171,8 @@ function MainCategory() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (!addForm.categoryName.trim()) {
-      setAddError('Please enter a category name.');
+    if (!addForm.categoryName.trim() || !addForm.categoryTamName.trim()) {
+      setAddError('Please enter both category names.');
       return;
     }
     setAddLoading(true);
@@ -206,7 +207,7 @@ function MainCategory() {
         );
         closeAddModal();
         fetchMainCategories();
-        fetchPosts();
+        // fetchPosts();
       } else {
         const errData = await response.json();
         setAddError(errData.message || 'Failed to save. Please try again.');
@@ -237,7 +238,7 @@ function MainCategory() {
       if (response.ok) {
         showToast('Main Category Status updated successfully!', 'success');
         fetchMainCategories();
-        fetchPosts();
+        // fetchPosts();
       } else {
         const errData = await response.json();
         showToast(
@@ -256,9 +257,9 @@ function MainCategory() {
   if (error) {
     return (
       <div className="error">
-        <h2>Error Loading Content</h2>
+        <h2>Error Loading Main Categories</h2>
         <p>{error}</p>
-        <button onClick={fetchPosts} className="retry-btn">
+        <button onClick={fetchMainCategories} className="retry-btn">
           Try Again
         </button>
       </div>
@@ -433,9 +434,9 @@ function MainCategory() {
       <main className="main-contentmain">
         {mainCategory.length === 0 ? (
           <div className="no-posts">
-            <h2>No Posts Available</h2>
-            <p>No posts were found in the API response.</p>
-            <button onClick={fetchPosts} className="retry-btn">
+            <h2>No Main Categories Available</h2>
+            <p>No main categories were found in the API response.</p>
+            <button onClick={fetchMainCategories} className="retry-btn">
               Retry
             </button>
           </div>

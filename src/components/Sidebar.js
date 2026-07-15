@@ -182,6 +182,11 @@ const Sidebar = ({ isOpen, onClose, activeMenu }) => {
       icon: '/assets/creator.jpg',
     },
     {
+      name: 'Reported Posts',
+      path: '/report-list',
+      icon: '/assets/report.jpg',
+    },
+    {
       name: 'Astrology',
       submenus: [
         {
@@ -198,16 +203,16 @@ const Sidebar = ({ isOpen, onClose, activeMenu }) => {
       path: '/notification-update',
       icon: '/assets/notification-bell.png',
     },
-    {
-      name: 'Today Talks Form',
-      path: '/today-talks',
-      icon: '/assets/tt.png',
-    },
-    {
-      name: 'Today Jobs Form',
-      path: '/today-jobs',
-      icon: '/assets/tj.png',
-    },
+    // {
+    //   name: 'Today Talks Form',
+    //   path: '/today-talks',
+    //   icon: '/assets/tt.png',
+    // },
+    // {
+    //   name: 'Today Jobs Form',
+    //   path: '/today-jobs',
+    //   icon: '/assets/tj.png',
+    // },
     {
       name: 'Vegetable Price',
       path: '/vegetableprice',

@@ -8,6 +8,12 @@ const NotificationList = () => {
   const [editingData, setEditingData] = useState(null);
   const [expandedPosts, setExpandedPosts] = useState({});
 
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+
   const toggleReadMore = (id) => {
     setExpandedPosts((prev) => ({
       ...prev,
@@ -70,7 +76,7 @@ const NotificationList = () => {
       );
 
       if (res.ok) {
-        alert(`Status updated!`);
+        showToast(`Status updated!`, "success");
         fetchNotifications();
       } else {
         alert('Failed to update status');
@@ -90,7 +96,7 @@ const NotificationList = () => {
       );
 
       if (res.ok) {
-        alert('Notification deleted!');
+        showToast('Notification deleted!', 'success');
         fetchNotifications();
       } else {
         alert('Failed to delete');
@@ -102,6 +108,9 @@ const NotificationList = () => {
 
   return (
     <div className="notification-containerntn">
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+      )}
       <div className="notification-headerntn">
         <h2>All Notifications</h2>
       </div>
@@ -142,7 +151,7 @@ const NotificationList = () => {
             <li key={item.type_id} className="notification-cardntn">
               <h3>{item.title}</h3>
               <img
-                src={item.image}
+                src={item.image || './assets/lookit.png'}
                 alt={item.title}
                 className="notification-imagentn"
               />
@@ -168,16 +177,18 @@ const NotificationList = () => {
                 <b>Time:</b> {item.time}
               </p>
 
+              {/* <div className='notify-list'> */}
               <p>
                 <b>Status:</b>{' '}
                 <span
-                  className={
-                    item.Status === 1 ? 'status-active' : 'status-inactive'
+                  className={`notify-list-status
+                    ${item.Status === 1 ? 'status-active' : 'status-inactive'}`
                   }
                 >
                   {item.Status === 1 ? 'Active' : 'Inactive'}
                 </span>
               </p>
+              {/* </div> */}
               <div className="notbtn">
                 {/* Toggle Button */}
                 <button

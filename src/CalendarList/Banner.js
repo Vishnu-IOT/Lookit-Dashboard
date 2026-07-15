@@ -38,7 +38,7 @@ export default function Banner() {
     setDeleting(true);
     try {
       const res = await fetch(
-        `https://tnreaders.in/mobile/banners-delete/${deletingBanner.id}`,
+        `https://users.mpdatahub.com/api/banners-delete/${deletingBanner.id}`,
         {
           method: "POST",
           headers: {
@@ -74,7 +74,7 @@ export default function Banner() {
 
     try {
       const res = await fetch(
-        `https://tnreaders.in/mobile/banners-update/${editingBanner.id}`,
+        `https://users.mpdatahub.com/api/banners-update/${editingBanner.id}`,
         { method: "POST", body: formData },
       );
       const json = await res.json();
@@ -98,7 +98,7 @@ export default function Banner() {
 
   const loadCategories = async () => {
     try {
-      const res = await fetch("https://tnreaders.in/mobile/list-main-selected");
+      const res = await fetch("https://users.mpdatahub.com/api/main-category");
       const json = await res.json();
       console.log(json);
 
@@ -113,7 +113,7 @@ export default function Banner() {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://tnreaders.in/mobile/banners?category_id=${categoryId}`,
+        `https://users.mpdatahub.com/api/banners?category_id=${categoryId}`,
       );
       const json = await res.json();
       if (json.status && Array.isArray(json.data.data)) {
@@ -142,7 +142,7 @@ export default function Banner() {
     const newStatus = isActive ? 0 : 1;
     try {
       const res = await fetch(
-        `https://tnreaders.in/mobile/banners-chnage-status?id=${banner.id}&status=${newStatus}`,
+        `https://users.mpdatahub.com/api/banners-chnage-status?id=${banner.id}&status=${newStatus}`,
       );
       const json = await res.json();
       if (json.status) loadBanners();
@@ -171,7 +171,7 @@ export default function Banner() {
 
     setUploading(true);
     try {
-      const res = await fetch("https://tnreaders.in/mobile/banners-store", {
+      const res = await fetch("https://users.mpdatahub.com/api/banners-store", {
         method: "POST",
         body: formData,
       });

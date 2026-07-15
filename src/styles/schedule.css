@@ -62,6 +62,20 @@ textarea {
   /* margin-left: 10px; */
 }
 
+.input-error {
+  border: 1px solid #ef4444 !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.error-text {
+  display: block;
+  margin-top: 5px;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 .btn:hover {
   background-color: #9647e0;
   color: rgb(255, 234, 0);

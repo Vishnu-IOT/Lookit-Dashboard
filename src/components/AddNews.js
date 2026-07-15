@@ -82,7 +82,7 @@ const AddNews = () => {
     if (imagetwo) formData.append('web_thumbnail', imagetwo);
     try {
       setLoading(true);
-      await axios.post('https://tnreaders.in/mobile/store-new-post', formData, {
+      await axios.post('https://users.mpdatahub.com/api/store-new-post', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (progressEvent) => {
           const percent = Math.round(
@@ -91,7 +91,7 @@ const AddNews = () => {
           setProgress(percent);
         },
       });
-      showToast('Post submitted successfully!', 'success');
+      showToast('News submitted successfully!', 'success');
       resetForm();
     } catch (err) {
       console.error(err);
@@ -252,13 +252,15 @@ const AddNews = () => {
             </div>
           </div>
         )}
-        <button
-          className="submit-button"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Uploading...' : 'சமர்ப்பிக்கவும்'}
-        </button>
+        <div className='submit-btn-actions'>
+          <button
+            className="submit-button"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? 'Uploading...' : 'Upload News'}
+          </button>
+        </div>
       </div>
     </div>
   );

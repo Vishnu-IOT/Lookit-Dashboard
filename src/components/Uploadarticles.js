@@ -202,10 +202,11 @@ const Uploadarticles = () => {
             onChange={(e) => setImagetwo(e.target.files[0])}
           />
         </div>
-
-        <button className="submit-button" onClick={handleSubmit}>
-          சமர்ப்பிக்கவும்
-        </button>
+        <div className='submit-btn-actions'>
+          <button className="submit-button" onClick={handleSubmit}>
+            Upload Article
+          </button>
+        </div>
       </div>
     </div>
   );

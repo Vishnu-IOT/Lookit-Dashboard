@@ -10,10 +10,10 @@ const SubCategory = () => {
   const { mainCategoryId } = useParams();
   const navigate = useNavigate();
 
-  const [posts, setPosts] = useState({
-    trending: [],
-    categories: [],
-  });
+  // const [posts, setPosts] = useState({
+  //   trending: [],
+  //   categories: [],
+  // });
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -43,60 +43,64 @@ const SubCategory = () => {
   const [subCategoriesId, setSubCategoriesId] = useState('');
 
   // ── Fetch posts filtered by mainCategoryId ────────────────────────────────
-  const fetchPosts = async () => {
-    try {
-      const res = await fetch('https://tnreaders.in/api/user/home-posts');
-      const data = await res.json();
-      const processedData = processApiData(data);
-      setPosts(processedData);
-    } catch (err) {
-      console.error('Error fetching posts:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchPosts = async () => {
+  //   try {
+  //     const res = await fetch('https://tnreaders.in/api/user/home-posts');
+  //     const data = await res.json();
+  //     const processedData = processApiData(data);
+  //     setPosts(processedData);
+  //   } catch (err) {
+  //     console.error('Error fetching posts:', err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Filter categories by the mainCategoryId from the URL param
-  const processApiData = (apiData) => {
-    const result = { trending: [], categories: [] };
+  // const processApiData = (apiData) => {
+  //   const result = { trending: [], categories: [] };
 
-    if (apiData.trendingposts) {
-      result.trending = apiData.trendingposts
-        .filter(
-          (post) =>
-            post.istrending === 1 &&
-            post.status === 'request' &&
-            post.isActive === 'yes'
-        )
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-        .slice(0, 6);
-    }
+  //   if (apiData.trendingposts) {
+  //     result.trending = apiData.trendingposts
+  //       .filter(
+  //         (post) =>
+  //           post.istrending === 1 &&
+  //           post.status === 'request' &&
+  //           post.isActive === 'yes'
+  //       )
+  //       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  //       .slice(0, 6);
+  //   }
 
-    if (apiData.homepageposts) {
-      result.categories = apiData.homepageposts
-        .filter(
-          (category) =>
-            // Only show sub-categories whose parent_id matches the selected main category
-            String(category.parent_id) === String(mainCategoryId)
-        )
-        .map((category) => ({
-          id: category.id,
-          parent_id: category.parent_id,
-          name: category.name,
-          status: category.status,
-          image: category.FullImgPath,
-          posts: (category.contentposts || [])
-            .filter(
-              (post) => post.status === 'request' && post.isActive === 'yes'
-            )
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-            .slice(0, 3),
-        }))
-        .filter((category) => category.posts.length > 0);
-    }
+  //   if (apiData.homepageposts) {
+  //     result.categories = apiData.homepageposts
+  //       .filter(
+  //         (category) =>
+  //           // Only show sub-categories whose parent_id matches the selected main category
+  //           String(category.parent_id) === String(mainCategoryId)
+  //       )
+  //       .map((category) => ({
+  //         id: category.id,
+  //         parent_id: category.parent_id,
+  //         name: category.name,
+  //         status: category.status,
+  //         image: category.FullImgPath,
+  //         posts: (category.contentposts || [])
+  //           .filter(
+  //             (post) => post.status === 'request' && post.isActive === 'yes'
+  //           )
+  //           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  //           .slice(0, 3),
+  //       }))
+  //       .filter((category) => category.posts.length > 0);
+  //   }
 
-    return result;
-  };
+  //   return result;
+  // };
+
+  // useEffect(() => {
+  //   fetchPosts();
+  // }, [mainCategoryId]);
 
   const fetchSubCategory = () => {
     if (!mainCategoryId) return;
@@ -104,7 +108,8 @@ const SubCategory = () => {
     axios
       .get(`https://users.mpdatahub.com/api/sub-category?id=${mainCategoryId}`)
       .then((res) => setSubCategory(res.data || []))
-      .catch(() => showToast('Failed to load sub categories', 'error'));
+      .catch(() => showToast('Failed to load sub categories', 'error'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -203,6 +208,10 @@ const SubCategory = () => {
       setAddError('Please enter a sub category name.');
       return;
     }
+    if (!addForm.subCategoryTamName.trim()) {
+      setAddError('Please enter a sub category tamil name.');
+      return;
+    }
 
     setAddLoading(true);
     setAddError('');
@@ -231,14 +240,12 @@ const SubCategory = () => {
       });
 
       if (response.ok) {
-        alert(
-          isEdit
-            ? 'Sub Category updated successfully!'
-            : 'Sub Category added successfully!'
-        );
+        isEdit
+          ? showToast('Sub Category updated successfully!', 'success')
+          : showToast('Sub Category added successfully!', 'success');
         fetchSubCategory();
         closeAddModal();
-        fetchPosts();
+        // fetchPosts();
       } else {
         const errData = await response.json();
         setAddError(errData.message || 'Failed to save. Please try again.');
@@ -252,19 +259,15 @@ const SubCategory = () => {
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, [mainCategoryId]);
-
-  useEffect(() => {
     axios
       .get('https://users.mpdatahub.com/api/main-category')
       .then((res) => {
-        const allowed = (res.data || []).filter(
-          (cat) => cat.status === 'allow'
-        );
-        setMainCategories(allowed);
+        // const allowed = (res.data || []).filter(
+        //   (cat) => cat.status === 'allow'
+        // );
+        setMainCategories(res.data || []);
       })
-      .catch(() => alert('Failed to load main categories', 'error'));
+      .catch(() => alert('Failed to load sub categories', 'error'));
   }, []);
 
   const handleStatusUpdateSubmit = async (category, status) => {
@@ -284,9 +287,9 @@ const SubCategory = () => {
       });
 
       if (response.ok) {
-        showToast('Main Category Status updated successfully!', 'success');
+        showToast('Sub Category Status updated successfully!', 'success');
         fetchSubCategory();
-        fetchPosts();
+        // fetchPosts();
       } else {
         const errData = await response.json();
         showToast(
@@ -295,7 +298,7 @@ const SubCategory = () => {
         );
       }
     } catch (error) {
-      console.error('Error updating main category:', error);
+      console.error('Error updating sub category:', error);
       showToast('Network error. Please try again.', 'error');
     }
   };
@@ -307,10 +310,10 @@ const SubCategory = () => {
 
   const renderHTML = (htmlString) => ({ __html: htmlString || '' });
 
-  const totalPosts =
-    posts.trending.length +
-    posts.categories.reduce((sum, cat) => sum + cat.posts.length, 0);
-  const totalCategories = posts.categories.length;
+  // const totalPosts =
+  //   posts.trending.length +
+  //   posts.categories.reduce((sum, cat) => sum + cat.posts.length, 0);
+  // const totalCategories = posts.categories.length;
 
   if (loading) return <Loder />;
 
@@ -361,7 +364,7 @@ const SubCategory = () => {
                     onChange={handleAddFormChange}
                     required
                     disabled
-                    // disabled={!!editTarget}
+                  // disabled={!!editTarget}
                   >
                     <option value="">Select a category…</option>
                     {mainCategories.map((cat) => (
@@ -593,62 +596,68 @@ const SubCategory = () => {
         </div> */}
 
         {/* Categories Grid — each card now has an Edit button */}
-        <div className="sub-category-grid">
-          {subCategory.map((category) => (
-            <div
-              key={`category-${category.id}`}
-              className="section-carddash category-sectiondash sub-category-card"
-            >
-              <div className="sub-category-img">
-                <img
-                  src={category.FullImgPath || '/assets/lookit.png'}
-                  alt={category.name}
-                  style={{
-                    width: 70,
-                    height: 70,
-                    borderRadius: 8,
-                    objectFit: 'fill',
-                  }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/assets/lookit.png';
-                  }}
-                />
-              </div>
-
-              <div className="section-headerdash sub-category-right">
-                <div className="sub-category-toggle">
-                  <StatusToggle
-                    defaultActive={category.status === 'allow' ? true : false}
-                    onChange={(isActive) => {
-                      handleStatusUpdateSubmit(
-                        category,
-                        isActive ? 'allow' : 'disable'
-                      );
+        {subCategory.length === 0 ? (
+          <div className="empty-statedash">
+            <p>No subcategories available.</p>
+            <p>Click "Add Subcategory" to get started. ✅</p>
+          </div>
+        ) : (
+          <div className="sub-category-grid">
+            {subCategory.map((category) => (
+              <div
+                key={`category-${category.id}`}
+                className="section-carddash category-sectiondash sub-category-card"
+              >
+                <div className="sub-category-img">
+                  <img
+                    src={category.FullImgPath || '/assets/lookit.png'}
+                    alt={category.name}
+                    style={{
+                      width: 70,
+                      height: 70,
+                      borderRadius: 8,
+                      objectFit: 'fill',
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/assets/lookit.png';
                     }}
                   />
                 </div>
-                <div className="category-infodash sub-category-name">
-                  <div className="category-infodash1">
-                    <h3>{category.name}</h3>
-                    <span className="posts-countdash">
-                      {/* {category.posts.length} posts */}
-                    </span>
-                  </div>
-                  {/* ── Edit button ── */}
-                  <button
-                    className="view-all-btndash"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditModal(category);
-                    }}
-                  >
-                    ✏️ Edit
-                  </button>
-                </div>
-              </div>
 
-              {/* <div className="category-postsdash">
+                <div className="section-headerdash sub-category-right">
+                  <div className="sub-category-toggle">
+                    <StatusToggle
+                      defaultActive={category.status === 'allow' ? true : false}
+                      onChange={(isActive) => {
+                        handleStatusUpdateSubmit(
+                          category,
+                          isActive ? 'allow' : 'disable'
+                        );
+                      }}
+                    />
+                  </div>
+                  <div className="category-infodash sub-category-name">
+                    <div className="category-infodash1">
+                      <h3>{category.name}</h3>
+                      <span className="posts-countdash">
+                        {/* {category.posts.length} posts */}
+                      </span>
+                    </div>
+                    {/* ── Edit button ── */}
+                    <button
+                      className="view-all-btndash"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditModal(category);
+                      }}
+                    >
+                      ✏️ Edit
+                    </button>
+                  </div>
+                </div>
+
+                {/* <div className="category-postsdash">
                 {category.posts.map((post) => (
                   <div
                     key={`${category.id}-${post.id}`}
@@ -682,20 +691,21 @@ const SubCategory = () => {
                   </div>
                 ))}
               </div> */}
-            </div>
-          ))}
-        </div>
-
-        {totalPosts === 0 && (
+              </div>
+            ))}
+          </div>
+        )}
+        {/* 
+        {subCategory.length === 0 && (
           <div className="empty-statedash">
             <div className="empty-icondash">📝</div>
             <h3>No Content Available</h3>
             <p>There's no content to display for this category.</p>
-            <button onClick={fetchPosts} className="retry-btn">
+            <button onClick={fetchSubCategory} className="retry-btn">
               Retry
             </button>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* ── Article Detail Modal (unchanged) ──────────────────────────────── */}

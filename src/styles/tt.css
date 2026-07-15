@@ -82,7 +82,7 @@
   border: 1px solid #ddd;
 }
 
-.remove-image-btn {
+/* .remove-image-btn {
   margin-top: 10px;
   padding: 8px 15px;
   background-color: #e74c3c;
@@ -95,7 +95,7 @@
 
 .remove-image-btn:hover {
   background-color: #c0392b;
-}
+} */
 
 .image-note {
   font-style: italic;

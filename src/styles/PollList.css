@@ -238,6 +238,18 @@
   background: #fff5f5;
 }
 
+.poll-list-action-btn--notify:hover {
+  border-color: #FFCC00;
+  color: #FFCC00;
+  background: #fff5f5;
+}
+
+.poll-list-action-btn--schedule:hover {
+  border-color: #FFA500;
+  color: #FFA500;
+  background: #fff5f5;
+}
+
 /* ── Question ────────────────────────────── */
 .poll-list-question {
   font-size: 15.5px;

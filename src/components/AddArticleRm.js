@@ -255,13 +255,15 @@ const AddArticleRm = () => {
             </div>
           </div>
         )}
-        <button
-          className="submit-button"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Uploading...' : 'சமர்ப்பிக்கவும்'}
-        </button>
+        <div className='submit-btn-actions'>
+          <button
+            className="submit-button"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? 'Uploading...' : 'Upload Article'}
+          </button>
+        </div>
       </div>
     </div>
   );

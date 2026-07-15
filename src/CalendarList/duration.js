@@ -582,10 +582,10 @@ const RasiUpdateForm = () => {
 
   const getEndpoint = () => {
     const endpoints = [
-      'https://tnreaders.in/mobile/rasi-daily-store',
-      'https://tnreaders.in/mobile/storeweekly',
-      'https://tnreaders.in/mobile/storemonthly',
-      'https://tnreaders.in/mobile/storeyearly'
+      'https://users.mpdatahub.com/api/rasi-daily-store',
+      'https://users.mpdatahub.com/api/storeweekly',
+      'https://users.mpdatahub.com/api/storemonthly',
+      'https://users.mpdatahub.com/api/storeyearly'
     ];
     return endpoints[activeTab];
   };
@@ -951,7 +951,7 @@ const RasiUpdateForm = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Summary *"
+                  label="Summary * "
                   name="summary"
                   value={formData.summary}
                   onChange={handleInputChange}

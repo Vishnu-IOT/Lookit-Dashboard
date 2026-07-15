@@ -4,7 +4,7 @@ import '../styles/RasiList.css';
 import Loder from './Loder';
 
 const RasiList = () => {
-  const API_URL = 'https://tnreaders.in/mobile/rasi-daily-list';
+  const API_URL = 'https://users.mpdatahub.com/api/rasi-daily-list';
   const navigate = useNavigate();
 
   const [rasiData, setRasiData] = useState([]);

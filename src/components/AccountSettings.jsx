@@ -93,7 +93,7 @@ export default function AccountSettings() {
         setInterests((prev) => [...prev, trimmed]);
       }
       else {
-        alert('Content Interest Already Exists!');
+        showToast('Content Interest Already Exists!', 'error');
       }
       setNewInterest("");
     }
@@ -112,10 +112,10 @@ export default function AccountSettings() {
       console.log(response.data);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-      alert("Status updated successfully");
+      showToast("Status updated successfully", "success");
     } catch (error) {
       console.error(error);
-      alert("Failed to update status");
+      showToast("Failed to update status", "error");
     }
   };
 
@@ -134,7 +134,7 @@ export default function AccountSettings() {
       console.log(response.data);
       setSaveContentSuccess(true);
       setTimeout(() => setSaveContentSuccess(false), 3000);
-      alert("Content Interest updated successfully");
+      showToast("Content Interest updated successfully", "success");
     } catch (error) {
       console.error(error);
       alert("Failed to update status");
@@ -169,7 +169,7 @@ export default function AccountSettings() {
       console.log(response.data);
       // setSaveContentSuccess(true);
       // setTimeout(() => setSaveContentSuccess(false), 3000);
-      alert("Content Access updated successfully");
+      showToast("Content Access updated successfully", "success");
     } catch (error) {
       console.error(error);
       alert("Failed to update Content Access");

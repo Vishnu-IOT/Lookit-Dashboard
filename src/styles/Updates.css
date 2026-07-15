@@ -22,11 +22,9 @@
 
 /* Header */
 .app-header {
-  background: linear-gradient(
-    135deg,
-    var(--secondary-color),
-    var(--primary-color)
-  );
+  background: linear-gradient(135deg,
+      var(--secondary-color),
+      var(--primary-color));
   color: white;
   padding: 1.5rem;
   text-align: center;
@@ -116,12 +114,14 @@
 
 .image-preview {
   margin-top: 1rem;
-  text-align: center;
+  text-align: start !important;
+  position: relative;
+  padding: 0.8rem !important;
 }
 
 .image-preview img {
   max-width: 100%;
-  max-height: 200px;
+  max-height: 300px;
   border-radius: 6px;
   border: 1px solid var(--border-color);
 }
@@ -137,18 +137,23 @@
 
 .remove-image-btn {
   margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
+  width: 30px;
+  height: 30px;
   background: var(--danger-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s;
+  font-size: 1.25rem;
+  transition: background-color 0.3s, transform 0.15s;
+  position: absolute;
+  top: 0;
+  left: 100px;
 }
 
 .remove-image-btn:hover {
   background: #c0392b;
+  transform: rotate(90deg);
 }
 
 /* Form Actions */
@@ -395,7 +400,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 
 .notification-bell-btn:hover {
@@ -425,12 +430,12 @@
   padding: 20px;
 }
 
-.modal-content {
+.modal-content23 {
   background: white;
   border-radius: 8px;
   padding: 24px;
   width: 100%;
-  /* max-width: 500px; */
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -523,7 +528,7 @@
 }
 
 /* Form actions for modal */
-.modal-content .form-actions {
+.modal-content23 .form-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -532,21 +537,21 @@
   border-top: 1px solid #e0e0e0;
 }
 
-.modal-content .btn {
+.modal-content23 .btn {
   padding: 10px 20px;
   font-size: 14px;
 }
 
-.modal-content .btn-primary {
+.modal-content23 .btn-primary {
   background: #007bff;
   color: white;
 }
 
-.modal-content .btn-primary:hover:not(:disabled) {
+.modal-content23 .btn-primary:hover:not(:disabled) {
   background: #0056b3;
 }
 
-.modal-content .btn-primary:disabled {
+.modal-content23 .btn-primary:disabled {
   background: #cccccc;
   cursor: not-allowed;
 }
@@ -559,7 +564,7 @@
 /* Notification Icons Container */
 .notification-icons {
   display: flex;
-  gap: 0px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -628,6 +633,7 @@
   align-items: center;
   gap: 8px;
 }
+
 .uf-user-initial {
   width: 45px;
   height: 45px;
@@ -790,7 +796,7 @@
 }
 
 /* Form actions for modal */
-.modal-content .form-actions {
+.modal-content23 .form-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -799,7 +805,7 @@
   border-top: 1px solid #e0e0e0;
 }
 
-.modal-content .btn {
+.modal-content23 .btn {
   padding: 10px 20px;
   font-size: 14px;
   border: none;
@@ -809,25 +815,25 @@
   font-weight: 500;
 }
 
-.modal-content .btn-primary {
+.modal-content23 .btn-primary {
   background: #007bff;
   color: white;
 }
 
-.modal-content .btn-primary:hover:not(:disabled) {
+.modal-content23 .btn-primary:hover:not(:disabled) {
   background: #0056b3;
 }
 
-.modal-content .btn-secondary {
+.modal-content23 .btn-secondary {
   background: #6c757d;
   color: white;
 }
 
-.modal-content .btn-secondary:hover:not(:disabled) {
+.modal-content23 .btn-secondary:hover:not(:disabled) {
   background: #545b62;
 }
 
-.modal-content .btn:disabled {
+.modal-content23 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -902,16 +908,16 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modal-content {
+  .modal-content23 {
     margin: 10px;
     padding: 20px;
   }
 
-  .modal-content .form-actions {
+  .modal-content23 .form-actions {
     flex-direction: column;
   }
 
-  .modal-content .btn {
+  .modal-content23 .btn {
     width: 100%;
   }
 
@@ -980,16 +986,16 @@
     gap: 0.5rem;
   }
 
-  .modal-content {
+  .modal-content23 {
     margin: 10px;
     padding: 20px;
   }
 
-  .modal-content .form-actions {
+  .modal-content23 .form-actions {
     flex-direction: column;
   }
 
-  .modal-content .btn {
+  .modal-content23 .btn {
     width: 100%;
   }
 
@@ -1015,6 +1021,7 @@
 }
 
 @media (max-width: 480px) {
+
   .category-form-container h2,
   .list-header h2 {
     font-size: 1.1rem;
@@ -1042,11 +1049,13 @@
     align-items: flex-start;
     padding: 0.5rem;
   }
+
   .uf-user-initial {
     width: 30px;
     height: 30px;
     font-size: 1.1rem;
   }
+
   /* .status-badges {
     align-self: flex-start;
   } */
@@ -1054,6 +1063,7 @@
 
 /* Print Styles */
 @media print {
+
   .category-form-container,
   .btn-refresh,
   .card-actions,

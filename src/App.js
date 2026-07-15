@@ -45,6 +45,7 @@ import CreatorList from "./components/CreatorList";
 import CreatorDetails from "./components/CreatorDetails";
 import AccountSettings from "./components/AccountSettings";
 import CreatorPostList from "./components/CreatorPostList";
+import ReportedPosts from "./components/ReportedPosts";
 
 // Dashboard Layout Component
 const DashboardLayout = ({
@@ -73,6 +74,7 @@ const DashboardLayout = ({
       "creator-details/:channelId": "Creator Details",
       "content-settings/:ascreator/settings": "Account Settings",
       "creator-post-list/:userId": "Creator Post List",
+      "report-list": "Reported Posts",
       "add-article-rm": "AddArticlerm",
       "list-articles-rm": "List and Edit Articles",
       "rasi-upload": "Rasi Upload Form",
@@ -150,6 +152,7 @@ const DashboardLayout = ({
               path="creator-post-list/:userId"
               element={<CreatorPostList />}
             />
+            <Route path="report-list" element={<ReportedPosts />} />
             <Route path="today-talks" element={<Todaytalksform />} />
             <Route path="today-jobs" element={<Todayjobsform />} />
             <Route path="rasi-list" element={<RasiAllList />} />

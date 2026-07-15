@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Notiupdate.css";
 import { Bell, Send } from 'lucide-react';
+import { FaBell } from "react-icons/fa";
 
-const API_BASE = "https://tnreaders.in/mobile";
+const API_BASE = "https://users.mpdatahub.com/api";
 
 const Notiupdate = () => {
     const [notifications, setNotifications] = useState([]);
@@ -10,7 +11,7 @@ const Notiupdate = () => {
     const [preview, setPreview] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
-    
+
     // Notification sending states
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [selectedNotification, setSelectedNotification] = useState(null);
@@ -33,6 +34,12 @@ const Notiupdate = () => {
         type: 'NOTIFICATION',
         type_id: ''
     });
+
+    const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+    };
 
     const fetchNotifications = async () => {
         try {
@@ -63,6 +70,22 @@ const Notiupdate = () => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
+        const allowedTypes = [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            showToast(
+                "Only JPG, JPEG, PNG and GIF images are allowed.",
+                "error"
+            );
+
+            e.target.value = "";
+            return;
+        }
         setImageFile(file);
         if (file) setPreview(URL.createObjectURL(file));
     };
@@ -76,16 +99,17 @@ const Notiupdate = () => {
         submitData.append("description", formData.description);
         submitData.append("status", formData.status);
         if (imageFile) submitData.append("image", imageFile);
-        
+
         const url = editingId
             ? `${API_BASE}/notifications/update/${editingId}`
             : `${API_BASE}/storeNotification`;
-        
+
         try {
             await fetch(url, {
                 method: "POST",
                 body: submitData,
             });
+            showToast(editingId ? "Notification updated successfully!" : "Notification created successfully!", "success");
             resetForm();
             fetchNotifications();
         } catch (err) {
@@ -121,29 +145,35 @@ const Notiupdate = () => {
 
     const handleDelete = async (id) => {
         if (!window.confirm("Delete notification?")) return;
-        await fetch(`${API_BASE}/notifications/delete/${id}`, {
-            method: "get",
-        });
-        fetchNotifications();
+        try {
+            await fetch(`${API_BASE}/notifications/delete/${id}`, {
+                method: "post",
+            });
+            fetchNotifications();
+            showToast("Notification deleted successfully!", "success");
+        } catch (error) {
+            console.error("Delete error", error);
+            showToast("Error deleting notification.", "error");
+        }
     };
 
     // Open notification modal for a specific notification
     const openNotificationModal = (notification, type = 'single') => {
         setSelectedNotification(notification);
         setNotificationType(type);
-        
+
         // Set form data based on the notification
         setNotificationForm({
             user_id: type === 'single' ? '84' : '',
             title: notification.title || 'New Notification',
-            message: notification.description || (type === 'single' 
-                ? 'Check out this new notification! Tap to view now. 🔥' 
+            message: notification.description || (type === 'single'
+                ? 'Check out this new notification! Tap to view now. 🔥'
                 : 'Check out this amazing update! Tap to explore now. 🚀'),
             image: notification.image || '',
             type: 'NOTIFICATION',
             type_id: notification.id.toString()
         });
-        
+
         setShowNotificationModal(true);
     };
 
@@ -166,7 +196,7 @@ const Notiupdate = () => {
     // Send notification (both single and bulk)
     const sendNotification = async (e) => {
         e.preventDefault();
-        
+
         if (!notificationForm.title.trim()) {
             alert('Please enter a title for the notification');
             return;
@@ -180,7 +210,7 @@ const Notiupdate = () => {
         setNotificationLoading(true);
 
         // Prepare payload based on notification type
-        const notificationPayload = notificationType === 'single' 
+        const notificationPayload = notificationType === 'single'
             ? {
                 user_id: notificationForm.user_id,
                 title: notificationForm.title,
@@ -199,9 +229,9 @@ const Notiupdate = () => {
             };
 
         try {
-            const apiUrl = notificationType === 'single' 
-                ? 'https://tnreaders.in/api/notification/sendSingleNotification'
-                : 'https://tnreaders.in/api/notification/bulk-send';
+            const apiUrl = notificationType === 'single'
+                ? 'https://users.mpdatahub.com/api/notification/sendSingleNotification'
+                : 'https://users.mpdatahub.com/api/notification/bulk-send';
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -230,6 +260,9 @@ const Notiupdate = () => {
 
     return (
         <div className="notification-container">
+            {toast.show && (
+                <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+            )}
             {/* Notification Modal */}
             {showNotificationModal && (
                 <div className="modal-overlay">
@@ -238,14 +271,14 @@ const Notiupdate = () => {
                             <h2>
                                 {notificationType === 'single' ? 'Send Single Notification' : 'Send Bulk Notification'}
                             </h2>
-                            <button 
+                            <button
                                 className="modal-close-btn"
                                 onClick={closeNotificationModal}
                             >
                                 &times;
                             </button>
                         </div>
-                        
+
                         <form onSubmit={sendNotification} className="notification-form">
                             {notificationType === 'single' && (
                                 <div className="form-group">
@@ -337,21 +370,21 @@ const Notiupdate = () => {
                             <div className="notification-info">
                                 <p className="info-text">
                                     <strong>Note:</strong> This notification will be sent to {
-                                        notificationType === 'single' 
-                                        ? 'a specific user' 
-                                        : 'ALL users'
+                                        notificationType === 'single'
+                                            ? 'a specific user'
+                                            : 'ALL users'
                                     }
                                 </p>
                             </div>
 
                             <div className="form-actions">
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     className={`btn ${notificationType === 'single' ? 'btn-primary' : 'btn-bulk'}`}
                                     disabled={notificationLoading}
                                 >
-                                    {notificationLoading 
-                                        ? (notificationType === 'single' ? 'Sending...' : 'Sending to All...') 
+                                    {notificationLoading
+                                        ? (notificationType === 'single' ? 'Sending...' : 'Sending to All...')
                                         : (notificationType === 'single' ? 'Send Notification' : 'Send to All Users')}
                                 </button>
                                 <button
@@ -391,7 +424,7 @@ const Notiupdate = () => {
                     onChange={handleChange}
                     required
                 />
-                <input type="file" accept="image/*" onChange={handleImageChange} />
+                <input type="file" accept="image/jpeg,image/png,image/gif" onChange={handleImageChange} />
                 {preview && (
                     <img src={preview} alt="preview" className="image-preview" />
                 )}
@@ -408,8 +441,13 @@ const Notiupdate = () => {
                 {notifications.map((item) => (
                     <div className="notification-card" key={item.id}>
                         <div className="card-header">
-                            <div className="card-title-row">
-                                <h4>{item.title}</h4>
+                            <div className="noti-card-title-row">
+                                <div className="noti-title-cat">
+                                    <div className="uf-user-initial">
+                                        <p className="noti-title-cat"><FaBell fontSize={24} /></p>
+                                    </div>
+                                    <h4>{item.title}</h4>
+                                </div>
                                 <div className="notification-icons">
                                     <button
                                         className="notification-bell-btn single"
@@ -425,14 +463,14 @@ const Notiupdate = () => {
                                     >
                                         <Send size={18} />
                                     </button>
+                                    <span
+                                        className={`status-label ${item.status === "1" || item.status === 1 ? "active" : "inactive"
+                                            }`}
+                                    >
+                                        {item.status === "1" || item.status === 1 ? "Active" : "Inactive"}
+                                    </span>
                                 </div>
                             </div>
-                            <span
-                                className={`status-label ${item.status === "1" || item.status === 1 ? "active" : "inactive"
-                                    }`}
-                            >
-                                {item.status === "1" || item.status === 1 ? "Active" : "Inactive"}
-                            </span>
                         </div>
                         <p className="category">{item.category_name}</p>
                         <p>{item.description}</p>

@@ -19,8 +19,10 @@
 }
 
 .notification-imagentn {
-  height: 100px;
-  object-fit: contain;
+  height: 200px;
+  width: 100%;
+  border-radius: 16px;
+  /* object-fit: contain; */
 }
 
 .trigger-btnntn {
@@ -40,22 +42,39 @@
 .notification-cardntn {
   border-radius: 8px;
   padding: 20px;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
   background-color: #fff;
   transition: 0.3s;
   width: auto;
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  position: relative;
 }
 
 .notification-cardntn:hover {
   background-color: #eef5ff;
 }
 
+.notify-list {
+  position: absolute;
+  inset: 0;
+}
+
+/* .notify-list-status {
+  border: 1px solid;
+  padding: 6px;
+} */
+
 .status-active {
+  /* background-color: green;
+   color: white; */
   color: green;
   font-weight: bold;
 }
 
 .status-inactive {
+  /* background-color: red;
+  color: white; */
   color: red;
   font-weight: bold;
 }

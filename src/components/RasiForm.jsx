@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../styles/RasiForm.css';
 
 const RasiForm = () => {
-  const API_URL = 'https://tnreaders.in/mobile/rasi-daily-store';
-  const LIST_API_URL = 'https://tnreaders.in/mobile/rasi-daily-list';
+  const API_URL = 'https://users.mpdatahub.com/api/rasi-daily-store';
+  const LIST_API_URL = 'https://users.mpdatahub.com/api/rasi-daily-list';
 
   const [formData, setFormData] = useState({
     date: '',

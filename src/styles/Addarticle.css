@@ -144,6 +144,12 @@
   resize: vertical;
 }
 
+.submit-btn-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .submit-button {
   background-color: #812baf;
   color: white;
@@ -151,7 +157,7 @@
   border: none;
   padding: 14px;
   border-radius: 12px;
-  width: 100%;
+  /* width: 100%; */
   cursor: pointer;
 }
 

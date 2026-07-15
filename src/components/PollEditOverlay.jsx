@@ -45,7 +45,6 @@ export default function PollEditOverlay({ poll, onClose, onSave }) {
                 end_date: endDate,
                 status,
             };
-            console.log(payload);
             const res = await axios.post(
                 `https://users.mpdatahub.com/api/poll-update`,
                 payload

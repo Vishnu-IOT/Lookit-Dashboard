@@ -50,7 +50,7 @@ const defaultNotificationForm = {
   title: '',
   message: 'Check out this new content! Tap to view now. 🔥',
   image: '',
-  type: 'POSTERS',
+  type: 'POSTER',
   type_id: '',
   topic: 'MPeoplesNEWS',
   scheduled_time: ''
@@ -76,13 +76,27 @@ const UpdatePostList = () => {
   const [notificationType, setNotificationType] = useState('schedule');
   const [notificationLoading, setNotificationLoading] = useState(false);
   const [notificationForm, setNotificationForm] = useState(defaultNotificationForm);
+  const [dateTimeError, setDateTimeError] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 15;
   const [totalPosts, setTotalPosts] = useState(0);
 
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+
   const dateTimeInputRef = useRef(null);
+
+  const LocalDateTime = () => {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -210,7 +224,7 @@ const UpdatePostList = () => {
       : '';
 
     setFormData({
-      category: category.category || '',
+      category: category.category_name || '',
       type: category.type || 'IMAGE',
       title: category.title || category.category_name || category.name || '',
       image: imageUrl,
@@ -286,12 +300,12 @@ const UpdatePostList = () => {
       const responseData = await response.json();
 
       if (response.ok) {
-        alert('Post updated successfully!');
+        showToast('Updates Post updated successfully!', 'success');
         resetForm();
         fetchCategories();
       } else {
         console.error('Save failed:', responseData);
-        alert('Save failed: ' + (responseData.message || 'Unknown error'));
+        showToast('Save failed: ' + (responseData.message || 'Unknown error'), 'error');
       }
     } catch (error) {
       console.error('Error saving post:', error);
@@ -309,12 +323,12 @@ const UpdatePostList = () => {
         method: 'POST',
       });
       if (response.ok) {
-        alert('Post deleted successfully!');
+        showToast('Updates Post deleted successfully!', 'success');
         fetchCategories();
       } else {
         const errorData = await response.json();
         console.error('Delete failed:', errorData);
-        alert('Delete failed: ' + (errorData.message || 'Unknown error'));
+        showToast('Delete failed: ' + (errorData.message || 'Unknown error'), 'error');
       }
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -328,6 +342,26 @@ const UpdatePostList = () => {
     setNotificationForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleDateTimeChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      const selected = new Date(e.target.value);
+
+      const now = new Date();
+      now.setSeconds(0, 0);
+
+      if (selected.getTime() < now.getTime()) {
+        setDateTimeError("Please select a future date and time.");
+      } else {
+        setDateTimeError("");
+      }
+      setNotificationForm((prev) => ({
+        ...prev, [name]: value
+      }));
+    },
+    [setNotificationForm],
+  );
+
   const openNotificationModal = (post, type = 'schedule') => {
     setNotificationType(type);
     setNotificationForm({
@@ -335,7 +369,7 @@ const UpdatePostList = () => {
       title: post.title || post.category || 'New Update',
       message: notificationMessage[post?.category_name],
       image: post.image || '',
-      type: 'POSTERS',
+      type: 'POSTER',
       type_id: post.id.toString(),
     });
     setShowNotificationModal(true);
@@ -420,12 +454,12 @@ const UpdatePostList = () => {
       });
 
       if (response.ok) {
-        alert(`${notificationType === 'schedule' ? 'Scheduled' : 'Bulk'} notification sent successfully!`);
+        showToast(`${notificationType === 'schedule' ? 'Scheduled' : 'Bulk'} notification sent successfully!`, 'success');
         closeNotificationModal();
       } else {
         const errorData = await response.json();
         console.error('Notification failed:', errorData);
-        alert(`Failed to send ${notificationType} notification: ` + (errorData.message || 'Unknown error'));
+        showToast(`Failed to send ${notificationType} notification: ` + (errorData.message || 'Unknown error'), 'error');
       }
     } catch (error) {
       console.error('Error sending notification:', error);
@@ -510,8 +544,9 @@ const UpdatePostList = () => {
           id: postId,
           isActive: newStatus,
         });
-        alert(
-          `Post status updated to ${newStatus === "yes" ? "Active" : "Disabled"}`,
+        showToast(
+          `Updates Post status updated to ${newStatus === "yes" ? "Active" : newStatus === "reject" ? "Rejected" : "Disabled"}`,
+          'success'
         );
         setCategories((prevPosts) =>
           prevPosts.map((post) =>
@@ -526,10 +561,13 @@ const UpdatePostList = () => {
 
   return (
     <div className="article-categories-container">
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+      )}
       {/* Notification Modal */}
       {showNotificationModal && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content23">
             <div className="modal-header">
               <h2>
                 {notificationType === 'schedule' ? 'Schedule Notification' : 'Send Bulk Notification'}
@@ -556,6 +594,31 @@ const UpdatePostList = () => {
               )}
 
               <div className="form-group">
+                <label htmlFor="type">Type *</label>
+                {/* <select
+                  id="type"
+                  name="type"
+                  value={notificationForm.type}
+                  onChange={handleNotificationInputChange}
+                  required
+                >
+                  <option value="POSTERS">POSTERS</option>
+                  <option value="ARTICLE">ARTICLE</option>
+                  <option value="SHORTS">SHORTS</option>
+                  <option value="VIDEOS">VIDEOS</option>
+                </select> */}
+                <input
+                  id="type"
+                  name="type"
+                  type="text"
+                  value={notificationForm.type}
+                  onChange={handleNotificationInputChange}
+                  required
+                  disabled
+                />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="title">Title *</label>
                 <input
                   type="text"
@@ -565,6 +628,7 @@ const UpdatePostList = () => {
                   onChange={handleNotificationInputChange}
                   placeholder="Notification title"
                   required
+                  disabled
                 />
               </div>
 
@@ -578,6 +642,7 @@ const UpdatePostList = () => {
                   placeholder="Notification message"
                   rows="3"
                   required
+                  disabled
                 />
               </div>
 
@@ -596,22 +661,6 @@ const UpdatePostList = () => {
                     <img src={notificationForm.image} alt="Notification preview" />
                   </div>
                 )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="type">Type *</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={notificationForm.type}
-                  onChange={handleNotificationInputChange}
-                  required
-                >
-                  <option value="POSTERS">POSTERS</option>
-                  <option value="ARTICLE">ARTICLE</option>
-                  <option value="SHORTS">SHORTS</option>
-                  <option value="VIDEOS">VIDEOS</option>
-                </select>
               </div>
 
               <div className="form-group">
@@ -637,8 +686,8 @@ const UpdatePostList = () => {
                       type="datetime-local"
                       name="scheduled_time"
                       value={notificationForm.scheduled_time || ''}
-                      onChange={handleNotificationInputChange}
-                      min={new Date().toISOString().slice(0, 16)}
+                      onChange={handleDateTimeChange}
+                      min={LocalDateTime()}
                       required={notificationType === 'schedule'}
                     />
                     <small className="form-help">
@@ -651,6 +700,11 @@ const UpdatePostList = () => {
                           {new Date(notificationForm.scheduled_time).toLocaleString()}
                         </p>
                       </div>
+                    )}
+                    {dateTimeError && (
+                      <small className="form-error">
+                        {dateTimeError}
+                      </small>
                     )}
                   </div>
 
@@ -686,7 +740,7 @@ const UpdatePostList = () => {
                 <button
                   type="submit"
                   className={`btn ${notificationType === 'schedule' ? 'btn-primary' : 'btn-bulk'}`}
-                  disabled={notificationLoading}
+                  disabled={notificationLoading || !!dateTimeError}
                 >
                   {notificationLoading
                     ? notificationType === 'schedule' ? 'Sending...' : 'Sending to All...'
@@ -851,7 +905,8 @@ const UpdatePostList = () => {
                   onChange={handleInputChange}
                 >
                   <option value="yes">Active</option>
-                  <option value="no">Inactive</option>
+                  <option value="no">Disabled</option>
+                  <option value="reject">Rejected</option>
                 </select>
               </div>
 
@@ -870,7 +925,7 @@ const UpdatePostList = () => {
           /* Posts List */
           <section className="categories-list-container">
             <div className="list-header">
-              <h2>All Posts ({categories.length})</h2>
+              <h2>All Updates ({categories.length})</h2>
               <button className="btn btn-refresh" onClick={fetchCategories} disabled={loading}>
                 {loading ? 'Refreshing...' : 'Refresh List'}
               </button>
@@ -1055,7 +1110,7 @@ const UpdatePostList = () => {
               </>
             )}
             <footer className="app-footer">
-              <p>Total Posts: {totalPosts}</p>
+              <p>Total Updates: {totalPosts}</p>
               {editingId && <p className="editing-notice">Editing Mode Active</p>}
               <p className="user-id-info">User ID: {currentUserId || 'Not loaded'}</p>
             </footer>

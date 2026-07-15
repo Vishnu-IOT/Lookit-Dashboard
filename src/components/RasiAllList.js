@@ -53,16 +53,16 @@ const RasiAllList = () => {
     const [imagePreview, setImagePreview] = useState('');
     const [isUpdatingStatus, setIsUpdatingStatus] = useState({});
     const API_ENDPOINTS = {
-        daily: 'https://tnreaders.in/mobile/rasi-daily-list',
-        weekly: 'https://tnreaders.in/mobile/listWeekly',
-        monthly: 'https://tnreaders.in/mobile/listemonthly',
-        yearly: 'https://tnreaders.in/mobile/listyearly'
+        daily: 'https://users.mpdatahub.com/api/rasi-daily-list',
+        weekly: 'https://users.mpdatahub.com/api/listWeekly',
+        monthly: 'https://users.mpdatahub.com/api/listemonthly',
+        yearly: 'https://users.mpdatahub.com/api/listyearly'
     };
     const UPDATE_API_ENDPOINTS = {
-        daily: 'https://tnreaders.in/mobile/rasi-daily-update',
-        weekly: 'https://tnreaders.in/mobile/weekly/update',
-        monthly: 'https://tnreaders.in/mobile/update/monthly',
-        yearly: 'https://tnreaders.in/mobile/yearly/update'
+        daily: 'https://users.mpdatahub.com/api/rasi-daily-update',
+        weekly: 'https://users.mpdatahub.com/api/weekly/update',
+        monthly: 'https://users.mpdatahub.com/api/update/monthly',
+        yearly: 'https://users.mpdatahub.com/api/yearly/update'
     };
     const rasiData = {
         "1": { name: "மேஷம்", color: "#FF6B6B", emoji: "🐏" },
@@ -468,7 +468,7 @@ const RasiAllList = () => {
         }));
         try {
             const response = await fetch(
-                `https://tnreaders.in/mobile/rasi-daily-status?date=${date}&status=${newStatus}`,
+                `https://users.mpdatahub.com/api/rasi-daily-status?date=${date}&status=${newStatus}`,
                 { method: 'GET' }
             );
             if (!response.ok) {

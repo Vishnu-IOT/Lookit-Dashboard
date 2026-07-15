@@ -13,6 +13,70 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
   const [type, setType] = useState("DAY-CALENDER"); // New state for types dropdown
   const [topics] = useState("MPeoplesNEWS"); // Topics state with fixed value
 
+  const [errors, setErrors] = useState({
+    title: "",
+    message: "",
+    date: "",
+    time: "",
+  });
+
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!title.trim()) {
+      newErrors.title = "Title is required.";
+    }
+    if (!message.trim()) {
+      newErrors.message = "Message is required.";
+    }
+    if (!date) {
+      newErrors.date = "Please select a date.";
+    }
+    if (!time) {
+      newErrors.time = "Please select a time.";
+    }
+    if (date && time) {
+      const selectedDateTime = new Date(`${date}T${time}`);
+      const now = new Date();
+      now.setSeconds(0, 0);
+      if (selectedDateTime < now) {
+        newErrors.time = "Please select a future date and time.";
+      }
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const resetForm = () => {
+    setId("");
+    setTitle("");
+    setMessage("");
+    setDate("");
+    setTime("");
+    setTypeid("");
+    setImageFile(null);
+    setPreview(null);
+    setType("DAY-CALENDER");
+
+    setErrors({
+      title: "",
+      message: "",
+      date: "",
+      time: "",
+    });
+
+    // Clear file input
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
   // Prefill data when editing
   useEffect(() => {
     if (editMode && editData) {
@@ -37,6 +101,10 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append("id", id);
@@ -64,8 +132,11 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
         const result = JSON.parse(text);
 
         if (result.success) {
-          alert("Notification created!");
-          onClose && onClose();
+          showToast("Notification created!", "success");
+          resetForm();
+          setTimeout(() => {
+            onClose && onClose();
+          }, 1000);
         } else {
           alert("Failed to create notification.");
         }
@@ -86,7 +157,7 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
         const result = JSON.parse(text);
 
         if (result.success) {
-          alert("Notification updated!");
+          showToast("Notification updated!", "success");
           onClose && onClose();
         } else {
           alert("Failed to update");
@@ -99,6 +170,9 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
 
   return (
     <div className="schedule-container">
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+      )}
       <h1 style={{ textAlign: "left", marginBottom: "20px" }}>
         Schedule Notifications
       </h1>
@@ -107,18 +181,45 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
           <label>Title</label>
           <input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
+            className={errors.title ? "input-error" : ""}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (errors.title) {
+                setErrors((prev) => ({
+                  ...prev,
+                  title: "",
+                }));
+              }
+            }}
           />
+          {errors.title && (
+            <small className="error-text">
+              {errors.title}
+            </small>
+          )}
         </div>
 
         <div className="form-group">
           <label>Message</label>
           <textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            required
+            className={errors.message ? "input-error" : ""}
+            onChange={(e) => {
+              setMessage(e.target.value);
+
+              if (errors.message) {
+                setErrors((prev) => ({
+                  ...prev,
+                  message: "",
+                }));
+              }
+            }}
           />
+          {errors.message && (
+            <small className="error-text">
+              {errors.message}
+            </small>
+          )}
         </div>
 
         {/* New Types dropdown */}
@@ -141,9 +242,25 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
           <input
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
+            min={new Date().toISOString().split("T")[0]}
+            className={errors.date ? "input-error" : ""}
+            onChange={(e) => {
+              setDate(e.target.value);
+              setTime("");
+
+              setErrors((prev) => ({
+                ...prev,
+                date: "",
+                time: "",
+              }));
+            }}
           />
+
+          {errors.date && (
+            <small className="error-text">
+              {errors.date}
+            </small>
+          )}
         </div>
 
         <div className="form-group">
@@ -151,9 +268,30 @@ const ScheduleForm = ({ editMode = false, editData = null, onClose }) => {
           <input
             type="time"
             value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
+            disabled={!date}
+            className={errors.time ? "input-error" : ""}
+            onChange={(e) => {
+              setTime(e.target.value);
+
+              if (errors.time) {
+                setErrors((prev) => ({
+                  ...prev,
+                  time: "",
+                }));
+              }
+            }}
           />
+
+          {errors.time && (
+            <small className="error-text">
+              {errors.time}
+            </small>
+          )}
+          {!date && (
+            <small className="form-help">
+              Please select a date first.
+            </small>
+          )}
         </div>
 
         <div className="form-group">

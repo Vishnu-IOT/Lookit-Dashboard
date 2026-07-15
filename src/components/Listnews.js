@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import "../styles/listall.css";
+import "../styles/ArticleDetails.css";
 import Loder from "./Loder";
-import { AiFillBell } from "react-icons/ai";
+import { AiFillBell, AiTwotoneThunderbolt } from "react-icons/ai";
 import { FcAlarmClock } from "react-icons/fc";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { LuEye } from "react-icons/lu";
-import { MdOutlineEdit } from "react-icons/md";
+import { MdOutlineEdit, MdOutlineStarBorderPurple500 } from "react-icons/md";
+import { IoMdCheckmarkCircleOutline, IoMdTrendingUp } from "react-icons/io";
+import { LiaTheaterMasksSolid } from "react-icons/lia";
+import { BsDot } from "react-icons/bs";
 
 const NotificationModal = ({
   showNotificationModal,
@@ -22,6 +26,15 @@ const NotificationModal = ({
   const messageInputRef = useRef(null);
   const imageInputRef = useRef(null);
   const dateTimeInputRef = useRef(null);
+  const [dateTimeError, setDateTimeError] = useState("");
+
+
+  const LocalDateTime = () => {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+  };
 
   useEffect(() => {
     if (showNotificationModal) {
@@ -62,6 +75,16 @@ const NotificationModal = ({
 
   const handleDateTimeChange = useCallback(
     (e) => {
+      const selected = new Date(e.target.value);
+
+      const now = new Date();
+      now.setSeconds(0, 0);
+
+      if (selected.getTime() < now.getTime()) {
+        setDateTimeError("Please select a future date and time.");
+      } else {
+        setDateTimeError("");
+      }
       setNotificationData((prev) => ({
         ...prev,
         scheduled_time: e.target.value,
@@ -100,6 +123,7 @@ const NotificationModal = ({
               onChange={handleInputChange("type")}
               type="text"
               style={{ textTransform: "uppercase" }}
+              disabled
             />
             <small className="form-help">
               Content type (ARTICLE, VIDEO, etc.)
@@ -113,6 +137,7 @@ const NotificationModal = ({
               value={notificationData.title}
               onChange={handleInputChange("title")}
               type="text"
+              disabled
             />
           </div>
           <div className="form-group">
@@ -123,6 +148,7 @@ const NotificationModal = ({
               value={notificationData.message}
               onChange={handleInputChange("message")}
               rows="4"
+              disabled
             />
           </div>
           <div className="form-group">
@@ -159,7 +185,7 @@ const NotificationModal = ({
                 type="datetime-local"
                 value={notificationData.scheduled_time || ""}
                 onChange={handleDateTimeChange}
-                min={new Date().toISOString().slice(0, 16)}
+                min={LocalDateTime()}
                 required={isScheduled}
               />
               <small className="form-help">
@@ -172,6 +198,11 @@ const NotificationModal = ({
                     {new Date(notificationData.scheduled_time).toLocaleString()}
                   </p>
                 </div>
+              )}
+              {dateTimeError && (
+                <small className="form-error">
+                  {dateTimeError}
+                </small>
               )}
             </div>
           )}
@@ -208,7 +239,8 @@ const NotificationModal = ({
             onClick={handleSendNotification}
             disabled={
               isSendingNotification ||
-              (isScheduled && !notificationData.scheduled_time)
+              (isScheduled && !notificationData.scheduled_time) ||
+              !!dateTimeError
             }
             type="button"
           >
@@ -267,6 +299,12 @@ const Listnews = () => {
     trending: "",
   });
   const [allPosts, setAllPosts] = useState([]);
+
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
 
   // Notification states
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -340,7 +378,7 @@ const Listnews = () => {
     try {
       // FIXED: Use notificationData.image which contains the web_thumbnail
       const basePayload = {
-        type: notificationData.type || "ARTICLE",
+        type: notificationData.type || "NEWS-UPDATE",
         type_id:
           notificationData.type_id || selectedPostForNotification.id.toString(),
         post_id: selectedPostForNotification.id.toString(),
@@ -404,16 +442,18 @@ const Listnews = () => {
       }
 
       if (response.data.success) {
-        alert(
+        showToast(
           isScheduledNotification
             ? `Notification scheduled successfully for ${scheduledDate} at ${scheduledTime}!`
             : "Notification sent successfully!",
+          "success"
         );
         handleCloseNotificationModal();
       } else {
-        alert(
+        showToast(
           response.data.message ||
           `Failed to ${isScheduledNotification ? "schedule" : "send"} notification`,
+          "error"
         );
       }
     } catch (err) {
@@ -445,9 +485,9 @@ const Listnews = () => {
       setIsScheduledNotification(isScheduled);
       const contentTypeUpper = post.content_type
         ? post.content_type.toUpperCase()
-        : "ARTICLE";
+        : "NEWS-UPDATE";
       setNotificationData({
-        type: contentTypeUpper,
+        type: "NEWS-UPDATE",
         type_id: post.id.toString(),
         title: post.title || "",
         message: (() => {
@@ -469,9 +509,18 @@ const Listnews = () => {
 
   const fetchPosts = useCallback(() => {
     setIsLoading(true);
+    const params = {
+      currentPage: currentPage,
+      perPage: postsPerPage,
+    };
+
+    // if (filters.category) params.category_id = filters.category;
+    if (filters.status) params.isActive = filters.status;
+    if (filters.contentType) params.content_type = filters.contentType;
+    if (filters.trending) params.istrending = filters.trending;
     axios
       .get(
-        `https://users.mpdatahub.com/api/view-new-Postsub?currentPage=${currentPage}&perPage=${postsPerPage}`,
+        `https://users.mpdatahub.com/api/view-new-Postsub`, { params }
       )
       .then((response) => {
         setAllPosts(response.data.data || []);
@@ -484,7 +533,7 @@ const Listnews = () => {
         console.error("API fetch error:", error);
         setIsLoading(false);
       });
-  }, [currentPage, postsPerPage]);
+  }, [currentPage, postsPerPage, filters]);
 
   // ... (keep all your existing functions: handleEdit, handleView, handleImageOneChange, handleImageTwoChange, handleSubmit, togglePostStatus, toggleTrendingStatus, pagination functions)
 
@@ -577,7 +626,7 @@ const Listnews = () => {
         },
       });
       if (response.data.success) {
-        alert(editingPost ? "Post updated!" : "Post submitted!");
+        showToast(editingPost ? "News updated!" : "News submitted!", "success");
         setEditingPost(null);
         setImageone(null);
         setImagetwo(null);
@@ -617,8 +666,9 @@ const Listnews = () => {
           postId,
           isActive: newStatus,
         });
-        alert(
-          `Post status updated to ${newStatus === "yes" ? "Active" : "Disabled"}`,
+        showToast(
+          `News status updated to ${newStatus === "yes" ? "Active" : "Disabled"}`,
+          "success"
         );
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
@@ -633,7 +683,7 @@ const Listnews = () => {
         }
       } catch (err) {
         console.error("Status update error", err);
-        alert("Error updating post status");
+        alert("Error updating News status");
       } finally {
         setIsProcessing(false);
       }
@@ -857,6 +907,9 @@ const Listnews = () => {
 
   return (
     <div className="articles-container">
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+      )}
       <NotificationModal
         showNotificationModal={showNotificationModal}
         notificationData={notificationData}
@@ -904,6 +957,7 @@ const Listnews = () => {
                   <option value="">All Statuses</option>
                   <option value="yes">Active</option>
                   <option value="no">Disabled</option>
+                  <option value="reject">Rejected</option>
                 </select>
               </div>
               <div className="filter-group">
@@ -1208,304 +1262,345 @@ const Listnews = () => {
           </div>
         </>
       ) : viewingPost ? (
-        <div className="post-detail-container">
-          <h2 className="detail-header">Post Details</h2>
-          <div className="detail-content">
-            <div className="detail-grid">
-              <div className="detail-group">
-                <span className="detail-label">Title</span>
-                <p className="detail-value">{viewingPost.title}</p>
-              </div>
-              <div className="detail-group">
-                <span className="detail-label">Content Type</span>
-                <p className="detail-value">{viewingPost.content_type}</p>
-              </div>
-            </div>
-            <div className="detail-grid">
-              <div className="detail-group">
-                <span className="detail-label">Main Category</span>
-                <p className="detail-value">
-                  {viewingPost.category?.name || "N/A"}
-                </p>
-              </div>
-              <div className="detail-group">
-                <span className="detail-label">Sub Category</span>
-                <p className="detail-value">
-                  {viewingPost.sub_category?.name || "N/A"}
-                </p>
-              </div>
-            </div>
-            <div className="detail-group">
-              <span className="detail-label">Description</span>
-              <p className="detail-value">{viewingPost.description}</p>
-            </div>
-            {viewingPost.youtube_url && (
-              <div className="detail-group">
-                <span className="detail-label">YouTube URL</span>
-                <a
-                  href={viewingPost.youtube_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="detail-value"
-                >
-                  {viewingPost.youtube_url}
-                </a>
-              </div>
-            )}
-            <div className="detail-grid">
-              <div className="detail-group">
-                <span className="detail-label">App Thumbnail</span>
-                {viewingPost.app_thumbnail && (
-                  <img
-                    src={viewingPost.app_thumbnail}
-                    alt="App Thumbnail"
-                    className="detail-image"
-                  />
-                )}
-              </div>
-              <div className="detail-group">
-                <span className="detail-label">Web Thumbnail</span>
-                {viewingPost.web_thumbnail && (
-                  <img
-                    src={viewingPost.web_thumbnail}
-                    alt="Web Thumbnail"
-                    className="detail-image"
-                  />
-                )}
-              </div>
-            </div>
-            <div className="detail-grid">
-              <div className="detail-group">
-                <span className="detail-label">Status</span>
-                <div className="status-controls-group">
-                  <div>
-                    <span className="detail-label">Active:</span>
-                    {isProcessing ? (
-                      <div className="processing-overlay">
-                        <div className="processing-spinner"></div>
-                        <div className="processing-text">Updating...</div>
-                      </div>
-                    ) : (
-                      // <div
-                      //   className={`toggle-group ${
-                      //     viewingPost.isActive === 'yes'
-                      //       ? 'status-active'
-                      //       : 'status-inactive'
-                      //   }`}
-                      //   onClick={() =>
-                      //     togglePostStatus(viewingPost.id, viewingPost.isActive)
-                      //   }
-                      // >
-                      //   <input
-                      //     className="toggle-switch"
-                      //     type="checkbox"
-                      //     role="switch"
-                      //     checked={viewingPost.isActive === 'yes'}
-                      //     readOnly
-                      //   />
-                      //   <span className="toggle-label">
-                      //     {viewingPost.isActive === 'yes'
-                      //       ? 'Active'
-                      //       : 'Disabled'}
-                      //   </span>
-                      // </div>
-                      <div
-                        className={`toggle-group ${viewingPost.isActive === "yes"
-                          ? "status-active"
-                          : viewingPost.isActive === "reject"
-                            ? "status-rejected"
-                            : "status-inactive"
-                          }`}
-                      >
-                        <select
-                          value={viewingPost.isActive || ""}
-                          onChange={(e) =>
-                            togglePostStatus(viewingPost.id, e.target.value)
-                          }
-                        >
-                          {/* <option value="">Select Status</option> */}
-                          <option className="toggle-label" value="yes">
-                            Active
-                          </option>
-                          <option value="no">Disabled</option>
-                          <option value="reject">Rejected</option>
-                        </select>
-                      </div>
-                    )}
-                  </div>
+        // <div className="post-detail-container">
+        //   <h2 className="detail-header">News Details</h2>
+        //   <div className="detail-content">
+        //     <div className="detail-grid">
+        //       <div className="detail-group">
+        //         <span className="detail-label">Title</span>
+        //         <p className="detail-value">{viewingPost.title}</p>
+        //       </div>
+        //       <div className="detail-group">
+        //         <span className="detail-label">Content Type</span>
+        //         <p className="detail-value">{viewingPost.content_type}</p>
+        //       </div>
+        //     </div>
+        //     <div className="detail-grid">
+        //       <div className="detail-group">
+        //         <span className="detail-label">Main Category</span>
+        //         <p className="detail-value">
+        //           {viewingPost.category?.category_name || "N/A"}
+        //         </p>
+        //       </div>
+        //       <div className="detail-group">
+        //         <span className="detail-label">Sub Category</span>
+        //         <p className="detail-value">
+        //           {viewingPost.category?.name || "N/A"}
+        //         </p>
+        //       </div>
+        //     </div>
+        //     <div className="detail-group">
+        //       <span className="detail-label">Description</span>
+        //       <p className="detail-value">{viewingPost.description}</p>
+        //     </div>
+        //     {viewingPost.youtube_url && (
+        //       <div className="detail-group">
+        //         <span className="detail-label">YouTube URL</span>
+        //         <a
+        //           href={viewingPost.youtube_url}
+        //           target="_blank"
+        //           rel="noopener noreferrer"
+        //           className="detail-value"
+        //         >
+        //           {viewingPost.youtube_url}
+        //         </a>
+        //       </div>
+        //     )}
+        //     <div className="detail-grid">
+        //       <div className="detail-group">
+        //         <span className="detail-label">App Thumbnail</span>
+        //         {viewingPost.app_thumbnail && (
+        //           <img
+        //             src={viewingPost.app_thumbnail}
+        //             alt="App Thumbnail"
+        //             className="detail-image"
+        //           />
+        //         )}
+        //       </div>
+        //       <div className="detail-group">
+        //         <span className="detail-label">Web Thumbnail</span>
+        //         {viewingPost.web_thumbnail && (
+        //           <img
+        //             src={viewingPost.web_thumbnail}
+        //             alt="Web Thumbnail"
+        //             className="detail-image"
+        //           />
+        //         )}
+        //       </div>
+        //     </div>
+        //     <div className="detail-grid">
+        //       <div className="detail-group">
+        //         <span className="detail-label">Status</span>
+        //         <div className="status-controls-group">
+        //           <div>
+        //             <span className="detail-label">Active:</span>
+        //             {isProcessing ? (
+        //               <div className="processing-overlay">
+        //                 <div className="processing-spinner"></div>
+        //                 <div className="processing-text">Updating...</div>
+        //               </div>
+        //             ) : (
+        //               // <div
+        //               //   className={`toggle-group ${
+        //               //     viewingPost.isActive === 'yes'
+        //               //       ? 'status-active'
+        //               //       : 'status-inactive'
+        //               //   }`}
+        //               //   onClick={() =>
+        //               //     togglePostStatus(viewingPost.id, viewingPost.isActive)
+        //               //   }
+        //               // >
+        //               //   <input
+        //               //     className="toggle-switch"
+        //               //     type="checkbox"
+        //               //     role="switch"
+        //               //     checked={viewingPost.isActive === 'yes'}
+        //               //     readOnly
+        //               //   />
+        //               //   <span className="toggle-label">
+        //               //     {viewingPost.isActive === 'yes'
+        //               //       ? 'Active'
+        //               //       : 'Disabled'}
+        //               //   </span>
+        //               // </div>
+        //               <div
+        //                 className={`toggle-group ${viewingPost.isActive === "yes"
+        //                   ? "status-active"
+        //                   : viewingPost.isActive === "reject"
+        //                     ? "status-rejected"
+        //                     : "status-inactive"
+        //                   }`}
+        //               >
+        //                 <select
+        //                   value={viewingPost.isActive || ""}
+        //                   onChange={(e) =>
+        //                     togglePostStatus(viewingPost.id, e.target.value)
+        //                   }
+        //                 >
+        //                   {/* <option value="">Select Status</option> */}
+        //                   <option className="toggle-label" value="yes">
+        //                     Active
+        //                   </option>
+        //                   <option value="no">Disabled</option>
+        //                   <option value="reject">Rejected</option>
+        //                 </select>
+        //               </div>
+        //             )}
+        //           </div>
 
-                  <div>
-                    <span className="detail-label">Trending:</span>
-                    {isProcessing ? (
-                      <div className="processing-overlay">
-                        <div className="processing-spinner"></div>
-                        <div className="processing-text">Updating...</div>
-                      </div>
-                    ) : (
-                      <div
-                        className={`toggle-group ${viewingPost.istrending === 1 ? "trending-active" : ""
-                          }`}
-                        onChange={(e) =>
-                          updateFlag(
-                            viewingPost.id,
-                            "istrending",
-                            viewingPost.istrending,
-                          )
-                        }
-                      >
-                        <input
-                          className="toggle-switch"
-                          type="checkbox"
-                          role="switch"
-                          checked={viewingPost.istrending === 1}
-                          readOnly
-                        />
-                        <span className="toggle-label">
-                          {viewingPost.istrending === 1 ? "Trending" : "Normal"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+        //           <div>
+        //             <span className="detail-label">Trending:</span>
+        //             {isProcessing ? (
+        //               <div className="processing-overlay">
+        //                 <div className="processing-spinner"></div>
+        //                 <div className="processing-text">Updating...</div>
+        //               </div>
+        //             ) : (
+        //               <div
+        //                 className={`toggle-group ${viewingPost.istrending === 1 ? "trending-active" : ""
+        //                   }`}
+        //                 onChange={(e) =>
+        //                   updateFlag(
+        //                     viewingPost.id,
+        //                     "istrending",
+        //                     viewingPost.istrending,
+        //                   )
+        //                 }
+        //               >
+        //                 <input
+        //                   className="toggle-switch"
+        //                   type="checkbox"
+        //                   role="switch"
+        //                   checked={viewingPost.istrending === 1}
+        //                   readOnly
+        //                 />
+        //                 <span className="toggle-label">
+        //                   {viewingPost.istrending === 1 ? "Trending" : "Normal"}
+        //                 </span>
+        //               </div>
+        //             )}
+        //           </div>
 
-                  <div>
-                    <span className="detail-label">Breaking:</span>
-                    {isProcessing ? (
-                      <div className="processing-overlay">
-                        <div className="processing-spinner"></div>
-                        <div className="processing-text">Updating...</div>
-                      </div>
-                    ) : (
-                      <div
-                        className={`toggle-group ${viewingPost.isBreaking === "yes"
-                          ? "status-active"
-                          : ""
-                          }`}
-                        onChange={(e) =>
-                          updateFlag(
-                            viewingPost.id,
-                            "isBreaking",
-                            viewingPost.isBreaking === "yes" ? 1 : 0,
-                          )
-                        }
-                      >
-                        <input
-                          className="toggle-switch"
-                          type="checkbox"
-                          role="switch"
-                          checked={viewingPost.isBreaking === "yes"}
-                          readOnly
-                        />
-                        <span className="toggle-label">
-                          {viewingPost.isBreaking === "yes"
-                            ? "Breaking"
-                            : "Normal"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <span className="detail-label">Entertainment:</span>
-                    {isProcessing ? (
-                      <div className="processing-overlay">
-                        <div className="processing-spinner"></div>
-                        <div className="processing-text">Updating...</div>
-                      </div>
-                    ) : (
-                      <div
-                        className={`toggle-group ${viewingPost.is_entertainment === 1
-                          ? "status-active"
-                          : ""
-                          }`}
-                        onChange={(e) =>
-                          updateFlag(
-                            viewingPost.id,
-                            "is_entertainment",
-                            viewingPost.is_entertainment,
-                          )
-                        }
-                      >
-                        <input
-                          className="toggle-switch"
-                          type="checkbox"
-                          role="switch"
-                          checked={viewingPost.is_entertainment === 1}
-                          readOnly
-                        />
-                        <span className="toggle-label">
-                          {viewingPost.is_entertainment === 1
-                            ? "Entertainment"
-                            : "Normal"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+        //           <div>
+        //             <span className="detail-label">Breaking:</span>
+        //             {isProcessing ? (
+        //               <div className="processing-overlay">
+        //                 <div className="processing-spinner"></div>
+        //                 <div className="processing-text">Updating...</div>
+        //               </div>
+        //             ) : (
+        //               <div
+        //                 className={`toggle-group ${viewingPost.isBreaking === "yes"
+        //                   ? "status-active"
+        //                   : ""
+        //                   }`}
+        //                 onChange={(e) =>
+        //                   updateFlag(
+        //                     viewingPost.id,
+        //                     "isBreaking",
+        //                     viewingPost.isBreaking === "yes" ? 1 : 0,
+        //                   )
+        //                 }
+        //               >
+        //                 <input
+        //                   className="toggle-switch"
+        //                   type="checkbox"
+        //                   role="switch"
+        //                   checked={viewingPost.isBreaking === "yes"}
+        //                   readOnly
+        //                 />
+        //                 <span className="toggle-label">
+        //                   {viewingPost.isBreaking === "yes"
+        //                     ? "Breaking"
+        //                     : "Normal"}
+        //                 </span>
+        //               </div>
+        //             )}
+        //           </div>
+        //           <div>
+        //             <span className="detail-label">Entertainment:</span>
+        //             {isProcessing ? (
+        //               <div className="processing-overlay">
+        //                 <div className="processing-spinner"></div>
+        //                 <div className="processing-text">Updating...</div>
+        //               </div>
+        //             ) : (
+        //               <div
+        //                 className={`toggle-group ${viewingPost.is_entertainment === 1
+        //                   ? "status-active"
+        //                   : ""
+        //                   }`}
+        //                 onChange={(e) =>
+        //                   updateFlag(
+        //                     viewingPost.id,
+        //                     "is_entertainment",
+        //                     viewingPost.is_entertainment,
+        //                   )
+        //                 }
+        //               >
+        //                 <input
+        //                   className="toggle-switch"
+        //                   type="checkbox"
+        //                   role="switch"
+        //                   checked={viewingPost.is_entertainment === 1}
+        //                   readOnly
+        //                 />
+        //                 <span className="toggle-label">
+        //                   {viewingPost.is_entertainment === 1
+        //                     ? "Entertainment"
+        //                     : "Normal"}
+        //                 </span>
+        //               </div>
+        //             )}
+        //           </div>
 
-                  <div>
-                    <span className="detail-label">Spotlight:</span>
-                    {isProcessing ? (
-                      <div className="processing-overlay">
-                        <div className="processing-spinner"></div>
-                        <div className="processing-text">Updating...</div>
-                      </div>
-                    ) : (
-                      <div
-                        className={`toggle-group ${viewingPost.is_spotlight === 1 ? "status-active" : ""
-                          }`}
-                        onChange={(e) =>
-                          updateFlag(
-                            viewingPost.id,
-                            "is_spotlight",
-                            viewingPost.is_spotlight,
-                          )
-                        }
-                      >
-                        <input
-                          className="toggle-switch"
-                          type="checkbox"
-                          role="switch"
-                          checked={viewingPost.is_spotlight === 1}
-                          readOnly
-                        />
-                        <span className="toggle-label">
-                          {viewingPost.is_spotlight === 1
-                            ? "Spotlighted"
-                            : "Normal"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="detail-group">
-                <span className="detail-label">Author</span>
-                <p className="detail-value">
-                  {viewingPost.user?.name || "N/A"}
-                </p>
-              </div>
+        //           <div>
+        //             <span className="detail-label">Spotlight:</span>
+        //             {isProcessing ? (
+        //               <div className="processing-overlay">
+        //                 <div className="processing-spinner"></div>
+        //                 <div className="processing-text">Updating...</div>
+        //               </div>
+        //             ) : (
+        //               <div
+        //                 className={`toggle-group ${viewingPost.is_spotlight === 1 ? "status-active" : ""
+        //                   }`}
+        //                 onChange={(e) =>
+        //                   updateFlag(
+        //                     viewingPost.id,
+        //                     "is_spotlight",
+        //                     viewingPost.is_spotlight,
+        //                   )
+        //                 }
+        //               >
+        //                 <input
+        //                   className="toggle-switch"
+        //                   type="checkbox"
+        //                   role="switch"
+        //                   checked={viewingPost.is_spotlight === 1}
+        //                   readOnly
+        //                 />
+        //                 <span className="toggle-label">
+        //                   {viewingPost.is_spotlight === 1
+        //                     ? "Spotlighted"
+        //                     : "Normal"}
+        //                 </span>
+        //               </div>
+        //             )}
+        //           </div>
+        //         </div>
+        //       </div>
+        //       <div className="detail-group">
+        //         <span className="detail-label">Author</span>
+        //         <p className="detail-value">
+        //           {viewingPost.user?.name || "N/A"}
+        //         </p>
+        //       </div>
+        //     </div>
+
+        //     <div className="detail-grid">
+        //       <div className="detail-group">
+        //         <span className="detail-label">Created At</span>
+        //         <p className="detail-value">
+        //           {new Date(viewingPost.created_at).toLocaleString()}
+        //         </p>
+        //       </div>
+        //       <div className="detail-group">
+        //         <span className="detail-label">Updated At</span>
+        //         <p className="detail-value">
+        //           {new Date(viewingPost.updated_at).toLocaleString()}
+        //         </p>
+        //       </div>
+        //     </div>
+        //     <div className="detail-actions">
+        //       <button
+        //         className="back-btn"
+        //         onClick={() => setViewingPost(null)}
+        //         type="button"
+        //       >
+        //         Back to List
+        //       </button>
+        //       <button
+        //         className="edit-detail-btn"
+        //         onClick={() => {
+        //           handleEdit(viewingPost);
+        //           setViewingPost(null);
+        //         }}
+        //         type="button"
+        //       >
+        //         Edit Post
+        //       </button>
+        //       <button
+        //         className="notification-btn-detail"
+        //         onClick={() => handleOpenNotificationModal(viewingPost, false)}
+        //         type="button"
+        //       >
+        //         🔔 Send Notification
+        //       </button>
+        //       <button
+        //         className="schedule-btn-detail"
+        //         onClick={() => handleOpenNotificationModal(viewingPost, true)}
+        //         type="button"
+        //       >
+        //         ⏰ Schedule Notification
+        //       </button>
+        //     </div>
+        //   </div>
+        // </div>
+        <div className="ls-art-container">
+          {/* Header with title and actions */}
+          <div className="ls-art-header">
+            <button
+              className="ls-art-btn ls-art-btn-back"
+              onClick={() => setViewingPost(null)}
+              type="button"
+            >
+              ←
+            </button>
+            <div className="ls-art-header-left">
+              <p className="ls-art-title" style={{ borderBottom: "1px solid black" }}>News Details</p>
             </div>
-
-            <div className="detail-grid">
-              <div className="detail-group">
-                <span className="detail-label">Created At</span>
-                <p className="detail-value">
-                  {new Date(viewingPost.created_at).toLocaleString()}
-                </p>
-              </div>
-              <div className="detail-group">
-                <span className="detail-label">Updated At</span>
-                <p className="detail-value">
-                  {new Date(viewingPost.updated_at).toLocaleString()}
-                </p>
-              </div>
-            </div>
-            <div className="detail-actions">
-              <button
-                className="back-btn"
-                onClick={() => setViewingPost(null)}
-                type="button"
-              >
-                Back to List
-              </button>
+            <div className="ls-art-header-actions">
               <button
                 className="edit-detail-btn"
                 onClick={() => {
@@ -1514,17 +1609,329 @@ const Listnews = () => {
                 }}
                 type="button"
               >
-                Edit Post
+                Edit
               </button>
               <button
                 className="notification-btn-detail"
                 onClick={() => handleOpenNotificationModal(viewingPost, false)}
                 type="button"
               >
-                🔔 Send Notification
+                🔔
               </button>
               <button
                 className="schedule-btn-detail"
+                onClick={() => handleOpenNotificationModal(viewingPost, true)}
+                type="button"
+              >
+                ⏰
+              </button>
+            </div>
+          </div>
+
+          {/* Main content */}
+          <div className="ls-art-content">
+            <div className="ls-art-main-grid">
+
+              <div className="ls-art-title-section">
+                <div>
+                  <div>
+                    <h3 className="ls-art-section-title">Title</h3>
+                    <p className="ls-art-title">{viewingPost.title}</p>
+                  </div>
+                  <div className="ls-art-author-ct">
+                    <div className="ls-art-content-type">
+                      <p className="ls-art-ct-value">{viewingPost.content_type}</p>
+                    </div>
+                    <p><BsDot /></p>
+                    <div className="ls-art-author-info">
+                      <p style={{ fontSize: 12, fontWeight: 500 }}>Published By</p>
+                      <div className="ls-art-author-initials">
+                        {viewingPost.user?.name ? viewingPost.user.name.charAt(0) : "N/A"}
+                      </div>
+                      <p className="ls-art-author-name">{viewingPost.user?.name || "N/A"}</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Type and Category Grid */}
+                <div className="ls-art-info-grid">
+                  <div className="ls-art-info-item">
+                    <label className="ls-art-label">Main Category</label>
+                    <p className="ls-art-value">
+                      {viewingPost.category?.category_name || "N/A"}
+                    </p>
+                  </div>
+                  <div className="ls-art-info-item">
+                    <label className="ls-art-label">Sub Category</label>
+                    <p className="ls-art-value">
+                      {viewingPost.category?.name || "N/A"}
+                    </p>
+                  </div>
+                  {viewingPost.youtube_url && (
+                    <div className="ls-art-info-item ls-art-info-item-row">
+                      <label className="ls-art-label">Youtube URL</label>
+                      <p className="ls-art-value">
+                        <a
+                          href={viewingPost.youtube_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ls-art-url-link"
+                        >
+                          {viewingPost.youtube_url}
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Status and Author Section */}
+              <div className="ls-art-card ls-art-overview">
+                {/* Status Controls */}
+                <div className="ls-art-section">
+                  <h3 className="ls-art-section-title">Status</h3>
+                  <div className="ls-art-status-grid">
+                    {/* Status Dropdown */}
+                    <div className="ls-art-status-item">
+                      <div className='ls-art-toggle-wrapper'>
+                        <p><IoMdCheckmarkCircleOutline /></p>
+                        <label className="ls-art-status-label">Active</label>
+                      </div>
+                      {isProcessing ? (
+                        <div className="ls-art-processing">
+                          <div className="ls-art-spinner"></div>
+                          Updating...
+                        </div>
+                      ) : (
+                        <select
+                          className={`ls-art-status-select ${viewingPost.isActive === "yes"
+                            ? "ls-art-status-active"
+                            : viewingPost.isActive === "reject"
+                              ? "ls-art-status-rejected"
+                              : "ls-art-status-inactive"
+                            }`}
+                          value={viewingPost.isActive || ""}
+                          onChange={(e) =>
+                            togglePostStatus(viewingPost.id, e.target.value)
+                          }
+                        >
+                          <option value="yes">Active</option>
+                          <option value="no">Disabled</option>
+                          <option value="reject">Rejected</option>
+                        </select>
+                      )}
+                    </div>
+
+                    {/* Trending Toggle */}
+                    <div className="ls-art-toggle-item">
+                      <div className='ls-art-toggle-wrapper'>
+                        <p><IoMdTrendingUp /></p>
+                        <label className="ls-art-toggle-label">Trending</label>
+                      </div>
+                      <div className='ls-art-toggle-wrapper'>
+                        {isProcessing ? (
+                          <div className="ls-art-processing">
+                            <div className="ls-art-spinner"></div>
+                          </div>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="ls-art-checkbox"
+                            checked={viewingPost.istrending === 1}
+                            onChange={() =>
+                              updateFlag(
+                                viewingPost.id,
+                                "istrending",
+                                viewingPost.istrending
+                              )
+                            }
+                          />
+                        )}
+                        <span className="toggle-label">
+                          {viewingPost.istrending === 1 ? "Trending" : "Normal"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Breaking Toggle */}
+                    <div className="ls-art-toggle-item">
+                      <div className='ls-art-toggle-wrapper'>
+                        <p><AiTwotoneThunderbolt /></p>
+                        <label className="ls-art-toggle-label">Breaking</label>
+                      </div>
+                      <div className='ls-art-toggle-wrapper'>
+                        {isProcessing ? (
+                          <div className="ls-art-processing">
+                            <div className="ls-art-spinner"></div>
+                          </div>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="ls-art-checkbox"
+                            checked={viewingPost.isBreaking === "yes"}
+                            onChange={() =>
+                              updateFlag(
+                                viewingPost.id,
+                                "isBreaking",
+                                viewingPost.isBreaking === "yes" ? 1 : 0
+                              )
+                            }
+                          />
+                        )}
+                        <span className="toggle-label">
+                          {viewingPost.isBreaking === "yes"
+                            ? "Breaking"
+                            : "Normal"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Entertainment Toggle */}
+                    <div className="ls-art-toggle-item">
+                      <div className='ls-art-toggle-wrapper'>
+                        <p><LiaTheaterMasksSolid /></p>
+                        <label className="ls-art-toggle-label">Entertainment</label>
+                      </div>
+                      <div className='ls-art-toggle-wrapper'>
+                        {isProcessing ? (
+                          <div className="ls-art-processing">
+                            <div className="ls-art-spinner"></div>
+                          </div>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="ls-art-checkbox"
+                            checked={viewingPost.is_entertainment === 1}
+                            onChange={() =>
+                              updateFlag(
+                                viewingPost.id,
+                                "is_entertainment",
+                                viewingPost.is_entertainment
+                              )
+                            }
+                          />
+                        )}
+                        <span className="toggle-label">
+                          {viewingPost.is_entertainment === 1
+                            ? "Entertainment"
+                            : "Normal"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Spotlight Toggle */}
+                    <div className="ls-art-toggle-item">
+                      <div className='ls-art-toggle-wrapper'>
+                        <p><MdOutlineStarBorderPurple500 /></p>
+                        <label className="ls-art-toggle-label">Spotlight</label>
+                      </div>
+                      <div className='ls-art-toggle-wrapper'>
+                        {isProcessing ? (
+                          <div className="ls-art-processing">
+                            <div className="ls-art-spinner"></div>
+                          </div>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="ls-art-checkbox"
+                            checked={viewingPost.is_spotlight === 1}
+                            onChange={() =>
+                              updateFlag(
+                                viewingPost.id,
+                                "is_spotlight",
+                                viewingPost.is_spotlight
+                              )
+                            }
+                          />
+                        )}
+                        <span className="toggle-label">
+                          {viewingPost.is_spotlight === 1
+                            ? "Spotlighted"
+                            : "Normal"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Details Card */}
+            <div className="ls-art-card ls-art-details">
+              <div className="ls-art-section">
+                <h3 className="ls-art-section-title">Description</h3>
+                {/* Description */}
+                <div className="ls-art-description-section">
+                  <p className="ls-art-description">{viewingPost.description}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Media and Metadata Card */}
+            <div className="ls-art-card ls-art-media">
+              <div className="ls-art-section">
+                <h3 className="ls-art-section-title">Media & Metadata</h3>
+
+                {/* Thumbnails Grid */}
+                <div className="ls-art-thumbnails-grid">
+                  {viewingPost.web_thumbnail && (
+                    <div className="ls-art-thumbnail-item">
+                      <label className="ls-art-label">Web Thumbnail</label>
+                      <img
+                        src={viewingPost.web_thumbnail}
+                        alt="Web Thumbnail"
+                        className="ls-art-thumbnail-image"
+                      />
+                    </div>
+                  )}
+                  {viewingPost.app_thumbnail && (
+                    <div className="ls-art-thumbnail-item">
+                      <label className="ls-art-label">App Thumbnail</label>
+                      <img
+                        src={viewingPost.app_thumbnail}
+                        alt="App Thumbnail"
+                        className="ls-art-thumbnail-image"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Timestamps */}
+                <div className="ls-art-timestamps">
+                  <div className="ls-art-timestamp-item">
+                    <label className="ls-art-label">Created At</label>
+                    <p className="ls-art-value">
+                      {new Date(viewingPost.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="ls-art-timestamp-item">
+                    <label className="ls-art-label">Updated At</label>
+                    <p className="ls-art-value">
+                      {new Date(viewingPost.updated_at).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="ls-art-footer">
+              <button
+                className="ls-art-btn ls-art-btn-edit"
+                onClick={() => {
+                  handleEdit(viewingPost);
+                  setViewingPost(null);
+                }}
+                type="button"
+              >
+                Edit
+              </button>
+              <button
+                className="ls-art-btn ls-art-btn-notify"
+                onClick={() => handleOpenNotificationModal(viewingPost, false)}
+                type="button"
+              >
+                🔔 Send Notification
+              </button>
+              <button
+                className="ls-art-btn ls-art-btn-schedule"
                 onClick={() => handleOpenNotificationModal(viewingPost, true)}
                 type="button"
               >
@@ -1540,7 +1947,7 @@ const Listnews = () => {
           ) : (
             <>
               <h2 className="form-title">
-                {editingPost ? "Edit Article" : "Add Article"}
+                {editingPost ? "Edit News" : "Add News"}
               </h2>
               {isSubmitting && (
                 <div className="processing-overlay">
@@ -1730,9 +2137,9 @@ const Listnews = () => {
                       Processing...
                     </>
                   ) : editingPost ? (
-                    "Update Article"
+                    "Update News"
                   ) : (
-                    "Submit Article"
+                    "Submit News"
                   )}
                 </button>
                 <button

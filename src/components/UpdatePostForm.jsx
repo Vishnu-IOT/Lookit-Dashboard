@@ -44,6 +44,12 @@ const UpdatePostForm = () => {
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState('');
 
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+
   useEffect(() => {
     getUserFromLocalStorage();
   }, []);
@@ -126,12 +132,12 @@ const UpdatePostForm = () => {
       return;
     }
     if (!formData.category) {
-      alert('Please select a category');
+      showToast('Please select a category', 'error');
       setLoading(false);
       return;
     }
     if (!formData.title.trim()) {
-      alert('Please enter a title');
+      showToast('Please enter a title', 'error');
       setLoading(false);
       return;
     }
@@ -158,15 +164,15 @@ const UpdatePostForm = () => {
       const responseData = await response.json();
 
       if (response.ok) {
-        alert('Post added successfully!');
+        showToast('Updates added successfully!', 'success');
         resetForm();
       } else {
         console.error('Save failed:', responseData);
-        alert('Save failed: ' + (responseData.message || 'Unknown error'));
+        showToast('Save failed: ' + (responseData.message || 'Unknown error'), 'error');
       }
     } catch (error) {
-      console.error('Error saving post:', error);
-      alert('Failed to save post: ' + error.message);
+      console.error('Error saving Updates:', error);
+      alert('Failed to save Updates: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -183,6 +189,9 @@ const UpdatePostForm = () => {
 
   return (
     <section className="category-form-container">
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>{toast.message}</div>
+      )}
       <h2>Add New Updates Post</h2>
       <div className="user-info" />
 
@@ -233,7 +242,7 @@ const UpdatePostForm = () => {
             name="title"
             value={formData.title}
             onChange={handleInputChange}
-            placeholder="Enter post title"
+            placeholder="Enter Updates title"
             required
           />
         </div>
@@ -248,6 +257,7 @@ const UpdatePostForm = () => {
             accept="image/*"
             onChange={handleImageChange}
             className="file-input"
+            required
           />
           {imagePreview && (
             <div className="image-preview">
@@ -259,9 +269,11 @@ const UpdatePostForm = () => {
                   setImagePreview('');
                   setImageFile(null);
                   setFormData((prev) => ({ ...prev, image: '' }));
+                  document.getElementById("image").value = "";
                 }}
+                aria-label="Remove image"
               >
-                Remove Image
+                ×
               </button>
             </div>
           )}
@@ -330,14 +342,15 @@ const UpdatePostForm = () => {
             onChange={handleInputChange}
           >
             <option value="yes">Active</option>
-            <option value="no">Inactive</option>
+            <option value="no">Disabled</option>
+            <option value="reject">Rejected</option>
           </select>
         </div>
 
         {/* Actions */}
         <div className="form-actions">
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : 'Add Post'}
+            {loading ? 'Saving...' : 'Add Updates'}
           </button>
         </div>
       </form>

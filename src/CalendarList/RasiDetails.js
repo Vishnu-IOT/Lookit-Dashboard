@@ -38,7 +38,7 @@ export default function ViewRasiForm() {
     setError("");
     setData([]);
 
-    const url = new URL("https://tnreaders.in/mobile/rasi-daily-date");
+    const url = new URL("https://users.mpdatahub.com/api/rasi-daily-date");
     const params = new URLSearchParams();
     if (type === "daily") {
       params.append("duration", "daily");
