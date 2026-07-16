@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import "../styles/RasiAllList.css"
+import "../styles/RasiDailyList.css"
 import Loder from './Loder';
 
 const RasiAllList = () => {
@@ -52,6 +53,36 @@ const RasiAllList = () => {
     });
     const [imagePreview, setImagePreview] = useState('');
     const [isUpdatingStatus, setIsUpdatingStatus] = useState({});
+
+    const [localShowCalendar, setLocalShowCalendar] = useState(false);
+    const [weekStart, setWeekStart] = useState(0);
+    const [weekAnchorDate, setWeekAnchorDate] = useState(() => new Date());
+    const [expandedItems, setExpandedItems] = useState({});
+    const [expandedMonItems, setExpandedMonItems] = useState({});
+    const [selectedWeekIndex, setSelectedWeekIndex] = useState(0);
+    const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
+    const [selectedYearIndex, setSelectedYearIndex] = useState(0);
+
+    const toggleReadMore = (id) => {
+        setExpandedItems((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
+
+    const toggleMonReadMore = (id) => {
+        setExpandedMonItems((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
+
+    useEffect(() => {
+        if (selectedDate) {
+            setWeekAnchorDate(new Date(selectedDate));
+        }
+    }, [selectedDate]);
+
     const API_ENDPOINTS = {
         daily: 'https://users.mpdatahub.com/api/rasi-daily-list',
         weekly: 'https://users.mpdatahub.com/api/listWeekly',
@@ -117,11 +148,14 @@ const RasiAllList = () => {
                 }
             } else if (activeTab === 'weekly') {
                 setWeeklyData(data?.data || []);
+                setSelectedWeekIndex(0);
             } else if (activeTab === 'monthly') {
                 setMonthlyData(data?.data || []);
+                setSelectedMonthIndex(0);
             }
             else if (activeTab === 'yearly') {
                 setYearlyData(data?.data || []);
+                setSelectedYearIndex(0);
             }
         } catch (err) {
             setError(err.message);
@@ -576,9 +610,6 @@ const RasiAllList = () => {
                         <button className="close-btn" onClick={handleCancelEdit}>×</button>
                     </div>
                     <form onSubmit={handleUpdateSubmit} className="edit-form">
-                        <button type="button" className="btn btn-secondary" onClick={handleCancelEdit}>
-                            Cancel
-                        </button>
                         {/* Common Fields */}
                         <div className="form-group">
                             <label>Select Rasi:</label>
@@ -1284,398 +1315,645 @@ const RasiAllList = () => {
                             <button type="submit" className="btn btn-primary">
                                 Update Rasi
                             </button>
+                            <button type="button" className="btn btn-secondary" onClick={handleCancelEdit}>
+                                Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         );
     };
-    // Render Daily Content
     const renderDailyContent = () => {
-        if (!dailyData.length) return <div className="no-data">No daily data available</div>;
+        // Local fallback so the "Pick Date" panel still works even if the
+        // parent hasn't wired up showCalendar/setShowCalendar as props.
+
+        const isCalendarOpen = typeof showCalendar === 'boolean' ? showCalendar : localShowCalendar;
+        const toggleCalendar = () =>
+            (setShowCalendar || setLocalShowCalendar)(!isCalendarOpen);
+
+        // Purely presentational: which 7-day window of the strip is visible.
+
+        if (!dailyData.length) {
+            return <div className="daily-list-no-data">No daily data available</div>;
+        }
+
         const groupedByDate = dailyData.reduce((acc, item) => {
             acc[item.date] = item;
             return acc;
         }, {});
-        return (
-            <div className="daily-container">
-                {/* Date Selector with Calendar View */}
-                <div className="date-selector-container">
-                    <div className="date-selector-header">
-                        <h3>📅 Select Date</h3>
-                        <button
-                            className="sort-toggle"
-                            onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                            title={`Sort ${sortOrder === 'desc' ? 'Oldest First' : 'Latest First'}`}
-                        >
-                            {sortOrder === 'desc' ? '⬇️ Latest First' : '⬆️ Oldest First'}
-                        </button>
-                    </div>
-                    {showCalendar && (
-                        <div className="calendar-view">
-                            {[...filteredRasi]
-                                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                                .map((item) => (
-                                    <div
-                                        key={item.date}
-                                        className={`calendar-date ${selectedDate === item.date ? 'selected' : ''}`}
-                                        onClick={() => setSelectedDate(item.date)}
-                                    >
-                                        <div className="calendar-date-day">
-                                            {new Date(item.date).getDate()}
-                                        </div>
-                                        <div className="calendar-date-month">
-                                            {new Date(item.date).toLocaleDateString('en-US', { month: 'short' })}
-                                        </div>
-                                        <div className={`calendar-status ${item.status}`}>
-                                            {item.status === 'allow' ? '✓' : '✗'}
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    )}
-                    <div className="date-scroll">
-                        {filteredRasi.map(item => (
-                            <div key={item.date} className="date-item">
-                                <button
-                                    className={`date-btn ${selectedDate === item.date ? 'active' : ''}`}
-                                    onClick={() => setSelectedDate(item.date === selectedDate ? null : item.date)}
-                                >
-                                    <div className="date-btn-content">
-                                        <div className="date-btn-full-date">
-                                            {formatDate1(item.date)}
-                                        </div>
-                                        <div className="date-btn-weekday">
-                                            {new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' })}
-                                        </div>
-                                    </div>
-                                </button>
-                                <div className="status-control">
-                                    <span className={`status-badge ${item.status}`}>
-                                        {item.status === 'allow' ? 'Enabled' : 'Disabled'}
-                                    </span>
-                                    <button
-                                        className={`status-toggle ${item.status === 'allow' ? 'allowed' : 'disallowed'}`}
-                                        onClick={() => handleStatusToggle(item.date, item.status)}
-                                        disabled={isUpdatingStatus[item.date]}
-                                        title={`${item.status === 'allow' ? 'Disable' : 'Enable'} predictions`}
-                                    >
-                                        {isUpdatingStatus[item.date] ? (
-                                            <span className="loading-spinner"></span>
-                                        ) : (
-                                            item.status === 'allow' ? 'Disable' : 'Enable'
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                {/* Rasi List */}
-                <div className="rasi-list-container">
-                    {selectedDate && groupedByDate[selectedDate] && (
-                        <div className="date-group">
-                            <div className="date-header-container">
-                                <div className="date-header-main">
-                                    <h2 className="date-header">{formatDate(selectedDate)}</h2>
-                                    <span className="total-rasi">
-                                        {groupedByDate[selectedDate].data?.length || 0} Rasis
-                                    </span>
-                                </div>
 
-                                <div className="date-actions">
-                                    <span className={`global-status ${groupedByDate[selectedDate].status}`}>
-                                        Status: {groupedByDate[selectedDate].status === 'allow' ? 'Active' : 'Inactive'}
-                                    </span>
-                                </div>
+        const toISODate = (date) => {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const getMondayOfWeek = (date) => {
+            const d = new Date(date);
+            const dow = d.getDay(); // 0=Sun..6=Sat
+            const diff = (dow === 0 ? -6 : 1) - dow;
+            d.setDate(d.getDate() + diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        };
+
+        // Build Mon–Sun purely from the calendar, not from fetched-data indices
+        const monday = getMondayOfWeek(weekAnchorDate);
+        const weekWindow = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const iso = toISODate(d);
+            return groupedByDate[iso] || { date: iso, status: null, data: [] };
+        });
+
+        const goPrevWeek = () => {
+            const d = new Date(weekAnchorDate);
+            d.setDate(d.getDate() - 7);
+            setWeekAnchorDate(d);
+        };
+        const goNextWeek = () => {
+            const d = new Date(weekAnchorDate);
+            d.setDate(d.getDate() + 7);
+            setWeekAnchorDate(d);
+        };
+
+        const handleDateInputChange = (e) => {
+            const value = e.target.value; // 'YYYY-MM-DD'
+            if (!value) return;
+            setWeekAnchorDate(new Date(value));
+            setSelectedDate(value);
+        };
+
+        const selectedGroup = selectedDate ? groupedByDate[selectedDate] : null;
+
+        return (
+            <div className="daily-list-container">
+                {/* <div className="period-info">
+                    <h2>📅 Daily Predictions</h2>
+                    <p className="info-text">Weekly predictions are updated every Monday</p>
+                </div> */}
+                {/* Week Strip Date Selector */}
+                <div className="daily-list-week-nav">
+                    <div className='daily-list-week-nav'>
+                        <button className="daily-list-nav-arrow" onClick={goPrevWeek} aria-label="Previous week">‹</button>
+
+                        <div className="daily-list-day-strip">
+                            {weekWindow.map((item) => {
+                                const dateObj = new Date(item.date);
+                                const isSelected = selectedDate === item.date;
+                                const hasData = item.data && item.data.length > 0;
+                                return (
+                                    <button
+                                        key={item.date}
+                                        className={`daily-list-day-box${isSelected ? ' daily-list-day-box-active' : ''}${!hasData ? ' daily-list-day-box-empty' : ''}`}
+                                        onClick={() => hasData && setSelectedDate(item.date === selectedDate ? null : item.date)}
+                                        disabled={!hasData}
+                                        title={!hasData ? 'No data for this date' : ''}
+                                    >
+                                        <span className="daily-list-day-weekday">
+                                            {dateObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}
+                                        </span>
+                                        <span className="daily-list-day-number">{dateObj.getDate()}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button className="daily-list-nav-arrow" onClick={goNextWeek} aria-label="Next week">›</button>
+                    </div>
+
+                    <button
+                        className="daily-list-pick-date-btn"
+                        onClick={toggleCalendar}
+                    >
+                        📅 Pick Date
+                    </button>
+
+                    <button
+                        className="daily-list-sort-toggle"
+                        onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+                        title={`Sort ${sortOrder === 'desc' ? 'Oldest First' : 'Latest First'}`}
+                    >
+                        {sortOrder === 'desc' ? '⬇️ Latest First' : '⬆️ Oldest First'}
+                    </button>
+                </div>
+
+                {/* Pick Date dropdown panel (reuses the original calendar-view data/behaviour) */}
+                {isCalendarOpen && (
+                    <div className="daily-list-pick-date-panel">
+                        <input
+                            type="date"
+                            className="daily-list-date-input"
+                            value={selectedDate || toISODate(weekAnchorDate)}
+                            onChange={handleDateInputChange}
+                        />
+                    </div>
+                )}
+
+                {/* Selected Date Bar */}
+                {selectedDate && selectedGroup && (
+                    <div className="daily-list-selected-bar">
+                        <div className="daily-list-selected-bar-left">
+                            <span className="daily-list-selected-bar-icon">📅</span>
+                            <div>
+                                {/* <div className="daily-list-selected-bar-label">SELECTED DATE</div> */}
+                                <div className="daily-list-section-title">{formatDate(selectedDate)}</div>
+                                <span className="daily-list-total-rasi">
+                                    {selectedGroup.data?.length || 0} Rasis
+                                </span>
                             </div>
-                            <div className="rasi-grid">
-                                {groupedByDate[selectedDate].data?.map((rasi, index) => {
+                        </div>
+
+                        <div className="daily-list-selected-bar-right">
+                            <span className="daily-list-selected-bar-status-label">
+                                Status: {selectedGroup.status === 'allow' ? 'Enabled' : 'Disabled'}
+                            </span>
+                            <button
+                                className={`daily-list-status-switch ${selectedGroup.status === 'allow' ? 'is-on' : 'is-off'}`}
+                                onClick={() => handleStatusToggle(selectedDate, selectedGroup.status)}
+                                disabled={isUpdatingStatus[selectedDate]}
+                                aria-label="Toggle status"
+                            >
+                                {isUpdatingStatus[selectedDate] ? (
+                                    <span className="daily-list-loading-spinner"></span>
+                                ) : (
+                                    <span className="daily-list-status-switch-knob"></span>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Rasi Card Grid */}
+                <div className="daily-list-card-section">
+                    {selectedDate && selectedGroup && (
+                        <>
+                            <div className="daily-list-card-grid">
+                                {selectedGroup.data?.map((rasi, index) => {
                                     const rasiInfo = rasiData[rasi.rasiId] || { name: rasi.name, color: '#666', emoji: '⭐' };
-                                    // Get the parent ID for daily
-                                    const parentId = groupedByDate[selectedDate].id;
+                                    const parentId = selectedGroup.id;
+                                    const isPublished = selectedGroup.status === 'allow';
+                                    const expanded = expandedItems[rasi.rasiId];
+
                                     return (
                                         <div
                                             key={`${selectedDate}-${index}`}
-                                            className="rasi-card1"
-                                            style={{ borderLeftColor: rasiInfo.color }}
+                                            className="daily-list-card"
+                                            style={{ '--daily-list-accent': rasiInfo.color }}
                                         >
-                                            <div className="card-header1">
-                                                <div className="card-header-top">
-                                                    <div className="rasi-title">
-                                                        <div className="rasi-emoji">{rasiInfo.emoji}</div>
-                                                        <div>
-                                                            <h4>{rasi.name || rasiInfo.name}</h4>
-                                                            <div className="rasi-id">Rasi ID: {rasi.rasiId}</div>
-                                                        </div>
+                                            <div className="daily-list-card-header">
+                                                <div className="daily-list-card-header">
+                                                    <span className="daily-list-card-icon">{rasiInfo.emoji}</span>
+                                                    <div className="daily-list-card-title-group">
+                                                        <h4 className="daily-list-card-title">{rasi.name || rasiInfo.name}</h4>
+                                                        <span className="daily-list-card-subtitle">
+                                                            {(rasi.name || rasiInfo.name || '').toUpperCase()}
+                                                        </span>
                                                     </div>
-                                                    <button
-                                                        className="edit-btn"
-                                                        onClick={() => handleEditClick(rasi, 'daily', selectedDate, parentId)}
-                                                        title="Edit Rasi"
-                                                    >
-                                                        <span className="edit-icon">✏️</span>
-                                                        Edit
-                                                    </button>
                                                 </div>
-                                                <div className="lucky-info-grid">
-                                                    <div className="lucky-item">
-                                                        <span className="lucky-icon">🎲</span>
-                                                        <div>
-                                                            <div className="lucky-label">அதிர்ஷ்ட எண்கள்</div>
-                                                            <div className="lucky-value">{rasi.luckyNumbers}</div>
-                                                        </div>
+                                                <button
+                                                    className="daily-list-manage-btn"
+                                                    onClick={() => handleEditClick(rasi, 'daily', selectedDate, parentId)}
+                                                >
+                                                    Edit
+                                                </button>
+                                            </div>
+
+                                            <p className="daily-list-card-desc">
+                                                {expanded
+                                                    ? rasi.summary
+                                                    : `${rasi.summary.slice(0, 120)}... `}
+                                                {rasi.summary.length > 120 && (
+                                                    <span
+                                                        onClick={() => toggleReadMore(rasi.rasiId)}
+                                                        style={{ color: "blue", cursor: "pointer" }}
+                                                    >
+                                                        {expanded ? "Read Less" : "Read More"}
+                                                    </span>
+                                                )}
+                                            </p>
+
+                                            <div className="daily-list-lucky-row">
+                                                <div className="daily-list-lucky-chip">
+                                                    <span className="daily-list-lucky-chip-icon">🎲</span>
+                                                    <div>
+                                                        <div className="daily-list-lucky-chip-label">அதிர்ஷ்ட எண்கள்</div>
+                                                        <div className="daily-list-lucky-chip-value">{rasi.luckyNumbers}</div>
                                                     </div>
-                                                    <div className="lucky-item">
-                                                        <span className="lucky-icon">🧭</span>
-                                                        <div>
-                                                            <div className="lucky-label">நல்ல திசை</div>
-                                                            <div className="lucky-value">{rasi.lucky_dr}</div>
-                                                        </div>
+                                                </div>
+                                                <div className="daily-list-lucky-chip">
+                                                    <span className="daily-list-lucky-chip-icon">🧭</span>
+                                                    <div>
+                                                        <div className="daily-list-lucky-chip-label">நல்ல திசை</div>
+                                                        <div className="daily-list-lucky-chip-value">{rasi.lucky_dr}</div>
                                                     </div>
-                                                    <div className="lucky-item">
-                                                        <span className="lucky-icon">🎨</span>
-                                                        <div>
-                                                            <div className="lucky-label">நல்ல நிறம்</div>
-                                                            <div className="lucky-value">{rasi.lucky_color}</div>
-                                                        </div>
+                                                </div>
+                                                <div className="daily-list-lucky-chip">
+                                                    <span className="daily-list-lucky-chip-icon">🎨</span>
+                                                    <div>
+                                                        <div className="daily-list-lucky-chip-label">நல்ல நிறம்</div>
+                                                        <div className="daily-list-lucky-chip-value">{rasi.lucky_color}</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="card-content">
-                                                <div className="summary-section">
-                                                    <h5>
-                                                        <span className="summary-icon">📜</span>
-                                                        ராசி பலன்
-                                                    </h5>
-                                                    <p className="summary-text">{rasi.summary}</p>
-                                                </div>
-                                                {rasi.imageUrl && (
-                                                    <div className="image-section">
-                                                        <div className="image-header">
-                                                            <span className="image-icon">🖼️</span>
-                                                            <span>ராசி படம்</span>
-                                                        </div>
-                                                        <img
-                                                            src={rasi.imageUrl}
-                                                            alt={rasi.name}
-                                                            className="rasi-image"
-                                                            onError={(e) => {
-                                                                e.target.style.display = 'none';
-                                                            }}
-                                                        />
+
+                                            {rasi.imageUrl && (
+                                                <div className="daily-list-card-image-section">
+                                                    <div className="daily-list-card-image-header">
+                                                        <span>🖼️</span> ராசி படம்
                                                     </div>
-                                                )}
+                                                    <img
+                                                        src={rasi.imageUrl}
+                                                        alt={rasi.name}
+                                                        className="daily-list-card-image"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <div className="daily-list-card-footer">
+                                                <span className="daily-list-card-footer-status">
+                                                    <span
+                                                        className={`daily-list-status-dot ${isPublished ? 'is-published' : 'is-unpublished'}`}
+                                                    ></span>
+                                                    {isPublished ? 'Published' : 'Unpublished'}
+                                                </span>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
-                        </div>
+                        </>
                     )}
                 </div>
             </div>
         );
     };
-    // Render Weekly Content
+    // Render Weekly Content — shows only the selected week, navigable via prev/next
     const renderWeeklyContent = () => {
-        if (!weeklyData.length) return <div className="no-data">No weekly data available</div>;
+        if (!weeklyData.length) return <div className="week-list-no-data">No weekly data available</div>;
+
+        const totalWeeks = weeklyData.length;
+        const currentIndex = Math.min(selectedWeekIndex, totalWeeks - 1);
+        const week = weeklyData[currentIndex];
+
+        const goPrevWeek = () => setSelectedWeekIndex((i) => Math.max(0, i - 1));
+        const goNextWeek = () => setSelectedWeekIndex((i) => Math.min(totalWeeks - 1, i + 1));
+
         return (
-            <div className="weekly-container">
-                <div className="period-info">
-                    <h2>📅 Weekly Predictions</h2>
+            <div className="week-list-container">
+                {/* <div className="period-info">
+                    <h2>📊 Weekly Predictions</h2>
                     <p className="info-text">Weekly predictions are updated every Monday</p>
-                </div>
-                {weeklyData.map((week, index) => (
-                    <div key={week.id || index} className="week-group">
-                        <div className="period-header-container">
-                            <h3 className="period-header">
-                                <span className="period-icon">🗓️</span>
-                                {week.date}
-                            </h3>
+                </div> */}
+                <div className="week-list-page-header">
+                    {/* <div>
+                        <h2 className="week-list-title">
+                            <span className="week-list-title-icon">📅</span>
+                            Weekly Rasipalan
+                        </h2>
+                        <p className="week-list-subtitle">Manage astrological predictions for the coming week.</p>
+                    </div> */}
+
+                    {totalWeeks > 1 && (
+                        <div className="month-list-select-wrap">
+                            <span className="month-list-select-label">SELECT WEEK</span>
+                            <div className="week-list-nav">
+
+                                <button
+                                    type="button"
+                                    className="week-list-nav-arrow"
+                                    onClick={goPrevWeek}
+                                    disabled={currentIndex === 0}
+                                    aria-label="Previous week"
+                                >
+                                    ‹
+                                </button>
+                                <span className="week-list-nav-label">{week.date}</span>
+                                <button
+                                    type="button"
+                                    className="week-list-nav-arrow"
+                                    onClick={goNextWeek}
+                                    disabled={currentIndex === totalWeeks - 1}
+                                    aria-label="Next week"
+                                >
+                                    ›
+                                </button>
+                            </div>
                         </div>
-                        <div className="rasi-grid">
-                            {week.rasi?.map((rasi, rasiIndex) => (
-                                <div key={rasiIndex} className="rasi-card1 weekly-card">
-                                    <div className="card-header">
-                                        <div className="rasi-title">
-                                            <div className="rasi-emoji">{rasiData[rasi.rasi]?.emoji || '⭐'}</div>
-                                            <h4>{rasi.name || rasiData[rasi.rasi]?.name || `ராசி ${rasi.rasi}`}</h4>
+                    )}
+                </div>
+
+                <div className="week-list-week-block">
+                    <div className="week-list-selected-card">
+                        <div className="week-list-selected-left">
+                            <span className="week-list-selected-icon">🗓️</span>
+                            <div>
+                                {/* <div className="week-list-selected-title">Selected Week</div> */}
+                                <div className="week-list-selected-title">{week.date}</div>
+                            </div>
+                        </div>
+                        <span className="week-list-enabled-pill">ENABLED</span>
+                    </div>
+
+                    {week.rasi && week.rasi.length > 0 ? (
+                        <div className="week-list-grid">
+                            {week.rasi.map((rasi, rasiIndex) => {
+                                const rasiInfo = rasiData[rasi.rasi] || { name: rasi.name, color: '#666', emoji: '⭐' };
+                                const hasContent = !!(rasi.kiraganam && String(rasi.kiraganam).trim());
+
+                                return (
+                                    <div
+                                        key={rasiIndex}
+                                        className="week-list-card"
+                                        style={{ '--week-list-accent': rasiInfo.color }}
+                                    >
+                                        <div className="week-list-card-top">
+                                            <div style={{ display: 'flex', gap: 10 }} >
+                                                <span className="week-list-card-number">{rasiIndex + 1}</span>
+                                                <h4 className="week-list-card-name">
+                                                    {rasiInfo.emoji} {rasi.name || rasiData[rasi.rasi]?.name || `ராசி ${rasi.rasi}`}
+                                                </h4>
+                                            </div>
+                                            <span className={`week-list-status-badge ${hasContent ? 'is-published' : 'is-draft'}`}>
+                                                {hasContent ? 'PUBLISHED' : 'DRAFT'}
+                                            </span>
+                                        </div>
+
+                                        <h5>
+                                            <span className="info-icon">🌟</span>
+                                            கிரகணம்
+                                        </h5>
+                                        <p className="week-list-card-desc">
+                                            {hasContent
+                                                ? rasi.kiraganam
+                                                : 'No summary generated yet. Click edit to start writing predictions for this week.'}
+                                        </p>
+                                        <h5>
+                                            <span className="info-icon">📈</span>
+                                            வாராந்திர கிரகணம்
+                                        </h5>
+
+                                        <p className="week-list-card-desc">
+                                            {rasi.weekly_kiraganam
+                                                ? rasi.weekly_kiraganam
+                                                : 'No summary generated yet. Click edit to start writing predictions for this week.'}
+                                        </p>
+                                        <h5>
+                                            <span className="info-icon">👍</span>
+                                            நன்மைகள்
+                                        </h5>
+                                        <p className="week-list-card-desc">
+                                            {rasi.advantages
+                                                ? rasi.advantages
+                                                : 'No summary generated yet. Click edit to start writing predictions for this week.'}
+                                        </p>
+                                        <h5>
+                                            <span className="info-icon">🙏</span>
+                                            பிரார்த்தனைகள்
+                                        </h5>
+                                        <p className="week-list-card-desc">
+                                            {rasi.prayers
+                                                ? rasi.prayers
+                                                : 'No summary generated yet. Click edit to start writing predictions for this week.'}
+                                        </p>
+                                        <div className="week-list-card-footer">
+                                            <span className="week-list-card-footer-note">
+                                                {rasi.prayers ? '🙏 Prayers added' : '✎ Not edited'}
+                                            </span>
                                             <button
-                                                className="edit-btn"
+                                                type="button"
+                                                className="week-list-edit-link"
                                                 onClick={() => handleEditClick(rasi, 'weekly', week, week.id)}
                                                 title="Edit Weekly Rasi"
-                                                style={{ marginLeft: 'auto' }}
                                             >
-                                                <span className="edit-icon">✏️</span>
-                                                Edit
+                                                {hasContent ? 'Edit Details →' : 'Create Prediction ⊕'}
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="card-content">
-                                        <div className="info-section">
-                                            <div className="info-item">
-                                                <h5>
-                                                    <span className="info-icon">🌟</span>
-                                                    கிரகணம்
-                                                </h5>
-                                                <p>{rasi.kiraganam}</p>
-                                            </div>
-                                            <div className="info-item">
-                                                <h5>
-                                                    <span className="info-icon">📈</span>
-                                                    வாராந்திர கிரகணம்
-                                                </h5>
-                                                <p>{rasi.weekly_kiraganam}</p>
-                                            </div>
-                                            <div className="info-item">
-                                                <h5>
-                                                    <span className="info-icon">👍</span>
-                                                    நன்மைகள்
-                                                </h5>
-                                                <p>{rasi.advantages}</p>
-                                            </div>
-                                            <div className="info-item">
-                                                <h5>
-                                                    <span className="info-icon">🙏</span>
-                                                    பிரார்த்தனைகள்
-                                                </h5>
-                                                <p>{rasi.prayers}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ) : (
+                        <div className="week-list-no-data">No data is available for the selected week</div>
+                    )}
+                </div>
+            </div >
         );
     };
     const renderMonthlyContent = () => {
         if (!monthlyData.length) {
-            return <div className="no-data">No monthly data available</div>;
+            return <div className="month-list-no-data">No monthly data available</div>;
         }
-        return (
-            <div className="monthly-container">
-                <div className="period-info">
-                    <h2>📅 Monthly Predictions</h2>
-                    <p className="info-text">Monthly rasi palan grouped by month / year</p>
-                </div>
-                {monthlyData.map((month, index) => (
-                    <div key={month.id || index} className="month-group">
 
-                        {/* Month Header */}
-                        <div className="period-header-container">
-                            <h3 className="period-header">
-                                <span className="period-icon">🗓️</span>
-                                {month.date}
-                            </h3>
-                            <div className="period-meta">
-                                <span className="lang-badge">
-                                    {month.mon_lan === 'tamil' ? 'தமிழ்' : 'English'}
-                                </span>
-                            </div>
+        const totalMonths = monthlyData.length;
+        const currentIndex = Math.min(selectedMonthIndex, totalMonths - 1);
+        const month = monthlyData[currentIndex];
+
+        return (
+            <div className="month-list-container">
+                {/* <div className="period-info">
+                    <h2>📈 Monthly Predictions</h2>
+                    <p className="info-text">Weekly predictions are updated every Monday</p>
+                </div> */}
+                <div className="month-list-page-header">
+                    {/* <div>
+                        <h2 className="month-list-title">
+                            <span className="month-list-title-icon">📅</span>
+                            Monthly Rasipalan
+                        </h2>
+                        <p className="month-list-subtitle">Curate and publish monthly astrological insights for all signs.</p>
+                    </div> */}
+                    {totalMonths > 1 && (
+                        <div className="month-list-select-wrap">
+                            <span className="month-list-select-label">SELECT MONTH</span>
+                            <select
+                                className="month-list-select"
+                                value={currentIndex}
+                                onChange={(e) => setSelectedMonthIndex(Number(e.target.value))}
+                            >
+                                {monthlyData.map((m, idx) => (
+                                    <option key={m.id || idx} value={idx}>
+                                        {m.date || m.tamil_month || `Month ${idx + 1}`}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                        {/* Rasi Cards */}
-                        <div className="rasi-grid">
-                            {month.rasi?.map((rasi, rasiIndex) => {
+                    )}
+                </div>
+
+                <div className="month-list-month-block">
+
+                    {/* Status Bar */}
+                    <div className="month-list-status-bar">
+                        <div className="month-list-status-left">
+                            <span className="month-list-status-dot"></span>
+                            <span className="month-list-status-text">
+                                <strong>{month.date || month.tamil_month}</strong>
+                            </span>
+                            <span className="month-list-live-badge">Active</span>
+                        </div>
+                        <span className="month-list-lang-pill">
+                            {month.mon_lan === 'tamil' ? 'தமிழ்' : 'English'}
+                        </span>
+                    </div>
+
+                    {/* Rasi Cards */}
+                    {month.rasi && month.rasi.length > 0 ? (
+                        <div className="month-list-grid">
+                            {month.rasi.map((rasi, rasiIndex) => {
                                 const rasiId = getMonthlyRasiId(rasi);
                                 const rasiInfo = rasiData[rasiId] || {
                                     name: rasi.name || 'ராசி',
                                     emoji: '⭐',
                                     color: '#999'
                                 };
+                                const hasContent = !!(rasi.kiraganam && String(rasi.kiraganam).trim());
+                                const expanded = expandedMonItems[rasi.rasiId];
                                 return (
                                     <div
                                         key={rasiIndex}
-                                        className="rasi-card1 monthly-card"
-                                        style={{ borderLeftColor: rasiInfo.color }}
+                                        className="month-list-card"
+                                        style={{ '--month-list-accent': rasiInfo.color }}
                                     >
                                         {/* Header */}
-                                        <div className="card-header">
-                                            <div className="rasi-title">
-                                                <div className="rasi-emoji">{rasiInfo.emoji}</div>
-                                                <div>
-                                                    <h4>{rasi.name || rasiInfo.name}</h4>
+                                        <div className="month-list-card-top">
+                                            <div className='month-list-card-emoji'>
+                                                <span className="month-list-card-icon">{rasiInfo.emoji}</span>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                    <h4 className="month-list-card-name">{rasi.name || rasiInfo.name}</h4>
                                                     {rasiId && (
-                                                        <div className="rasi-id">Rasi ID: {rasiId}</div>
+                                                        <span className="month-list-card-sub">{`RASI ${rasiId}`}</span>
                                                     )}
                                                 </div>
-                                                <button
-                                                    className="edit-btn"
-                                                    onClick={() => handleEditClick(rasi, 'monthly', month, month.id)}
-                                                    title="Edit Monthly Rasi"
-                                                    style={{ marginLeft: 'auto' }}
-                                                >
-                                                    <span className="edit-icon">✏️</span>
-                                                    Edit
-                                                </button>
                                             </div>
+                                            <button
+                                                type="button"
+                                                className="month-list-edit-icon-btn"
+                                                onClick={() => handleEditClick(rasi, 'monthly', month, month.id)}
+                                                title="Edit Monthly Rasi"
+                                            >
+                                                Edit
+                                            </button>
                                         </div>
                                         {/* Content */}
-                                        <div className="card-content">
-                                            <div className="info-section">
-                                                <div className="info-item">
-                                                    <h5>🌟 கிரகணம்</h5>
-                                                    <p>{rasi.kiraganam || '—'}</p>
-                                                </div>
-                                                <div className="info-item">
-                                                    <h5>🙏 பிரார்த்தனைகள்</h5>
-                                                    <p>{rasi.prayers || '—'}</p>
-                                                </div>
-                                            </div>
-                                            {/* Image */}
-                                            {rasi.imageUrl && (
-                                                <div className="image-section">
-                                                    <img
-                                                        src={rasi.imageUrl}
-                                                        alt={rasi.name}
-                                                        className="rasi-image"
-                                                        onError={(e) => (e.target.style.display = 'none')}
-                                                    />
-                                                </div>
+                                        {/* <p className="month-list-card-desc">{rasi.kiraganam || '—'}</p> */}
+                                        <p className="daily-list-card-desc">
+                                            {expanded
+                                                ? rasi.kiraganam
+                                                : `${rasi.kiraganam.slice(0, 120)}... `}
+                                            {rasi.kiraganam.length > 120 && (
+                                                <span
+                                                    onClick={() => toggleMonReadMore(rasi.rasiId)}
+                                                    style={{ color: "blue", cursor: "pointer" }}
+                                                >
+                                                    {expanded ? "Read Less" : "Read More"}
+                                                </span>
                                             )}
+                                        </p>
+                                        {/* Image */}
+                                        {rasi.imageUrl && (
+                                            <div className="month-list-card-image-section">
+                                                <img
+                                                    src={rasi.imageUrl}
+                                                    alt={rasi.name}
+                                                    className="month-list-card-image"
+                                                    onError={(e) => (e.target.style.display = 'none')}
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="month-list-card-footer">
+                                            <span className={`month-list-progress-text ${hasContent ? 'is-published' : 'is-draft'}`}>
+                                                {hasContent ? '100% Published' : 'Drafting'}
+                                            </span>
+                                            <span className="month-list-prayer-note">
+                                                {rasi.prayers ? '🙏 Prayers set' : '🙏 No prayers'}
+                                            </span>
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
-                    </div>
-                ))}
+                    ) : (
+                        <div className="month-list-no-data">No data is available for the selected month</div>
+                    )}
+                </div>
             </div>
         );
     };
     const renderYearlyContent = () => {
         if (!yearlyData.length) {
-            return <div className="no-data">No yearly data available</div>;
+            return <div className="year-list-no-data">No yearly data available</div>;
         }
+
+        const totalYears = yearlyData.length;
+        const currentIndex = Math.min(selectedYearIndex, totalYears - 1);
+        const yearItem = yearlyData[currentIndex];
+
         return (
-            <div className="yearly-container">
-                <div className="period-info">
+            <div className="year-list-container">
+                {/* <div className="period-info">
                     <h2>📆 Yearly Predictions</h2>
-                    <p className="info-text">Complete yearly rasi palan overview</p>
-                </div>
-                {yearlyData.map((yearItem, index) => (
-                    <div key={yearItem.id || index} className="year-group">
-                        {/* Year Header */}
-                        <div className="period-header-container">
-                            <h3 className="period-header">
-                                <span className="period-icon">📅</span>
-                                {yearItem.date}
-                            </h3>
-                            <div className="period-meta">
-                                <span className={`status-badge ${yearItem.Status ? 'allow' : 'disallow'}`}>
-                                    {yearItem.Status ? 'Active' : 'Inactive'}
-                                </span>
-                                <span className="lang-badge">
-                                    {yearItem.mon_lan === 'tamil' ? 'தமிழ்' : 'English'}
-                                </span>
+                    <p className="info-text">Weekly predictions are updated every Monday</p>
+                </div> */}
+                <div className="year-list-year-block">
+
+                    {/* Year Header */}
+                    <div className="year-list-header">
+                        <div>
+                            <span className="year-list-selector-label">SELECT YEAR</span>
+                            <div className="year-list-selector">
+                                {totalYears > 1 ? (
+                                    <select
+                                        className="year-list-selector-select"
+                                        value={currentIndex}
+                                        onChange={(e) => setSelectedYearIndex(Number(e.target.value))}
+                                    >
+                                        {yearlyData.map((y, idx) => (
+                                            <option key={y.id || idx} value={idx}>
+                                                {y.date || `Year ${idx + 1}`}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <span className="year-list-selector-value">{yearItem.date}</span>
+                                )}
                             </div>
                         </div>
-                        {/* Rasi Cards */}
-                        <div className="rasi-grid">
-                            {yearItem.rasi?.map((rasi, rasiIndex) => {
+                        {/* <div className="year-list-status">
+                            <div className="year-list-status-text-group">
+                                <span className="year-list-status-label">STATUS</span>
+                                <span className="year-list-status-value">Selected Year</span>
+                            </div>
+                            <span className={`year-list-status-pill ${yearItem.Status ? 'is-enabled' : 'is-disabled'}`}>
+                                <span className="year-list-status-pill-knob"></span>
+                            </span>
+                        </div> */}
+                    </div>
+
+                    {/* Status Bar */}
+                    <div className="month-list-status-bar">
+                        <div className="month-list-status-left">
+                            <span className="month-list-status-dot"></span>
+                            <span className="month-list-status-text">
+                                <strong>{yearItem.date || yearItem.tamil_month}</strong>
+                            </span>
+                            <span className="month-list-live-badge">{yearItem.Status === 1 ? "Active" : "Inactive"}</span>
+                        </div>
+                        <span className="month-list-lang-pill">
+                            {yearItem.mon_lan === 'tamil' ? 'தமிழ்' : 'English'}
+                        </span>
+                    </div>
+
+                    {/* Rasi Cards */}
+                    {yearItem.rasi && yearItem.rasi.length > 0 ? (
+                        <div className="year-list-grid">
+                            {yearItem.rasi.map((rasi, rasiIndex) => {
                                 const rasiId = getYearlyRasiId(rasi);
                                 const rasiInfo = rasiData[rasiId] || {
                                     name: rasi.name || 'ராசி',
@@ -1685,86 +1963,63 @@ const RasiAllList = () => {
                                 return (
                                     <div
                                         key={rasiIndex}
-                                        className="rasi-card1 yearly-card"
-                                        style={{ borderLeftColor: rasiInfo.color }}
+                                        className="year-list-card"
+                                        style={{ '--year-list-accent': rasiInfo.color }}
                                     >
                                         {/* Header */}
-                                        <div className="card-header">
-                                            <div className="rasi-title">
-                                                <div className="rasi-emoji">{rasiInfo.emoji}</div>
-                                                <div>
-                                                    <h4>{rasi.name || rasiInfo.name}</h4>
-                                                    <div className="rasi-id">Rasi ID: {rasiId}</div>
+                                        <div className="year-list-card-top">
+                                            <div className='month-list-card-emoji'>
+                                                <span className="year-list-card-icon">{rasiInfo.emoji}</span>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                    <h4 className="year-list-card-name">{rasi.name || rasiInfo.name}</h4>
+                                                    <span className="year-list-card-sub">
+                                                        {(rasiInfo.name || '').toUpperCase()}
+                                                    </span>
                                                 </div>
-                                                <button
-                                                    className="edit-btn"
-                                                    onClick={() => handleEditClick(rasi, 'yearly', yearItem, rasi.id)}
-                                                    title="Edit Yearly Rasi"
-                                                    style={{ marginLeft: 'auto' }}
-                                                >
-                                                    <span className="edit-icon">✏️</span>
-                                                    Edit
-                                                </button>
                                             </div>
+                                            <button
+                                                type="button"
+                                                className="year-list-edit-icon-btn"
+                                                onClick={() => handleEditClick(rasi, 'yearly', yearItem, rasi.id)}
+                                                title="Edit Yearly Rasi"
+                                            >
+                                                Edit
+                                            </button>
                                         </div>
                                         {/* Content */}
-                                        <div className="card-content">
-                                            <div className="info-section">
-                                                <div className="info-item">
-                                                    <h5>🌟 கிரகணம்</h5>
-                                                    {renderComplexValue(rasi.kiraganam)}
-                                                </div>
-                                                <div className="info-item">
-                                                    <h5>👁️ கிரகணம் (Eye)</h5>
-                                                    {renderComplexValue(rasi.kiraganam_eye)}
-                                                </div>
-                                                {rasi.rasi_des && (
-                                                    <div className="info-item">
-                                                        <h5>📜 ராசி விளக்கம்</h5>
-                                                        <p>{rasi.rasi_des}</p>
-                                                    </div>
-                                                )}
-                                                {[
-                                                    'advantages',
-                                                    'Officers',
-                                                    'Traders',
-                                                    'Pengal',
-                                                    'politician',
-                                                    'artist',
-                                                    'students',
-                                                    'Good',
-                                                    'Attention'
-                                                ].map(key => (
-                                                    rasi[key] && (
-                                                        <div className="info-item" key={key}>
-                                                            <h5>{key}</h5>
-                                                            <p>{rasi[key]}</p>
-                                                        </div>
-                                                    )
-                                                ))}
-                                                <div className="info-item">
-                                                    <h5>🙏 பிரார்த்தனைகள்</h5>
-                                                    <p>{rasi.prayers || '—'}</p>
-                                                </div>
+                                        <div className="year-list-card-desc">
+                                            {renderComplexValue(rasi.kiraganam)}
+                                        </div>
+                                        {rasi.rasi_des && (
+                                            <p className="year-list-card-note">{rasi.rasi_des}</p>
+                                        )}
+                                        {/* Image */}
+                                        {rasi.imageUrl && (
+                                            <div className="year-list-card-image-section">
+                                                <img
+                                                    src={rasi.imageUrl}
+                                                    alt={rasi.name}
+                                                    className="year-list-card-image"
+                                                    onError={(e) => (e.target.style.display = 'none')}
+                                                />
                                             </div>
-                                            {/* Image */}
-                                            {rasi.imageUrl && (
-                                                <div className="image-section">
-                                                    <img
-                                                        src={rasi.imageUrl}
-                                                        alt={rasi.name}
-                                                        className="rasi-image"
-                                                        onError={(e) => (e.target.style.display = 'none')}
-                                                    />
-                                                </div>
-                                            )}
+                                        )}
+                                        <div className="year-list-card-footer">
+                                            <span className="year-list-last-edit">
+                                                {rasi.prayers ? '🙏 Prayers set' : '🙏 —'}
+                                            </span>
+                                            <span className={`year-list-status-badge ${yearItem.Status ? 'is-published' : 'is-draft'}`}>
+                                                {yearItem.Status ? 'Published' : 'Draft'}
+                                            </span>
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
-                    </div>
-                ))}
+                    ) : (
+                        <div className="year-list-no-data">No data is available for the selected year</div>
+                    )}
+                </div>
             </div>
         );
     };

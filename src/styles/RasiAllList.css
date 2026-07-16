@@ -76,6 +76,11 @@
 .tabs-container {
   overflow-x: scroll;
   margin-bottom: 12px;
+
+  &::-webkit-scrollbar {
+    display: none;
+    /* Safari, Chrome, Edge */
+  }
 }
 
 .tabs {

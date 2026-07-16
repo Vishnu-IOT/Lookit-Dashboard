@@ -1,0 +1,1414 @@
+/* ==========================================================================
+   DailyContent — daily-list-* layout
+   Palette: indigo/lavender, matches the provided screenshot
+   ========================================================================== */
+
+.daily-list-container {
+    --daily-list-primary: #4b3fe4;
+    --daily-list-primary-dark: #3a30b8;
+    --daily-list-bg: #f6f6fc;
+    --daily-list-card-bg: #ffffff;
+    --daily-list-border: #ececf6;
+    --daily-list-text: #1f1b33;
+    --daily-list-muted: #8b87a3;
+    --daily-list-success: #22c55e;
+    --daily-list-danger: #ef4444;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: var(--daily-list-bg);
+    padding: 20px;
+    border-radius: 20px;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--daily-list-text);
+}
+
+.daily-list-no-data {
+    padding: 40px;
+    text-align: center;
+    color: var(--daily-list-muted);
+    font-size: 15px;
+}
+
+/* ---------------- Week Strip Nav ---------------- */
+
+.daily-list-week-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.daily-list-nav-arrow {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 10px;
+    background: var(--daily-list-card-bg);
+    color: var(--daily-list-text);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.08);
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.daily-list-nav-arrow:hover:not(:disabled) {
+    background: #efedfd;
+}
+
+.daily-list-nav-arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.daily-list-day-strip {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.daily-list-day-strip::-webkit-scrollbar {
+    display: none;
+}
+
+.daily-list-day-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 52px;
+    padding: 8px 6px;
+    border: 1px solid var(--daily-list-border);
+    border-radius: 12px;
+    background: var(--daily-list-card-bg);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.daily-list-day-box:hover {
+    border-color: var(--daily-list-primary);
+}
+
+.daily-list-day-weekday {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-day-number {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.daily-list-day-box-active {
+    background: var(--daily-list-primary);
+    border-color: var(--daily-list-primary);
+    box-shadow: 0 4px 12px rgba(75, 63, 228, 0.35);
+}
+
+.daily-list-day-box-active .daily-list-day-weekday,
+.daily-list-day-box-active .daily-list-day-number {
+    color: #ffffff;
+}
+
+.daily-list-pick-date-btn,
+.daily-list-sort-toggle {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    border: 1px solid var(--daily-list-border);
+    border-radius: 10px;
+    background: var(--daily-list-card-bg);
+    color: var(--daily-list-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.daily-list-pick-date-btn:hover,
+.daily-list-sort-toggle:hover {
+    background: #efedfd;
+}
+
+/* ---------------- Pick Date Panel ---------------- */
+
+.daily-list-pick-date-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px;
+    background: var(--daily-list-card-bg);
+    border: 1px solid var(--daily-list-border);
+    border-radius: 14px;
+}
+
+.daily-list-calendar-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--daily-list-bg);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s ease;
+}
+
+.daily-list-calendar-chip:hover {
+    background: #efedfd;
+}
+
+.daily-list-calendar-chip-active {
+    background: var(--daily-list-primary);
+    color: #ffffff;
+}
+
+.daily-list-calendar-chip-status.allow {
+    color: var(--daily-list-success);
+}
+
+.daily-list-calendar-chip-status.disallow {
+    color: var(--daily-list-danger);
+}
+
+.daily-list-calendar-chip-active .daily-list-calendar-chip-status.allow,
+.daily-list-calendar-chip-active .daily-list-calendar-chip-status.disallow {
+    color: #ffffff;
+}
+
+/* ---------------- Selected Date Bar ---------------- */
+
+.daily-list-selected-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--daily-list-card-bg);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.06);
+}
+
+.daily-list-selected-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.daily-list-selected-bar-icon {
+    font-size: 20px;
+}
+
+.daily-list-selected-bar-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-selected-bar-date {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.daily-list-selected-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.daily-list-selected-bar-status-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-status-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: #d8d5f2;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.daily-list-status-switch.is-on {
+    background: var(--daily-list-primary);
+}
+
+.daily-list-status-switch-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.daily-list-status-switch.is-on .daily-list-status-switch-knob {
+    transform: translateX(20px);
+}
+
+.daily-list-loading-spinner {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #ffffff;
+    animation: daily-list-spin 0.7s linear infinite;
+}
+
+@keyframes daily-list-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---------------- Card Section ---------------- */
+
+.daily-list-card-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.daily-list-section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.daily-list-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.daily-list-total-rasi {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.daily-list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    background: var(--daily-list-card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--daily-list-border);
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.05);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.daily-list-card:hover {
+    box-shadow: 0 8px 20px rgba(31, 27, 51, 0.08);
+    transform: translateY(-2px);
+}
+
+.daily-list-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.daily-list-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 20px;
+    background: color-mix(in srgb, var(--daily-list-accent, #666) 14%, white);
+    flex-shrink: 0;
+}
+
+.daily-list-card-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.daily-list-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.daily-list-card-subtitle {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-card-desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #514c6b;
+}
+
+.daily-list-lucky-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--daily-list-bg);
+    border-radius: 12px;
+}
+
+.daily-list-lucky-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.daily-list-lucky-chip-icon {
+    font-size: 14px;
+}
+
+.daily-list-lucky-chip-label {
+    font-size: 10.5px;
+    color: var(--daily-list-muted);
+    font-weight: 600;
+}
+
+.daily-list-lucky-chip-value {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.daily-list-card-image-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.daily-list-card-image-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-card-image {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    max-height: 160px;
+}
+
+.daily-list-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--daily-list-border);
+}
+
+.daily-list-card-footer-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--daily-list-muted);
+}
+
+.daily-list-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--daily-list-success);
+}
+
+.daily-list-status-dot.is-unpublished {
+    background: var(--daily-list-danger);
+}
+
+.daily-list-manage-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--daily-list-primary);
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.daily-list-manage-btn:hover {
+    background: var(--daily-list-primary-dark);
+}
+
+.daily-list-day-box-empty {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.daily-list-date-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--daily-list-border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--daily-list-text);
+    background: var(--daily-list-bg);
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 640px) {
+    .daily-list-container {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .daily-list-selected-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .daily-list-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* .daily-list-day-strip {
+        overflow: scroll;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    } */
+
+    .daily-list-week-nav {
+        overflow: scroll;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}
+
+/* ==========================================================================
+   WeeklyContent — week-list-* layout
+   Matches "Weekly Rasipalan" screen (indigo/lavender palette)
+   ========================================================================== */
+
+.week-list-container {
+    --week-list-primary: #4b3fe4;
+    --week-list-primary-dark: #3a30b8;
+    --week-list-bg: #f6f6fc;
+    --week-list-card-bg: #ffffff;
+    --week-list-border: #ececf6;
+    --week-list-text: #1f1b33;
+    --week-list-muted: #8b87a3;
+    --week-list-success: #22c55e;
+    --week-list-success-bg: #e8fbf0;
+    --week-list-draft: #b48a1c;
+    --week-list-draft-bg: #fdf3e0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: var(--week-list-bg);
+    padding: 20px;
+    border-radius: 20px;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--week-list-text);
+}
+
+.week-list-no-data {
+    padding: 40px;
+    text-align: center;
+    color: var(--week-list-muted);
+    font-size: 15px;
+}
+
+.week-list-page-header {
+    display: inline-flex;
+    align-items: flex-end;
+    /* justify-content: space-between; */
+    gap: 16px;
+}
+
+.week-list-title {
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.week-list-title-icon {
+    font-size: 20px;
+}
+
+.week-list-subtitle {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--week-list-muted);
+}
+
+.week-list-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    padding: 6px 8px;
+    background: var(--week-list-card-bg);
+    border: 1px solid var(--week-list-border);
+    border-radius: 12px;
+}
+
+.week-list-nav-arrow {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 8px;
+    background: var(--week-list-bg);
+    color: var(--week-list-text);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.week-list-nav-arrow:hover:not(:disabled) {
+    background: #efedfd;
+}
+
+.week-list-nav-arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.week-list-nav-label {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
+.week-list-week-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------------- Selected Week Card ---------------- */
+
+.week-list-selected-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--week-list-card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--week-list-border);
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.06);
+}
+
+.week-list-selected-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.week-list-selected-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #efedfd;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.week-list-selected-title {
+    font-size: 14.5px;
+    font-weight: 700;
+}
+
+.week-list-selected-desc {
+    font-size: 12.5px;
+    color: var(--week-list-muted);
+}
+
+.week-list-enabled-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--week-list-primary);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+/* ---------------- Card Grid ---------------- */
+
+.week-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.week-list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    background: var(--week-list-card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--week-list-border);
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.05);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.week-list-card:hover {
+    box-shadow: 0 8px 20px rgba(31, 27, 51, 0.08);
+    transform: translateY(-2px);
+}
+
+.week-list-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.week-list-card-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--week-list-accent, #4b3fe4) 16%, white);
+    color: var(--week-list-text);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.week-list-status-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.week-list-status-badge.is-published {
+    background: var(--week-list-success-bg);
+    color: var(--week-list-success);
+}
+
+.week-list-status-badge.is-draft {
+    background: var(--week-list-draft-bg);
+    color: var(--week-list-draft);
+}
+
+.week-list-card-name {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+.week-list-card-desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #514c6b;
+    flex: 1;
+}
+
+.week-list-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--week-list-border);
+}
+
+.week-list-card-footer-note {
+    font-size: 12px;
+    color: var(--week-list-muted);
+    font-weight: 500;
+}
+
+.week-list-edit-link {
+    border: none;
+    background: var(--week-list-primary);
+    padding: 4px 6px;
+    color: white;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 6px;
+}
+
+.week-list-edit-link:hover {
+    background: var(--week-list-primary-dark);
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .week-list-container {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .week-list-page-header {
+        flex-direction: column;
+    }
+
+    .week-list-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   MonthlyContent — month-list-* layout
+   Matches "Monthly Rasipalan" screen (indigo/lavender palette)
+   ========================================================================== */
+:root {
+    --month-list-primary: #4b3fe4;
+    --month-list-primary-dark: #3a30b8;
+    --month-list-bg: #f6f6fc;
+    --month-list-card-bg: #ffffff;
+    --month-list-border: #ececf6;
+    --month-list-text: #1f1b33;
+    --month-list-muted: #8b87a3;
+    --month-list-success: #22c55e;
+    --month-list-success-bg: #e8fbf0;
+    --month-list-draft: #b45309;
+    --month-list-draft-bg: #fdf0e2;
+    --month-list-live: #22c55e;
+}
+
+.month-list-container {
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--month-list-bg);
+    padding: 20px;
+    border-radius: 20px;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--month-list-text);
+}
+
+.month-list-no-data {
+    padding: 40px;
+    text-align: center;
+    color: var(--month-list-muted);
+    font-size: 15px;
+}
+
+.month-list-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.month-list-title {
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.month-list-title-icon {
+    font-size: 20px;
+}
+
+.month-list-subtitle {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--month-list-muted);
+}
+
+.month-list-select-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.month-list-select-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--month-list-text);
+}
+
+.month-list-select {
+    padding: 8px 12px;
+    border: 1px solid var(--month-list-border);
+    border-radius: 10px;
+    background: var(--month-list-card-bg);
+    color: var(--month-list-text);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.month-list-select:focus {
+    outline: 2px solid var(--month-list-primary);
+    outline-offset: 1px;
+}
+
+.month-list-month-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------------- Status Bar ---------------- */
+
+.month-list-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    background: var(--month-list-card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--month-list-border);
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.06);
+}
+
+.month-list-status-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.month-list-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--month-list-live);
+    flex-shrink: 0;
+}
+
+.month-list-status-text {
+    font-size: 13.5px;
+    color: var(--month-list-muted);
+}
+
+.month-list-status-text strong {
+    color: var(--month-list-text);
+}
+
+.month-list-live-badge {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--month-list-success-bg);
+    color: var(--month-list-success);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.month-list-lang-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #efedfd;
+    color: var(--month-list-primary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ---------------- Card Grid ---------------- */
+
+.month-list-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.month-list-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 18px;
+    background: var(--month-list-card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--month-list-border);
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.05);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.month-list-card:hover {
+    box-shadow: 0 8px 20px rgba(31, 27, 51, 0.08);
+    transform: translateY(-2px);
+}
+
+.month-list-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.month-list-card-emoji {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.month-list-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 18px;
+    background: color-mix(in srgb, var(--month-list-accent, #4b3fe4) 16%, white);
+    flex-shrink: 0;
+}
+
+.month-list-edit-icon-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--month-list-primary);
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.month-list-edit-icon-btn:hover {
+    opacity: 1;
+}
+
+.month-list-card-name {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+.month-list-card-sub {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--month-list-muted);
+    margin-top: -4px;
+}
+
+.month-list-card-desc {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #514c6b;
+    flex: 1;
+}
+
+.month-list-card-image-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.month-list-card-image {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    max-height: 250px;
+}
+
+.month-list-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--month-list-border);
+}
+
+.month-list-progress-text {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.month-list-progress-text.is-published {
+    color: var(--month-list-success);
+}
+
+.month-list-progress-text.is-draft {
+    color: var(--month-list-draft);
+}
+
+.month-list-prayer-note {
+    font-size: 11.5px;
+    color: var(--month-list-muted);
+}
+
+@media (max-width: 640px) {
+    .month-list-container {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .month-list-page-header {
+        flex-direction: column;
+    }
+
+    .month-list-status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .month-list-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .month-list-select-wrap {
+        align-items: flex-start;
+        width: 100%;
+    }
+}
+
+/* ==========================================================================
+   YearlyContent — year-list-* layout
+   Matches "Yearly Selector" screen (indigo/lavender palette)
+   ========================================================================== */
+
+.year-list-container {
+    --year-list-primary: #4b3fe4;
+    --year-list-primary-dark: #3a30b8;
+    --year-list-bg: #f6f6fc;
+    --year-list-card-bg: #ffffff;
+    --year-list-border: #ececf6;
+    --year-list-text: #1f1b33;
+    --year-list-muted: #8b87a3;
+    --year-list-success: #22c55e;
+    --year-list-success-bg: #e8fbf0;
+    --year-list-draft: #b48a1c;
+    --year-list-draft-bg: #fdf3e0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: var(--year-list-bg);
+    padding: 20px;
+    border-radius: 20px;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--year-list-text);
+}
+
+.year-list-no-data {
+    padding: 40px;
+    text-align: center;
+    color: var(--year-list-muted);
+    font-size: 15px;
+}
+
+.year-list-year-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------------- Header Row ---------------- */
+
+.year-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.year-list-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 16px;
+    background: var(--year-list-card-bg);
+    border: 1px solid var(--year-list-border);
+    border-radius: 14px;
+}
+
+.year-list-selector-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--year-list-text);
+}
+
+.year-list-selector-value {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.year-list-selector-select {
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--year-list-text);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.year-list-selector-select:focus {
+    outline: 2px solid var(--year-list-primary);
+    outline-offset: 1px;
+}
+
+.year-list-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--year-list-card-bg);
+    border: 1px solid var(--year-list-border);
+    border-radius: 14px;
+}
+
+.year-list-status-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.year-list-status-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--year-list-muted);
+}
+
+.year-list-status-value {
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.year-list-status-pill {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+    background: #d8d5f2;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.year-list-status-pill.is-enabled {
+    background: var(--year-list-primary);
+}
+
+.year-list-status-pill-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.year-list-status-pill.is-enabled .year-list-status-pill-knob {
+    transform: translateX(18px);
+}
+
+/* ---------------- Card Grid ---------------- */
+
+.year-list-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.year-list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px;
+    background: var(--year-list-card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--year-list-border);
+    box-shadow: 0 1px 3px rgba(31, 27, 51, 0.05);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.year-list-card:hover {
+    box-shadow: 0 8px 20px rgba(31, 27, 51, 0.08);
+    transform: translateY(-2px);
+}
+
+.year-list-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.year-list-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 18px;
+    background: color-mix(in srgb, var(--year-list-accent, #4b3fe4) 16%, white);
+    flex-shrink: 0;
+}
+
+.year-list-status-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.year-list-status-badge.is-published {
+    background: var(--year-list-success-bg);
+    color: var(--year-list-success);
+}
+
+.year-list-status-badge.is-draft {
+    background: var(--year-list-draft-bg);
+    color: var(--year-list-draft);
+}
+
+.year-list-card-name {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+.year-list-card-sub {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--year-list-muted);
+    margin-top: -4px;
+}
+
+.year-list-card-desc {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #514c6b;
+    flex: 1;
+}
+
+.year-list-card-desc .kv-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 6px;
+}
+
+.year-list-card-note {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--year-list-muted);
+}
+
+.year-list-card-image-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.year-list-card-image {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    max-height: 250px;
+}
+
+.year-list-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--year-list-border);
+}
+
+.year-list-last-edit {
+    font-size: 12px;
+    color: var(--year-list-muted);
+}
+
+.year-list-edit-icon-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--year-list-primary);
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.year-list-edit-icon-btn:hover {
+    opacity: 1;
+}
+
+@media (max-width: 640px) {
+    .year-list-container {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .year-list-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .year-list-grid {
+        grid-template-columns: 1fr;
+    }
+}

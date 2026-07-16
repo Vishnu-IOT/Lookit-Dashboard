@@ -1,0 +1,703 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100;9..40,200;9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+
+
+/* Base Styles */
+.rasi-form__container {
+    min-height: 100vh;
+    color: #2c2c2c;
+}
+
+.rasi-form__paper {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    border: 1px solid #e8e8e8;
+}
+
+/* Typography */
+.rasi-form__title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 28px 0;
+    background: linear-gradient(120deg, var(--primary) 0%, var(--primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+/* Tabs */
+.rasi-form__tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #e8e8e8;
+    /* margin-bottom: 28px; */
+    /* flex-wrap: wrap; */
+    overflow: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.rasi-form__tab {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #999999;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'DM Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    bottom: -1px;
+}
+
+.rasi-form__tab:hover {
+    color: var(--primary);
+}
+
+.rasi-form__tab--active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Language Selector */
+.rasi-form__language-selector {
+    margin-bottom: 24px;
+    max-width: 49%;
+}
+
+/* Form Grid System */
+.rasi-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rasi-form__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* .rasi-form__row--half {
+    grid-template-columns: repeat(2, 1fr);
+} */
+
+/* .rasi-form__row--triple {
+    grid-template-columns: repeat(2, 1fr);
+} */
+
+@media (max-width: 768px) {
+    .rasi-form__row {
+        grid-template-columns: 1fr;
+    }
+
+    .rasi-form__row--half {
+        grid-template-columns: 1fr;
+    }
+
+    .rasi-form__row--triple {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .rasi-form__row--triple {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Form Groups */
+.rasi-form__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rasi-form__form-group--half {
+    grid-column: span 1;
+}
+
+/* Labels */
+.rasi-form__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4c4c4c;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Inputs */
+.rasi-form__input,
+.rasi-form__textarea,
+.rasi-form__select {
+    font-family: 'DM Sans', sans-serif;
+    background: #f9f9f9;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    color: #2c2c2c;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.rasi-form__input:focus,
+.rasi-form__textarea:focus,
+.rasi-form__select:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(201, 169, 97, 0.1);
+}
+
+.rasi-form__input:disabled,
+.rasi-form__input--readonly,
+.rasi-form__textarea:disabled {
+    background: #f0f0f0;
+    color: #999999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.rasi-form__textarea {
+    resize: vertical;
+    min-height: 60px;
+    padding: 10px 12px;
+}
+
+.rasi-form__textarea--small {
+    min-height: 40px;
+    font-size: 13px;
+}
+
+.rasi-form__input--small {
+    font-size: 13px;
+    padding: 8px 10px;
+}
+
+.rasi-form__select {
+    cursor: pointer;
+    padding: 10px 12px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999999' d='M1 4l5 4 5-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+/* .rasi-form__select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='" + encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--primary')) + "' d='M1 4l5 4 5-4'/%3E%3C/svg%3E");
+} */
+
+.rasi-form__input--readonly::placeholder {
+    color: #c0c0c0;
+}
+
+/* Helper Text */
+.rasi-form__helper-text {
+    font-size: 12px;
+    color: #999999;
+    margin-top: -2px;
+}
+
+.rasi-form__error-text {
+    font-size: 12px;
+    color: #d32f2f;
+    margin-top: -2px;
+}
+
+/* Buttons */
+.rasi-form__btn {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    /* display: inline-flex; */
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.rasi-form__btn--small {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.rasi-form__btn--primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(201, 169, 97, 0.2);
+}
+
+.rasi-form__btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(201, 169, 97, 0.25);
+}
+
+.rasi-form__btn--primary:active {
+    transform: translateY(0);
+}
+
+.rasi-form__btn--primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.rasi-form__btn--outlined {
+    background: #ffffff;
+    border: 1px solid #d8d8d8;
+    color: var(--primary);
+}
+
+.rasi-form__btn--outlined:hover {
+    background: #f9f9f9;
+    border-color: var(--primary);
+    color: var(--primary-light);
+}
+
+.rasi-form__btn--danger {
+    background: #d32f2f;
+    color: #ffffff;
+    padding: 6px 10px;
+    font-size: 12px;
+    min-width: auto;
+    box-shadow: 0 2px 4px rgba(211, 47, 47, 0.2);
+}
+
+.rasi-form__btn--danger:hover {
+    background: #c62828;
+    box-shadow: 0 4px 8px rgba(211, 47, 47, 0.25);
+}
+
+/* Cards */
+.rasi-form__card {
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.rasi-form__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+.rasi-form__card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Table */
+.rasi-form__table-wrapper {
+    overflow-x: auto;
+    margin: 16px 0;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+}
+
+.rasi-form__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.rasi-form__table thead {
+    background: #f5f5f5;
+}
+
+.rasi-form__table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--primary);
+    border-bottom: 1px solid #e8e8e8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.rasi-form__table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.rasi-form__table tbody tr:hover {
+    background: #f9f9f9;
+}
+
+.rasi-form__table input,
+.rasi-form__table textarea {
+    width: 100%;
+    margin: 0;
+}
+
+/* Week Section */
+.rasi-form__week-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rasi-form__week-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.rasi-form__nav-btn {
+    background: #ffffff;
+    border: 1px solid #d8d8d8;
+    color: var(--primary);
+    padding: 10px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.rasi-form__nav-btn:hover {
+    background: #f0f0f0;
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.rasi-form__week-display {
+    flex: 1;
+    text-align: center;
+}
+
+.rasi-form__week-range {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.rasi-form__week-label {
+    font-size: 12px;
+    color: #999999;
+    margin-top: 4px;
+}
+
+.rasi-form__date-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rasi-form__week-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rasi-form__week-details p {
+    margin: 0;
+    font-size: 13px;
+    color: #4c4c4c;
+}
+
+.rasi-form__week-details strong {
+    color: var(--primary);
+}
+
+/* Modal */
+.rasi-form__modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+}
+
+.rasi-form__modal {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    max-width: 500px;
+    width: 100%;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+    animation: rasi-form-modal-appear 0.3s ease;
+}
+
+@keyframes rasi-form-modal-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.rasi-form__modal-title {
+    padding: 20px;
+    border-bottom: 1px solid #e8e8e8;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    background: #f9f9f9;
+}
+
+.rasi-form__modal-content {
+    padding: 20px;
+}
+
+.rasi-form__modal-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid #e8e8e8;
+    background: #f9f9f9;
+    justify-content: flex-end;
+}
+
+.rasi-form__modal-actions button {
+    min-width: 120px;
+}
+
+/* Notifications/Toast */
+.rasi-form__notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 16px 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 400px;
+    z-index: 999;
+    animation: rasi-form-toast-slide 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border: 1px solid;
+}
+
+@keyframes rasi-form-toast-slide {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.rasi-form__notification--success {
+    background: #f0f9f5;
+    border-color: #81c784;
+    color: #2e7d32;
+}
+
+.rasi-form__notification--error {
+    background: #fdf5f5;
+    border-color: #ef5350;
+    color: #c62828;
+}
+
+.rasi-form__notification--warning {
+    background: #fff8f0;
+    border-color: #ffb74d;
+    color: #e65100;
+}
+
+.rasi-form__notification-message {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.rasi-form__notification-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 18px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.rasi-form__notification-close:hover {
+    opacity: 1;
+}
+
+/* Actions */
+.rasi-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e8e8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .rasi-form__paper {
+        padding: 20px;
+    }
+
+    .rasi-form__title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .rasi-form__tabs {
+        margin-bottom: 20px;
+    }
+
+    .rasi-form__tab {
+        padding: 10px 14px;
+        font-size: 12px;
+    }
+
+    .rasi-form__modal-overlay {
+        padding: 12px;
+    }
+
+    .rasi-form__notification {
+        bottom: 12px;
+        right: 12px;
+        left: 12px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .rasi-form__paper {
+        padding: 16px;
+        border-radius: 6px;
+    }
+
+    .rasi-form__title {
+        font-size: 20px;
+    }
+
+    .rasi-form__tabs {
+        /* flex-direction: column; */
+        gap: 4px;
+    }
+
+    .rasi-form__tab {
+        width: 100%;
+        text-align: left;
+        padding: 12px;
+    }
+
+    .rasi-form__week-nav {
+        /* flex-direction: column; */
+        gap: 12px;
+    }
+
+    .rasi-form__actions {
+        flex-direction: column;
+    }
+
+    .rasi-form__actions button {
+        width: 100%;
+    }
+
+    .rasi-form__card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Language Selector */
+    .rasi-form__language-selector {
+        max-width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes rasi-form-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Focus Visible */
+.rasi-form__btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.rasi-form__input:focus-visible,
+.rasi-form__textarea:focus-visible,
+.rasi-form__select:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .rasi-form__container {
+        background: white;
+        padding: 0;
+    }
+
+    .rasi-form__paper {
+        box-shadow: none;
+        padding: 0;
+        background: white;
+        border: none;
+    }
+}

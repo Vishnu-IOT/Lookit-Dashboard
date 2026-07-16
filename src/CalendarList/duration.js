@@ -1,36 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Grid,
-  Tab,
-  Tabs,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Alert,
-  Snackbar,
-  Card,
-  CardContent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
-} from '@mui/material';
-import { Add, Delete, Save, NavigateBefore, NavigateNext, CalendarToday } from '@mui/icons-material';
-import "./simple.css"
+import '../styles/RasiUploadForm.css';
 
 const rasiOptions = [
   { name: "மேஷம்", rasiId: "1" },
@@ -48,8 +18,8 @@ const rasiOptions = [
 ];
 
 const englishMonths = [
-  "jan", "feb", "mar", "apr", "may", "jun",
-  "jul", "aug", "sep", "oct", "nov", "dec"
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 ];
 
 const tamilMonths = [
@@ -66,7 +36,6 @@ const RasiUpdateForm = () => {
   const [sundayPickerOpen, setSundayPickerOpen] = useState(false);
   const [sundayPickerDate, setSundayPickerDate] = useState('');
 
-  // Base form state
   const [formData, setFormData] = useState({
     date: '',
     duration: '',
@@ -95,30 +64,24 @@ const RasiUpdateForm = () => {
     Note: ''
   });
 
-  // Additional state for Monthly and Yearly date inputs
   const [monthlyDate, setMonthlyDate] = useState({ month: '', year: '' });
   const [yearlyDate, setYearlyDate] = useState({ year: '' });
-
-  // Dynamic tables for yearly
   const [kiraganamRows, setKiraganamRows] = useState([{ title: '', value: '' }]);
   const [kiraganamEyeRows, setKiraganamEyeRows] = useState([{ title: '', value: '' }]);
 
-  // Function to get the Sunday of a given week
   const getSunday = (date) => {
     const d = new Date(date);
-    const day = d.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const diff = d.getDate() - day; // subtract days to get to Sunday
+    const day = d.getDay();
+    const diff = d.getDate() - day;
     return new Date(d.setDate(diff));
   };
 
-  // Function to get the Saturday of a given week (6 days after Sunday)
   const getSaturday = (sunday) => {
     const saturday = new Date(sunday);
     saturday.setDate(sunday.getDate() + 6);
     return saturday;
   };
 
-  // Function to format date as YYYY-MM-DD
   const formatDate = (date) => {
     if (!date) return '';
     const d = new Date(date);
@@ -128,51 +91,46 @@ const RasiUpdateForm = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Function to get week range string
   const getWeekRangeString = (sunday) => {
     if (!sunday) return '';
     const saturday = getSaturday(sunday);
     return `${formatDate(sunday)}==${formatDate(saturday)}`;
   };
 
-  // Function to set the current week's Sunday
   const setCurrentWeek = () => {
     const today = new Date();
     const currentSunday = getSunday(today);
     setSelectedSunday(currentSunday);
-    setFormData(prev => ({ 
-      ...prev, 
-      date: getWeekRangeString(currentSunday) 
+    setFormData(prev => ({
+      ...prev,
+      date: getWeekRangeString(currentSunday)
     }));
   };
 
-  // Function to navigate to previous week
   const goToPreviousWeek = () => {
     if (selectedSunday) {
       const prevSunday = new Date(selectedSunday);
       prevSunday.setDate(prevSunday.getDate() - 7);
       setSelectedSunday(prevSunday);
-      setFormData(prev => ({ 
-        ...prev, 
-        date: getWeekRangeString(prevSunday) 
+      setFormData(prev => ({
+        ...prev,
+        date: getWeekRangeString(prevSunday)
       }));
     }
   };
 
-  // Function to navigate to next week
   const goToNextWeek = () => {
     if (selectedSunday) {
       const nextSunday = new Date(selectedSunday);
       nextSunday.setDate(nextSunday.getDate() + 7);
       setSelectedSunday(nextSunday);
-      setFormData(prev => ({ 
-        ...prev, 
-        date: getWeekRangeString(nextSunday) 
+      setFormData(prev => ({
+        ...prev,
+        date: getWeekRangeString(nextSunday)
       }));
     }
   };
 
-  // Function to open Sunday picker
   const openSundayPicker = () => {
     if (selectedSunday) {
       setSundayPickerDate(formatDate(selectedSunday));
@@ -182,34 +140,31 @@ const RasiUpdateForm = () => {
     setSundayPickerOpen(true);
   };
 
-  // Function to handle Sunday selection from picker
   const handleSundayPickerSelect = () => {
     if (sundayPickerDate) {
       const selectedDate = new Date(sundayPickerDate);
       const selectedSunday = getSunday(selectedDate);
       setSelectedSunday(selectedSunday);
-      setFormData(prev => ({ 
-        ...prev, 
-        date: getWeekRangeString(selectedSunday) 
+      setFormData(prev => ({
+        ...prev,
+        date: getWeekRangeString(selectedSunday)
       }));
     }
     setSundayPickerOpen(false);
   };
 
-  // Function to get formatted week display
   const getWeekDisplay = () => {
     if (!selectedSunday) return 'Select a week';
     const saturday = getSaturday(selectedSunday);
     return `${formatDate(selectedSunday)} to ${formatDate(saturday)}`;
   };
 
-  // Function to check if a date is a Sunday
   const isDateSunday = (dateString) => {
     const date = new Date(dateString);
     return date.getDay() === 0;
   };
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (newValue) => {
     setActiveTab(newValue);
     resetFormForTab(newValue);
   };
@@ -217,13 +172,11 @@ const RasiUpdateForm = () => {
   const resetFormForTab = (tabIndex) => {
     const today = new Date();
     const currentYear = today.getFullYear();
-    // Get current month based on language
     let currentMonth = '';
     if (tabIndex === 2) {
       if (monthlyLanguage === 'english') {
         currentMonth = englishMonths[today.getMonth()];
       } else {
-        // For Tamil, default to the first month (சித்திரை)
         currentMonth = tamilMonths[0];
       }
     }
@@ -259,26 +212,21 @@ const RasiUpdateForm = () => {
     if (tabIndex === 0) {
       resetData.date = formatDate(today);
     } else if (tabIndex === 1) {
-      // Set current week when switching to Weekly tab
       const currentSunday = getSunday(today);
       setSelectedSunday(currentSunday);
       resetData.date = getWeekRangeString(currentSunday);
     } else if (tabIndex === 2) {
-      // Set default for monthly: current month-year
       setMonthlyDate({ month: currentMonth, year: currentYear.toString() });
       resetData.date = `${currentMonth}-${currentYear}`;
       resetData.mon_lan = monthlyLanguage;
-      // Add Tamil month name if language is Tamil
       if (monthlyLanguage === 'tamil') {
         resetData.tamil_month_name = currentMonth;
       }
     } else if (tabIndex === 3) {
-      // Set default for yearly
       if (yearlyLanguage === 'english') {
         setYearlyDate({ year: currentYear.toString(), year_name: '' });
         resetData.date = currentYear.toString();
       } else {
-        // For Tamil, default to the first option
         setYearlyDate({ year: currentYear.toString(), year_name: 'பரபாவ' });
         resetData.date = currentYear.toString();
         resetData.year_name = 'பரபாவ';
@@ -292,31 +240,20 @@ const RasiUpdateForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // Special handling for date field based on active tab
-    if (name === 'date') {
-      if (activeTab === 0) {
-        // Daily: YYYY-MM-DD format
-        setFormData(prev => ({ ...prev, date: value }));
-      }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleMonthlyDateChange = (field, value) => {
     const newMonthlyDate = { ...monthlyDate, [field]: value };
     setMonthlyDate(newMonthlyDate);
 
-    // Update formData date in "month-year" format
     if (newMonthlyDate.month && newMonthlyDate.year) {
       const formattedDate = `${newMonthlyDate.month}-${newMonthlyDate.year}`;
       setFormData(prev => ({ ...prev, date: formattedDate }));
 
-      // Also store the Tamil month separately in formData if language is Tamil
       if (monthlyLanguage === 'tamil' && newMonthlyDate.month && newMonthlyDate.year) {
         const formattedDate = `${newMonthlyDate.month}-${newMonthlyDate.year}`;
         setFormData(prev => ({ ...prev, tamil_month_name: formattedDate }));
@@ -328,15 +265,12 @@ const RasiUpdateForm = () => {
     const newYearlyDate = { ...yearlyDate, [field]: value };
     setYearlyDate(newYearlyDate);
 
-    // Update formData based on language
     if (yearlyLanguage === 'english') {
-      // For English: date = year value
       if (newYearlyDate.year) {
         const updatedFormData = { date: newYearlyDate.year };
         setFormData(prev => ({ ...prev, ...updatedFormData }));
       }
     } else {
-      // For Tamil: date = year value, year_name = பரபாவ or other Tamil year names
       if (newYearlyDate.year && newYearlyDate.year_name) {
         const updatedFormData = {
           date: newYearlyDate.year,
@@ -357,60 +291,16 @@ const RasiUpdateForm = () => {
     }));
   };
 
-  // Get current months based on selected language for monthly tab
   const getCurrentMonths = () => {
     return monthlyLanguage === 'english' ? englishMonths : tamilMonths;
   };
 
-  // Render year input based on language for yearly tab
-  const renderYearInput = () => {
-    return (
-      <Grid container spacing={2}>
-        {/* Year input - always shown */}
-        <Grid item xs={yearlyLanguage === 'tamil' ? 6 : 12}>
-          <TextField
-            fullWidth
-            label="Year"
-            value={yearlyDate.year}
-            onChange={(e) => handleYearlyDateChange('year', e.target.value)}
-            type="number"
-            InputProps={{ inputProps: { min: 2000, max: 2100 } }}
-            placeholder="2026"
-          />
-        </Grid>
-
-        {/* Year name dropdown - only for Tamil language */}
-        {yearlyLanguage === 'tamil' && (
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel>Year Name</InputLabel>
-              <Select
-                value={yearlyDate.year_name}
-                onChange={(e) => handleYearlyDateChange('year_name', e.target.value)}
-                label="Year Name"
-              >
-                <MenuItem value="விசுவாசுவ">விசுவாசுவ</MenuItem>
-                <MenuItem value="பரபாவ">பரபாவ</MenuItem>
-                {/* You can add more Tamil year names here if needed */}
-                <MenuItem value="பிலவங்க">பிலவங்க</MenuItem>
-                <MenuItem value="கீலக">கீலக</MenuItem>
-                <MenuItem value="சௌமிய">சௌமிய</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        )}
-      </Grid>
-    );
-  };
-
-  // Dynamic table handlers for kiraganam
   const handleKiraganamChange = (index, field, value) => {
     const newRows = [...kiraganamRows];
     newRows[index] = { ...newRows[index], [field]: value };
     setKiraganamRows(newRows);
   };
 
-  // Dynamic table handlers for kiraganam eye
   const handleKiraganamEyeChange = (index, field, value) => {
     const newRows = [...kiraganamEyeRows];
     newRows[index] = { ...newRows[index], [field]: value };
@@ -484,7 +374,6 @@ const RasiUpdateForm = () => {
         return false;
       }
 
-      // For yearly tab, check if all rows have both title and value when one is filled
       const invalidKiraganam = kiraganamRows.some(row =>
         (row.title && !row.value) || (!row.title && row.value)
       );
@@ -520,9 +409,7 @@ const RasiUpdateForm = () => {
     let payload = { ...formData };
     const endpoint = getEndpoint();
 
-    // Prepare payload based on tab
     if (activeTab === 3) {
-      // Yearly - format kiraganam as array of objects
       const formattedKiraganam = kiraganamRows
         .filter(row => row.title && row.value)
         .map(row => ({
@@ -530,7 +417,6 @@ const RasiUpdateForm = () => {
           value: row.value
         }));
 
-      // Format kiraganam_eye as array of objects
       const formattedKiraganamEye = kiraganamEyeRows
         .filter(row => row.title && row.value)
         .map(row => ({
@@ -538,16 +424,13 @@ const RasiUpdateForm = () => {
           value: row.value
         }));
 
-      // Update payload with formatted arrays
       payload.kiraganam = formattedKiraganam;
       payload.kiraganam_eye = formattedKiraganamEye;
 
-      // Year name is already in formData, but ensure it's in payload
       if (yearlyLanguage === 'tamil' && yearlyDate.year_name) {
         payload.year_name = yearlyDate.year_name;
       }
     } else if (activeTab === 2) {
-      // Monthly - include tamil_month_name if language is Tamil
       if (monthlyLanguage === 'tamil') {
         payload.tamil_month_name = `${monthlyDate.month}-${monthlyDate.year}`;
       }
@@ -595,7 +478,6 @@ const RasiUpdateForm = () => {
     return names[activeTab];
   };
 
-  // Update formData when language changes
   useEffect(() => {
     if (activeTab === 2) {
       setFormData(prev => ({
@@ -603,7 +485,6 @@ const RasiUpdateForm = () => {
         mon_lan: monthlyLanguage
       }));
 
-      // Reset month selection when language changes
       const currentMonths = getCurrentMonths();
       const newMonth = monthlyDate.month && currentMonths.includes(monthlyDate.month)
         ? monthlyDate.month
@@ -617,7 +498,6 @@ const RasiUpdateForm = () => {
           mon_lan: monthlyLanguage
         };
 
-        // Add Tamil month name if language is Tamil
         if (monthlyLanguage === 'tamil' && newMonth && monthlyDate.year) {
           updatedFormData.tamil_month_name = `${newMonth}-${monthlyDate.year}`;
         }
@@ -630,23 +510,19 @@ const RasiUpdateForm = () => {
         mon_lan: yearlyLanguage
       }));
 
-      // Reset year selection when language changes
       let newYear = yearlyDate.year || new Date().getFullYear().toString();
       let newYearName = yearlyDate.year_name;
 
       if (yearlyLanguage === 'tamil') {
-        // For Tamil, set default year name if not already set
         if (!newYearName) {
           newYearName = 'பரபாவ';
         }
       } else {
-        // For English, clear year name
         newYearName = '';
       }
 
       setYearlyDate({ year: newYear, year_name: newYearName });
 
-      // Update form data
       const updatedFormData = {
         date: newYear,
         mon_lan: yearlyLanguage
@@ -667,864 +543,842 @@ const RasiUpdateForm = () => {
   const renderDateInput = () => {
     if (activeTab === 0) {
       return (
-        <TextField
-          fullWidth
-          label="Date"
-          name="date"
-          value={formData.date}
-          onChange={handleInputChange}
-          type="date"
-          InputLabelProps={{ shrink: true }}
-        />
+        <div className="rasi-form__form-group">
+          <label className="rasi-form__label">Date</label>
+          <input
+            className="rasi-form__input"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            type="date"
+            placeholder='Select Date'
+          />
+        </div>
       );
     } else if (activeTab === 1) {
       return (
-        <Grid container spacing={2}>
-          {/* Week Navigation */}
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <IconButton onClick={goToPreviousWeek} color="primary">
-                <NavigateBefore />
-              </IconButton>
-              
-              <Box sx={{ textAlign: 'center', flexGrow: 1 }}>
-                <Typography variant="h6" color="primary">
-                  {getWeekDisplay()}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Selected Week Range
-                </Typography>
-              </Box>
-              
-              <IconButton onClick={goToNextWeek} color="primary">
-                <NavigateNext />
-              </IconButton>
-            </Box>
-          </Grid>
-
-          {/* Sunday Selection Button */}
-          <Grid item xs={12}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={openSundayPicker}
-              startIcon={<CalendarToday />}
+        <div className="rasi-form__week-section">
+          <div className="rasi-form__week-nav">
+            <button
+              className="rasi-form__nav-btn rasi-form__nav-btn--prev"
+              onClick={goToPreviousWeek}
+              title="Previous week"
             >
-              Select Sunday of the Week
-            </Button>
-          </Grid>
+              ←
+            </button>
 
-          {/* Current Selected Week Range (Read-only) */}
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Week Range (Auto-generated)"
+            <div className="rasi-form__week-display">
+              <div className="rasi-form__week-range">
+                {getWeekDisplay()}
+              </div>
+              <div className="rasi-form__week-label">Selected Week Range</div>
+            </div>
+
+            <button
+              className="rasi-form__nav-btn rasi-form__nav-btn--next"
+              onClick={goToNextWeek}
+              title="Next week"
+            >
+              →
+            </button>
+          </div>
+
+          <button
+            className="rasi-form__btn rasi-form__btn--outlined"
+            onClick={openSundayPicker}
+          >
+            📅 Select Sunday of the Week
+          </button>
+
+          <div className="rasi-form__form-group">
+            <label className="rasi-form__label">Week Range (Auto-generated)</label>
+            <input
+              className="rasi-form__input rasi-form__input--readonly"
               value={formData.date}
-              InputProps={{
-                readOnly: true,
-              }}
-              helperText="Format: YYYY-MM-DD==YYYY-MM-DD"
+              readOnly
+              placeholder="Format: YYYY-MM-DD==YYYY-MM-DD"
             />
-          </Grid>
+            <span className="rasi-form__helper-text">Format: YYYY-MM-DD==YYYY-MM-DD</span>
+          </div>
 
-          {/* Week Details */}
-          <Grid item xs={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="subtitle2" gutterBottom>
-                  Week Details:
-                </Typography>
-                {selectedSunday && (
-                  <>
-                    <Typography variant="body2">
-                      <strong>Sunday:</strong> {formatDate(selectedSunday)}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Monday:</strong> {formatDate(new Date(selectedSunday.getTime() + 24 * 60 * 60 * 1000))}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Tuesday:</strong> {formatDate(new Date(selectedSunday.getTime() + 2 * 24 * 60 * 60 * 1000))}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Wednesday:</strong> {formatDate(new Date(selectedSunday.getTime() + 3 * 24 * 60 * 60 * 1000))}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Thursday:</strong> {formatDate(new Date(selectedSunday.getTime() + 4 * 24 * 60 * 60 * 1000))}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Friday:</strong> {formatDate(new Date(selectedSunday.getTime() + 5 * 24 * 60 * 60 * 1000))}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Saturday:</strong> {formatDate(getSaturday(selectedSunday))}
-                    </Typography>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
+          <div className="rasi-form__card">
+            <h4 className="rasi-form__card-title">Week Details:</h4>
+            {selectedSunday && (
+              <div className="rasi-form__week-details">
+                <p><strong>Sunday:</strong> {formatDate(selectedSunday)}</p>
+                <p><strong>Monday:</strong> {formatDate(new Date(selectedSunday.getTime() + 24 * 60 * 60 * 1000))}</p>
+                <p><strong>Tuesday:</strong> {formatDate(new Date(selectedSunday.getTime() + 2 * 24 * 60 * 60 * 1000))}</p>
+                <p><strong>Wednesday:</strong> {formatDate(new Date(selectedSunday.getTime() + 3 * 24 * 60 * 60 * 1000))}</p>
+                <p><strong>Thursday:</strong> {formatDate(new Date(selectedSunday.getTime() + 4 * 24 * 60 * 60 * 1000))}</p>
+                <p><strong>Friday:</strong> {formatDate(new Date(selectedSunday.getTime() + 5 * 24 * 60 * 60 * 1000))}</p>
+                <p><strong>Saturday:</strong> {formatDate(getSaturday(selectedSunday))}</p>
+              </div>
+            )}
+          </div>
 
-          {/* Quick Navigation Button */}
-          <Grid item xs={12}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={setCurrentWeek}
-              startIcon={<CalendarToday />}
-            >
-              Jump to Current Week
-            </Button>
-          </Grid>
-        </Grid>
+          <button
+            className="rasi-form__btn rasi-form__btn--outlined"
+            onClick={setCurrentWeek}
+          >
+            📅 Jump to Current Week
+          </button>
+        </div>
       );
     } else if (activeTab === 2) {
       return (
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel>Month</InputLabel>
-              <Select
+        <div className="rasi-form__date-inputs">
+          <div className="rasi-form__row rasi-form__row--half">
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Month</label>
+              <select
+                className="rasi-form__select"
                 value={monthlyDate.month}
                 onChange={(e) => handleMonthlyDateChange('month', e.target.value)}
-                label="Month"
               >
+                <option value="">Select Month</option>
                 {getCurrentMonths().map((month) => (
-                  <MenuItem key={month} value={month}>
+                  <option key={month} value={month}>
                     {month}
-                  </MenuItem>
+                  </option>
                 ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              label="Year"
-              value={monthlyDate.year}
-              onChange={(e) => handleMonthlyDateChange('year', e.target.value)}
-              type="number"
-              InputProps={{ inputProps: { min: 2000, max: 2100 } }}
-              placeholder="2026"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="caption" color="textSecondary">
+              </select>
+            </div>
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Year</label>
+              <input
+                className="rasi-form__input"
+                value={monthlyDate.year}
+                onChange={(e) => handleMonthlyDateChange('year', e.target.value)}
+                type="number"
+                min="2000"
+                max="2100"
+                placeholder="2026"
+              />
+            </div>
+            <span className="rasi-form__helper-text">
               Will be sent as: {formData.date || 'Select month and year'}
-            </Typography>
-          </Grid>
-        </Grid>
+            </span>
+          </div>
+        </div>
       );
     } else if (activeTab === 3) {
       return (
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            {renderYearInput()}
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="caption" color="textSecondary">
-              Will be sent as: {formData.date || 'Enter year'}
-            </Typography>
-          </Grid>
-        </Grid>
+        <div className="rasi-form__date-inputs">
+          <div className={yearlyLanguage === 'tamil' ? 'rasi-form__form-group rasi-form__form-group--half' : 'rasi-form__form-group'}>
+            <label className="rasi-form__label">Year</label>
+            <input
+              className="rasi-form__input"
+              value={yearlyDate.year}
+              onChange={(e) => handleYearlyDateChange('year', e.target.value)}
+              type="number"
+              min="2000"
+              max="2100"
+              placeholder="2026"
+            />
+          </div>
+
+          {yearlyLanguage === 'tamil' && (
+            <div className="rasi-form__form-group rasi-form__form-group--half">
+              <label className="rasi-form__label">Year Name</label>
+              <select
+                className="rasi-form__select"
+                value={yearlyDate.year_name}
+                onChange={(e) => handleYearlyDateChange('year_name', e.target.value)}
+              >
+                <option value="">Select Year Name</option>
+                <option value="விசுவாசுவ">விசுவாசுவ</option>
+                <option value="பரபாவ">பரபாவ</option>
+                <option value="பிலவங்க">பிலவங்க</option>
+                <option value="கீலக">கீலக</option>
+                <option value="சௌமிய">சௌமிய</option>
+              </select>
+            </div>
+          )}
+
+          <span className="rasi-form__helper-text">
+            Will be sent as: {formData.date || 'Enter year'}
+          </span>
+        </div>
       );
     }
   };
 
+  const tabNames = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
+
   return (
-    <Box sx={{ p: 3 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Rasi Updates Management
-        </Typography>
+    <div className="rasi-form__container">
+      <div className="rasi-form__paper">
+        <h1 className="rasi-form__title">Rasi Updates Management</h1>
 
-        <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 3 }}>
-          <Tab label="Daily" />
-          <Tab label="Weekly" />
-          <Tab label="Monthly" />
-          <Tab label="Yearly" />
-        </Tabs>
-
-        {/* Language selector for Monthly tab */}
-        {activeTab === 2 && (
-          <FormControl sx={{ mb: 3, minWidth: 120 }}>
-            <InputLabel>Language</InputLabel>
-            <Select
-              value={monthlyLanguage}
-              onChange={(e) => setMonthlyLanguage(e.target.value)}
-              label="Language"
+        <div className="rasi-form__tabs">
+          {tabNames.map((tabName, index) => (
+            <button
+              key={index}
+              className={`rasi-form__tab ${activeTab === index ? 'rasi-form__tab--active' : ''}`}
+              onClick={() => handleTabChange(index)}
             >
-              <MenuItem value="english">English</MenuItem>
-              <MenuItem value="tamil">Tamil</MenuItem>
-            </Select>
-          </FormControl>
+              {tabName}
+            </button>
+          ))}
+        </div>
+
+        {(activeTab === 2 || activeTab === 3) && (
+          <div className="rasi-form__language-selector">
+            <label className="rasi-form__label">Language</label>
+            <select
+              className="rasi-form__select"
+              value={activeTab === 2 ? monthlyLanguage : yearlyLanguage}
+              onChange={(e) => activeTab === 2 ? setMonthlyLanguage(e.target.value) : setYearlyLanguage(e.target.value)}
+            >
+              <option value="english">English</option>
+              <option value="tamil">Tamil</option>
+            </select>
+          </div>
         )}
 
-        {/* Language selector for Yearly tab */}
-        {activeTab === 3 && (
-          <FormControl sx={{ mb: 3, minWidth: 120 }}>
-            <InputLabel>Language</InputLabel>
-            <Select
-              value={yearlyLanguage}
-              onChange={(e) => setYearlyLanguage(e.target.value)}
-              label="Language"
-            >
-              <MenuItem value="english">English</MenuItem>
-              <MenuItem value="tamil">Tamil</MenuItem>
-            </Select>
-          </FormControl>
-        )}
-
-        <Grid container spacing={3}>
-          {/* Rasi Selection */}
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Rasi *</InputLabel>
-              <Select
+        <div className="rasi-form__form">
+          <div className="rasi-form__row rasi-form__row--half">
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Rasi *</label>
+              <select
+                className="rasi-form__select"
                 value={formData.rasiId}
                 onChange={handleRasiChange}
-                label="Rasi *"
               >
+                <option value="">Select Rasi</option>
                 {rasiOptions.map((rasi) => (
-                  <MenuItem key={rasi.rasiId} value={rasi.rasiId}>
+                  <option key={rasi.rasiId} value={rasi.rasiId}>
                     {rasi.name}
-                  </MenuItem>
+                  </option>
                 ))}
-              </Select>
-            </FormControl>
-          </Grid>
+              </select>
+            </div>
+          </div>
 
-          {/* Date Field - Dynamic based on tab */}
-          <Grid item xs={12} md={6}>
+          <div className="rasi-form__form-group">
             {renderDateInput()}
-          </Grid>
+          </div>
+          {(activeTab === 0 || activeTab === 1) && (
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Name</label>
+              <input
+                className="rasi-form__input rasi-form__input--readonly"
+                value={formData.name}
+                readOnly
+                placeholder="Auto-filled based on Rasi selection"
+              />
+              <span className="rasi-form__helper-text">Auto-filled based on Rasi selection</span>
+            </div>
+          )}
 
-          {/* Common Fields */}
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Name"
-              name="name"
-              value={formData.name}
-              disabled
-              helperText="Auto-filled based on Rasi selection"
-            />
-          </Grid>
-
-          {/* Tab-specific Fields */}
           {activeTab === 0 && (
             <>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Duration"
-                  name="duration"
-                  value={formData.duration}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Lucky Numbers"
-                  name="luckyNumbers"
-                  value={formData.luckyNumbers}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Lucky Direction"
-                  name="lucky_dr"
-                  value={formData.lucky_dr}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Lucky Color"
-                  name="lucky_color"
-                  value={formData.lucky_color}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Summary * "
+              <div className="rasi-form__row rasi-form__row--half">
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Duration</label>
+                  <input
+                    className="rasi-form__input"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleInputChange}
+                    placeholder='Duration'
+                  />
+                </div>
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Lucky Numbers</label>
+                  <input
+                    className="rasi-form__input"
+                    name="luckyNumbers"
+                    value={formData.luckyNumbers}
+                    onChange={handleInputChange}
+                    placeholder='Lucky Numbers'
+                  />
+                </div>
+              </div>
+              <div className="rasi-form__row rasi-form__row--half">
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Lucky Direction</label>
+                  <input
+                    className="rasi-form__input"
+                    name="lucky_dr"
+                    value={formData.lucky_dr}
+                    onChange={handleInputChange}
+                    placeholder='Lucky Direction'
+                  />
+                </div>
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Lucky Color</label>
+                  <input
+                    className="rasi-form__input"
+                    name="lucky_color"
+                    value={formData.lucky_color}
+                    onChange={handleInputChange}
+                    placeholder='Lucky Color'
+                  />
+                </div>
+              </div>
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Summary *</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="summary"
                   value={formData.summary}
                   onChange={handleInputChange}
-                  multiline
-                  rows={4}
+                  rows="4"
                   required
+                  placeholder='Rasi Summary'
                 />
-              </Grid>
+              </div>
             </>
           )}
 
           {activeTab === 1 && (
             <>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Kiraganam *"
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Kiraganam *</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="kiraganam"
                   value={formData.kiraganam}
                   onChange={handleInputChange}
-                  multiline
-                  rows={3}
+                  rows="3"
                   required
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Weekly Kiraganam"
+              </div>
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Weekly Kiraganam</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="weekly_kiraganam"
                   value={formData.weekly_kiraganam}
                   onChange={handleInputChange}
-                  multiline
-                  rows={3}
+                  rows="3"
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Advantages"
+              </div>
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Advantages</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="advantages"
                   value={formData.advantages}
                   onChange={handleInputChange}
-                  multiline
-                  rows={3}
+                  rows="3"
                 />
-              </Grid>
+              </div>
             </>
           )}
 
           {(activeTab === 2 || activeTab === 3) && (
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Mon Lan"
-                name="mon_lan"
-                value={formData.mon_lan}
-                disabled
-                helperText={
-                  activeTab === 2
-                    ? `Auto-filled based on language selection (${monthlyLanguage})`
-                    : `Auto-filled based on language selection (${yearlyLanguage})`
-                }
-              />
-            </Grid>
+            <div className="rasi-form__row rasi-form__row--half">
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Name</label>
+                <input
+                  className="rasi-form__input rasi-form__input--readonly"
+                  value={formData.name}
+                  readOnly
+                  placeholder="Auto-filled based on Rasi selection"
+                />
+                <span className="rasi-form__helper-text">Auto-filled based on Rasi selection</span>
+              </div>
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Mon Lan</label>
+                <input
+                  className="rasi-form__input rasi-form__input--readonly"
+                  value={formData.mon_lan}
+                  readOnly
+                  placeholder="Auto-filled"
+                />
+                <span className="rasi-form__helper-text">
+                  Auto-filled based on language selection ({activeTab === 2 ? monthlyLanguage : yearlyLanguage})
+                </span>
+              </div>
+            </div>
           )}
 
           {activeTab === 2 && (
             <>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Kiraganam"
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Kiraganam</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="kiraganam"
                   value={formData.kiraganam}
                   onChange={handleInputChange}
-                  multiline
-                  rows={3}
+                  rows="3"
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Prayers"
+              </div>
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Prayers</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="prayers"
                   value={formData.prayers}
                   onChange={handleInputChange}
-                  multiline
-                  rows={3}
+                  rows="3"
                 />
-              </Grid>
+              </div>
             </>
           )}
 
           {activeTab === 3 && (
             <>
-              {/* Dynamic Kiraganam Table */}
-              <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="h6">Kiraganam Data</Typography>
-                      <Button
-                        startIcon={<Add />}
-                        onClick={addKiraganamRow}
-                        variant="outlined"
-                        size="small"
-                      >
-                        Add Row
-                      </Button>
-                    </Box>
+              <div className="rasi-form__card">
+                <div className="rasi-form__card-header">
+                  <h3 className="rasi-form__card-title">Kiraganam Data</h3>
+                  <button
+                    className="rasi-form__btn rasi-form__btn--small"
+                    onClick={addKiraganamRow}
+                  >
+                    + Add Row
+                  </button>
+                </div>
 
-                    <TableContainer>
-                      <Table size="small">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>#</TableCell>
-                            <TableCell>Title</TableCell>
-                            <TableCell>Value</TableCell>
-                            <TableCell>Actions</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {kiraganamRows.map((row, rowIndex) => (
-                            <TableRow key={rowIndex}>
-                              <TableCell>{rowIndex + 1}</TableCell>
-                              <TableCell>
-                                <TextField
-                                  size="small"
-                                  fullWidth
-                                  placeholder="Enter title"
-                                  value={row.title || ''}
-                                  onChange={(e) => handleKiraganamChange(rowIndex, 'title', e.target.value)}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  size="small"
-                                  fullWidth
-                                  placeholder="Enter value"
-                                  value={row.value || ''}
-                                  onChange={(e) => handleKiraganamChange(rowIndex, 'value', e.target.value)}
-                                  multiline
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => removeKiraganamRow(rowIndex)}
-                                  color="error"
-                                >
-                                  <Delete fontSize="small" />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </CardContent>
-                </Card>
-              </Grid>
+                <div className="rasi-form__table-wrapper">
+                  <table className="rasi-form__table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Value</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {kiraganamRows.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          <td>{rowIndex + 1}</td>
+                          <td>
+                            <input
+                              className="rasi-form__input rasi-form__input--small"
+                              placeholder="Enter title"
+                              value={row.title || ''}
+                              onChange={(e) => handleKiraganamChange(rowIndex, 'title', e.target.value)}
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              className="rasi-form__textarea rasi-form__textarea--small"
+                              placeholder="Enter value"
+                              value={row.value || ''}
+                              onChange={(e) => handleKiraganamChange(rowIndex, 'value', e.target.value)}
+                              rows="2"
+                            />
+                          </td>
+                          <td>
+                            <button
+                              className="rasi-form__btn rasi-form__btn--danger rasi-form__btn--small"
+                              onClick={() => removeKiraganamRow(rowIndex)}
+                              title="Delete"
+                            >
+                              ✕
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-              {/* Dynamic Kiraganam Eye Table */}
-              <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="h6">Kiraganam Eye Data</Typography>
-                      <Button
-                        startIcon={<Add />}
-                        onClick={addKiraganamEyeRow}
-                        variant="outlined"
-                        size="small"
-                      >
-                        Add Row
-                      </Button>
-                    </Box>
+              <div className="rasi-form__card">
+                <div className="rasi-form__card-header">
+                  <h3 className="rasi-form__card-title">Kiraganam Eye Data</h3>
+                  <button
+                    className="rasi-form__btn rasi-form__btn--small"
+                    onClick={addKiraganamEyeRow}
+                  >
+                    + Add Row
+                  </button>
+                </div>
 
-                    <TableContainer>
-                      <Table size="small">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>#</TableCell>
-                            <TableCell>Title</TableCell>
-                            <TableCell>Value</TableCell>
-                            <TableCell>Actions</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {kiraganamEyeRows.map((row, rowIndex) => (
-                            <TableRow key={rowIndex}>
-                              <TableCell>{rowIndex + 1}</TableCell>
-                              <TableCell>
-                                <TextField
-                                  size="small"
-                                  fullWidth
-                                  placeholder="Enter title"
-                                  value={row.title || ''}
-                                  onChange={(e) => handleKiraganamEyeChange(rowIndex, 'title', e.target.value)}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <TextField
-                                  size="small"
-                                  fullWidth
-                                  placeholder="Enter value"
-                                  value={row.value || ''}
-                                  onChange={(e) => handleKiraganamEyeChange(rowIndex, 'value', e.target.value)}
-                                  multiline
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => removeKiraganamEyeRow(rowIndex)}
-                                  color="error"
-                                >
-                                  <Delete fontSize="small" />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </CardContent>
-                </Card>
-              </Grid>
+                <div className="rasi-form__table-wrapper">
+                  <table className="rasi-form__table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Value</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {kiraganamEyeRows.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          <td>{rowIndex + 1}</td>
+                          <td>
+                            <input
+                              className="rasi-form__input rasi-form__input--small"
+                              placeholder="Enter title"
+                              value={row.title || ''}
+                              onChange={(e) => handleKiraganamEyeChange(rowIndex, 'title', e.target.value)}
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              className="rasi-form__textarea rasi-form__textarea--small"
+                              placeholder="Enter value"
+                              value={row.value || ''}
+                              onChange={(e) => handleKiraganamEyeChange(rowIndex, 'value', e.target.value)}
+                              rows="2"
+                            />
+                          </td>
+                          <td>
+                            <button
+                              className="rasi-form__btn rasi-form__btn--danger rasi-form__btn--small"
+                              onClick={() => removeKiraganamEyeRow(rowIndex)}
+                              title="Delete"
+                            >
+                              ✕
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-              {/* Individual fields */}
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>Other Data:</Typography>
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Rasi Description"
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Rasi Description</label>
+                <textarea
+                  className="rasi-form__textarea"
                   name="rasi_des"
                   value={formData.rasi_des}
                   onChange={handleInputChange}
-                  multiline
-                  rows={3}
+                  rows="3"
                 />
-              </Grid>
+              </div>
 
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Advantages"
-                  name="advantages"
-                  value={formData.advantages}
-                  onChange={handleInputChange}
-                  multiline
-                  rows={2}
-                />
-              </Grid>
+              <div className="rasi-form__row rasi-form__row--half">
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Advantages</label>
+                  <textarea
+                    className="rasi-form__textarea"
+                    name="advantages"
+                    value={formData.advantages}
+                    onChange={handleInputChange}
+                    rows="2"
+                  />
+                </div>
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Prayers</label>
+                  <textarea
+                    className="rasi-form__textarea"
+                    name="prayers"
+                    value={formData.prayers}
+                    onChange={handleInputChange}
+                    rows="2"
+                  />
+                </div>
+              </div>
 
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Prayers"
-                  name="prayers"
-                  value={formData.prayers}
-                  onChange={handleInputChange}
-                  multiline
-                  rows={2}
-                />
-              </Grid>
-
-              {/* Category fields - conditionally render based on language */}
               {yearlyLanguage === 'english' && (
-                <>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Officers"
+                <div className="rasi-form__row rasi-form__row--triple">
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Officers</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Officers"
                       value={formData.Officers}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Traders"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Traders</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Traders"
                       value={formData.Traders}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Pengal"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Pengal</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Pengal"
                       value={formData.Pengal}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Politician"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Politician</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="politician"
                       value={formData.politician}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Artist"
+                  </div>
+                </div>
+              )}
+
+              {yearlyLanguage === 'english' && (
+                <div className="rasi-form__row rasi-form__row--triple">
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Artist</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="artist"
                       value={formData.artist}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Students"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Students</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="students"
                       value={formData.students}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Good"
+                  </div>
+                </div>
+              )}
+
+              {yearlyLanguage === 'english' && (
+                <div className="rasi-form__row rasi-form__row--half">
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Good</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Good"
                       value={formData.Good}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Attention"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Attention</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Attention"
                       value={formData.Attention}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                </>
+                  </div>
+                </div>
               )}
 
               {yearlyLanguage === 'tamil' && (
-                <>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Traders (தொழிலதிபர்கள்)"
+                <div className="rasi-form__row rasi-form__row--triple">
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Traders (தொழிலதிபர்கள்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Traders"
                       value={formData.Traders}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Officers (அலுவலகத்தினர்)"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Officers (அலுவலகத்தினர்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Officers"
                       value={formData.Officers}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Police (காவல்துறையினர்)"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Police (காவல்துறையினர்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Police"
                       value={formData.Police}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Politician (அரசியல்வாதிகள்)"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Politician (அரசியல்வாதிகள்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="politician"
                       value={formData.politician}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Pengal (மகளிர்)"
+                  </div>
+                </div>
+              )}
+
+              {yearlyLanguage === 'tamil' && (
+                <div className="rasi-form__row rasi-form__row--triple">
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Pengal (மகளிர்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Pengal"
                       value={formData.Pengal}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      fullWidth
-                      label="Students (மாணவர்கள்)"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Students (மாணவர்கள்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="students"
                       value={formData.students}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Good (நன்மை)"
+                  </div>
+                </div>
+              )}
+
+              {yearlyLanguage === 'tamil' && (
+                <div className="rasi-form__row rasi-form__row--half">
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Good (நன்மை)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Good"
                       value={formData.Good}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Attention (கவனம்)"
+                  </div>
+                  <div className="rasi-form__form-group">
+                    <label className="rasi-form__label">Attention (கவனம்)</label>
+                    <textarea
+                      className="rasi-form__textarea"
                       name="Attention"
                       value={formData.Attention}
                       onChange={handleInputChange}
-                      multiline
-                      rows={2}
+                      rows="2"
                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Note (குறிப்பு)"
-                      name="Note"
-                      value={formData.Note}
-                      onChange={handleInputChange}
-                      multiline
-                      rows={2}
-                    />
-                  </Grid>
-                </>
+                  </div>
+                </div>
+              )}
+
+              {yearlyLanguage === 'tamil' && (
+                <div className="rasi-form__form-group">
+                  <label className="rasi-form__label">Note (குறிப்பு)</label>
+                  <textarea
+                    className="rasi-form__textarea"
+                    name="Note"
+                    value={formData.Note}
+                    onChange={handleInputChange}
+                    rows="2"
+                  />
+                </div>
               )}
             </>
           )}
 
-          {/* Common field for all tabs */}
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Image URL"
-              name="image"
-              value={formData.image}
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          {/* Prayers field for Weekly and Monthly */}
           {(activeTab === 0 || activeTab === 1 || activeTab === 2) && (
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Prayers"
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Image URL</label>
+              <input
+                className="rasi-form__input"
+                name="image"
+                value={formData.image}
+                onChange={handleInputChange}
+                placeholder='Image URL'
+              />
+            </div>
+          )}
+
+          {(activeTab === 0 || activeTab === 1 || activeTab === 2) && (
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Prayers</label>
+              <textarea
+                className="rasi-form__textarea"
                 name="prayers"
                 value={formData.prayers}
                 onChange={handleInputChange}
-                multiline
-                rows={3}
+                rows="3"
+                placeholder='Prayers'
               />
-            </Grid>
+            </div>
           )}
 
-          {/* Advantages for Weekly */}
-          {activeTab === 1 && (
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Advantages"
-                name="advantages"
-                value={formData.advantages}
+          {activeTab === 3 && (
+            <div className="rasi-form__form-group">
+              <label className="rasi-form__label">Image URL</label>
+              <input
+                className="rasi-form__input"
+                name="image"
+                value={formData.image}
                 onChange={handleInputChange}
-                multiline
-                rows={3}
+                placeholder='Image URL'
               />
-            </Grid>
+            </div>
           )}
-        </Grid>
+        </div>
 
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Save />}
+        <div className="rasi-form__actions">
+          <button
+            className="rasi-form__btn rasi-form__btn--primary"
             onClick={handleSubmit}
-            size="large"
           >
-            Save {getTabName()} Update
-          </Button>
-        </Box>
-      </Paper>
+            💾 Save {getTabName()} Update
+          </button>
+        </div>
+      </div>
 
-      {/* Sunday Picker Dialog */}
-      <Dialog open={sundayPickerOpen} onClose={() => setSundayPickerOpen(false)}>
-        <DialogTitle>Select Sunday Date</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Select Sunday"
-            type="date"
-            value={sundayPickerDate}
-            onChange={(e) => setSundayPickerDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ mt: 2 }}
-            helperText="Please select a Sunday (day of week should be Sunday)"
-            error={sundayPickerDate && !isDateSunday(sundayPickerDate)}
-          />
-          {sundayPickerDate && !isDateSunday(sundayPickerDate) && (
-            <Typography color="error" variant="caption">
-              Please select a Sunday. The selected date is not a Sunday.
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSundayPickerOpen(false)}>Cancel</Button>
-          <Button 
-            onClick={handleSundayPickerSelect} 
-            variant="contained" 
-            disabled={sundayPickerDate && !isDateSunday(sundayPickerDate)}
+      {sundayPickerOpen && (
+        <div className="rasi-form__modal-overlay" onClick={() => setSundayPickerOpen(false)}>
+          <div className="rasi-form__modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="rasi-form__modal-title">Select Sunday Date</h2>
+            <div className="rasi-form__modal-content">
+              <div className="rasi-form__form-group">
+                <label className="rasi-form__label">Select Sunday</label>
+                <input
+                  className="rasi-form__input"
+                  type="date"
+                  value={sundayPickerDate}
+                  onChange={(e) => setSundayPickerDate(e.target.value)}
+                  placeholder='Select Sunday'
+                />
+                <span className="rasi-form__helper-text">Please select a Sunday (day of week should be Sunday)</span>
+                {sundayPickerDate && !isDateSunday(sundayPickerDate) && (
+                  <span className="rasi-form__error-text">Please select a Sunday. The selected date is not a Sunday.</span>
+                )}
+              </div>
+            </div>
+            <div className="rasi-form__modal-actions">
+              <button
+                className="rasi-form__btn rasi-form__btn--outlined"
+                onClick={() => setSundayPickerOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="rasi-form__btn rasi-form__btn--primary"
+                onClick={handleSundayPickerSelect}
+                disabled={sundayPickerDate && !isDateSunday(sundayPickerDate)}
+              >
+                Select
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notification.open && (
+        <div className={`rasi-form__notification rasi-form__notification--${notification.severity}`}>
+          <span className="rasi-form__notification-message">{notification.message}</span>
+          <button
+            className="rasi-form__notification-close"
+            onClick={() => setNotification({ ...notification, open: false })}
           >
-            Select
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={() => setNotification({ ...notification, open: false })}
-      >
-        <Alert
-          onClose={() => setNotification({ ...notification, open: false })}
-          severity={notification.severity}
-          sx={{ width: '100%' }}
-        >
-          {notification.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+            ✕
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 
