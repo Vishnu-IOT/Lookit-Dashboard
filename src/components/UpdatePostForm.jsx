@@ -28,6 +28,7 @@ const defaultFormData = {
   category: '',
   type: 'IMAGE',
   title: '',
+  description: '',
   image: '',
   video: '',
   isActive: 'yes',
@@ -146,6 +147,7 @@ const UpdatePostForm = () => {
     formPayload.append('category', formData.category);
     formPayload.append('type', formData.type);
     formPayload.append('title', formData.title);
+    formPayload.append('description', formData.description);
     formPayload.append('isActive', formData.isActive);
     formPayload.append('user_id', currentUserId);
 
@@ -244,6 +246,18 @@ const UpdatePostForm = () => {
             onChange={handleInputChange}
             placeholder="Enter Updates title"
             required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label" htmlFor="description">Description</label>
+          <textarea
+            className="form-textarea"
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            placeholder="Enter Updates description"
           />
         </div>
 

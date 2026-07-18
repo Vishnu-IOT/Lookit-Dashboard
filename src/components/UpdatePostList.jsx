@@ -227,6 +227,7 @@ const UpdatePostList = () => {
       category: category.category_name || '',
       type: category.type || 'IMAGE',
       title: category.title || category.category_name || category.name || '',
+      description: category.description || '',
       image: imageUrl,
       video: videoUrl,
       isActive: category.isActive || 'yes',
@@ -275,6 +276,7 @@ const UpdatePostList = () => {
     formPayload.append('category', formData.category);
     formPayload.append('type', formData.type);
     formPayload.append('title', formData.title);
+    formPayload.append('description', formData.description);
     formPayload.append('isActive', formData.isActive);
     formPayload.append('user_id', currentUserId);
 
@@ -367,7 +369,7 @@ const UpdatePostList = () => {
     setNotificationForm({
       user_id: type === 'schedule' ? (post.user_id || currentUserId).toString() : '',
       title: post.title || post.category || 'New Update',
-      message: notificationMessage[post?.category_name],
+      message: post.description || notificationMessage[post?.category_name],
       image: post.image || '',
       type: 'POSTER',
       type_id: post.id.toString(),
@@ -817,6 +819,18 @@ const UpdatePostList = () => {
               </div>
 
               <div className="form-group">
+                <label className="form-label" htmlFor="description">Description</label>
+                <textarea
+                  className="form-textarea"
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Enter Updates description"
+                />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="image">Thumbnail Image *</label>
                 <input
                   type="file"
@@ -838,7 +852,7 @@ const UpdatePostList = () => {
                         setFormData((prev) => ({ ...prev, image: '' }));
                       }}
                     >
-                      Remove Image
+                      ×
                     </button>
                   </div>
                 )}
