@@ -11,6 +11,7 @@ import { MdOutlineEdit, MdOutlineStarBorderPurple500 } from "react-icons/md";
 import { IoMdCheckmarkCircleOutline, IoMdTrendingUp } from "react-icons/io";
 import { LiaTheaterMasksSolid } from "react-icons/lia";
 import { BsDot } from "react-icons/bs";
+import Toggle from "./Togglebtn";
 
 const NotificationModal = ({
   showNotificationModal,
@@ -1070,56 +1071,6 @@ const Listarticle = () => {
                       <div className="la-post-actions">
                         <div className="status-controls">
                           <div
-                            className={`toggle-group ${post.istrending === 1 ? "trending-active" : ""
-                              }`}
-                            onChange={(e) =>
-                              updateFlag(post.id, "istrending", e.target.value)
-                            }
-                          >
-                            <span
-                              style={{
-                                color: "black",
-                                fontWeight: 300,
-                                fontSize: 16,
-                              }}
-                            >
-                              Trending:
-                            </span>
-                            <input
-                              className="toggle-switch"
-                              type="checkbox"
-                              role="switch"
-                              checked={post.istrending === 1}
-                              readOnly
-                            />
-                            <span className="toggle-label">
-                              {post.istrending === 1 ? "Trending" : "Normal"}
-                            </span>
-                          </div>
-
-                          {/* <div
-                            className={`toggle-group ${
-                              post.isActive === 'yes'
-                                ? 'status-active'
-                                : 'status-inactive'
-                            }`}
-                            onClick={() =>
-                              togglePostStatus(post.id, post.isActive)
-                            }
-                          >
-                            <input
-                              className="toggle-switch"
-                              type="checkbox"
-                              role="switch"
-                              checked={post.isActive === 'yes'}
-                              readOnly
-                            />
-                            <span className="toggle-label">
-                              {post.isActive === 'yes' ? 'Active' : 'Disabled'}
-                            </span>
-                          </div> */}
-
-                          <div
                             className={`toggle-group ${post.isActive === "yes"
                               ? "status-active"
                               : post.isActive === "reject"
@@ -1150,6 +1101,92 @@ const Listarticle = () => {
                               <option value="reject">Rejected</option>
                             </select>
                           </div>
+
+                          <div className="toggle-flex">
+                            {/* <div
+                              className={`toggle-group ${post.istrending === 1 ? "trending-active" : ""
+                                }`}
+                              onChange={(e) =>
+                                updateFlag(post.id, "istrending", e.target.value)
+                              }
+                            >
+                              <span
+                                style={{
+                                  color: "black",
+                                  fontWeight: 300,
+                                  fontSize: 16,
+                                }}
+                              >
+                                Trending:
+                              </span>
+                              <input
+                                className="toggle-switch"
+                                type="checkbox"
+                                role="switch"
+                                checked={post.istrending === 1}
+                                readOnly
+                              />
+                              <span className="toggle-label">
+                                {post.istrending === 1 ? "Trending" : "Normal"}
+                              </span>
+                            </div> */}
+
+                            <Toggle
+                              checked={post.istrending === 1}
+                              label={'Trending'}
+                              onChange={() => updateFlag(post.id, "istrending", post.istrending)}
+                              labelOn="Trending"
+                              labelOff="Normal"
+                            />
+                            <Toggle
+                              checked={post.is_entertainment === 1}
+                              label={'Entertainment'}
+                              onChange={() => updateFlag(post.id, "is_entertainment", post.is_entertainment)}
+                              labelOn="Entertainment"
+                              labelOff="Normal"
+                            />
+                          </div>
+
+                          <div className="toggle-flex">
+                            <Toggle
+                              checked={post.isBreaking === 'yes' ? 1 : 0}
+                              label={'Breaking'}
+                              onChange={() => updateFlag(post.id, "isBreaking", post.isBreaking === "yes" ? 1 : 0)}
+                              labelOn="Breaking"
+                              labelOff="Normal"
+                            />
+
+
+                            <Toggle
+                              checked={post.is_spotlight === 1}
+                              label={'Spotlight'}
+                              onChange={() => updateFlag(post.id, "is_spotlight", post.is_spotlight)}
+                              labelOn="Spotlight"
+                              labelOff="Normal"
+                            />
+                          </div>
+
+                          {/* <div
+                            className={`toggle-group ${
+                              post.isActive === 'yes'
+                                ? 'status-active'
+                                : 'status-inactive'
+                            }`}
+                            onClick={() =>
+                              togglePostStatus(post.id, post.isActive)
+                            }
+                          >
+                            <input
+                              className="toggle-switch"
+                              type="checkbox"
+                              role="switch"
+                              checked={post.isActive === 'yes'}
+                              readOnly
+                            />
+                            <span className="toggle-label">
+                              {post.isActive === 'yes' ? 'Active' : 'Disabled'}
+                            </span>
+                          </div> */}
                         </div>
                         <div className="action-buttons">
                           <button

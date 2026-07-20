@@ -1,0 +1,53 @@
+.togg-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.togg-title {
+    color: black;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.togg-switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+    background-color: #ccc;
+    border-radius: 999px;
+    transition: background-color 0.2s ease-in-out;
+    flex-shrink: 0;
+}
+
+.togg-switch.togg-checked {
+    background-color: var(--primary);
+    /* green when active */
+}
+
+.togg-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.togg-switch.togg-checked .togg-knob {
+    transform: translateX(20px);
+}
+
+.togg-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}

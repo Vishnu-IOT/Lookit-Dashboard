@@ -38,7 +38,7 @@ const RasiUpdateForm = () => {
 
   const [formData, setFormData] = useState({
     date: '',
-    duration: '',
+    duration: 'Daily',
     rasiId: '',
     name: '',
     summary: '',
@@ -183,7 +183,7 @@ const RasiUpdateForm = () => {
 
     const resetData = {
       date: '',
-      duration: '',
+      duration: 'Daily',
       rasiId: '',
       name: '',
       summary: '',
@@ -777,11 +777,12 @@ const RasiUpdateForm = () => {
                 <div className="rasi-form__form-group">
                   <label className="rasi-form__label">Duration</label>
                   <input
-                    className="rasi-form__input"
+                    className="rasi-form__input rasi-form__input--readonly"
                     name="duration"
                     value={formData.duration}
                     onChange={handleInputChange}
                     placeholder='Duration'
+                    readOnly
                   />
                 </div>
                 <div className="rasi-form__form-group">
