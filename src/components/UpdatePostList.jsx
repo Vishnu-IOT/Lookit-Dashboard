@@ -4,7 +4,7 @@ import imageCompression from 'browser-image-compression';
 import '../styles/Updates.css';
 import { IoCameraReverse, IoPersonCircleOutline } from 'react-icons/io5';
 import { FiCheckCircle } from "react-icons/fi";
-import { PiBowlFood, PiXCircleLight } from "react-icons/pi";
+import { PiBowlFood, PiHandsPrayingDuotone, PiXCircleLight } from "react-icons/pi";
 import { HiOutlineNewspaper, HiOutlineFilm, HiOutlineCpuChip, HiOutlineAcademicCap, HiOutlineBriefcase, HiOutlineSparkles } from "react-icons/hi2";
 import { MdSportsVolleyball, MdTravelExplore } from "react-icons/md";
 import { RiHealthBookLine } from "react-icons/ri";
@@ -28,6 +28,7 @@ const categoryOptions = [
   { value: 'SCIENCE', label: 'Science', icon: <GiMaterialsScience /> },
   { value: 'ARTS', label: 'Arts', icon: <HiOutlineSparkles /> },
   { value: 'POLITICS', label: 'Politics', icon: <FaLandmarkDome /> },
+  { value: 'SPIRITUAL', label: 'Spiritual', icon: <PiHandsPrayingDuotone /> },
 ];
 
 const typeOptions = [
@@ -157,6 +158,7 @@ const UpdatePostList = () => {
     SCIENCE: "அறிவியல் கண்டுபிடிப்புகள் மற்றும் ஆய்வுகள்.",
     ARTS: "கலை, இலக்கியம் மற்றும் படைப்பாற்றல் நிகழ்வுகள்.",
     POLITICS: "அரசியல் செய்திகள் மற்றும் பொது நிர்வாக தகவல்கள்.",
+    SPIRITUAL: "பிரபஞ்சம் உங்களுக்கு என்ன சொல்ல வருகிறது என்று தெரிந்துகொள்ளுங்கள்!"
   };
 
   // ── Image compression ──────────────────────────────────────────────────
