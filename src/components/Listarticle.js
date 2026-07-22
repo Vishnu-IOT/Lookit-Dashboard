@@ -556,7 +556,7 @@ const Listarticle = () => {
       setImageone(null);
       setImagetwo(null);
       const allowedCategories = (mainCatRes.data || []).filter(
-        (cat) => cat.status === "allow",
+        (cat) => cat.status === "allow" && cat.name !== 'News',
       );
       setMainCategories(allowedCategories);
       setSubCategories(subCatRes.data || []);
@@ -844,7 +844,7 @@ const Listarticle = () => {
       .get("https://users.mpdatahub.com/api/main-category")
       .then((res) => {
         const allowedCategories = (res.data || []).filter(
-          (cat) => cat.status === "allow",
+          (cat) => cat.status === "allow" && cat.name !== 'News',
         );
         setMainCategories(allowedCategories);
       })

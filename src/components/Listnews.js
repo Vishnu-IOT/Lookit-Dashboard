@@ -557,7 +557,7 @@ const Listnews = () => {
       setImageone(null);
       setImagetwo(null);
       const allowedCategories = (mainCatRes.data || []).filter(
-        (cat) => cat.status === "allow",
+        (cat) => cat.status === "allow" && cat.name === 'News',
       );
       setMainCategories(allowedCategories);
       setSubCategories(subCatRes.data || []);
