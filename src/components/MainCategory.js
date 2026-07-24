@@ -5,6 +5,7 @@ import '../styles/SubCategoryOverlay.css';
 import Loder from './Loder';
 import axios from 'axios';
 import StatusToggle from './StatusToggle';
+import Toggle from './Togglebtn';
 
 const categoryTitles = {
   157: 'INFORMATION',
@@ -49,6 +50,11 @@ function MainCategory() {
   };
 
   const [mainCategory, setMainCategory] = useState([]);
+
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortCategory, setSortCategory] = useState(null);
+  const [sortOrder, setSortOrder] = useState("");
+  const [sortLoading, setSortLoading] = useState(false);
 
   // ── Fetch ──────────────────────────────────────────────────────────────
   // const fetchPosts = async () => {
@@ -159,6 +165,19 @@ function MainCategory() {
     setAddError('');
   };
 
+  // ── Edit Sort Order modal handler ────────────────────────────────────────────────
+  const openSortModal = (category) => {
+    setSortCategory(category);
+    setSortOrder(category.order_sort || "");
+    setShowSortModal(true);
+  };
+
+  const closeSortModal = () => {
+    setShowSortModal(false);
+    setSortCategory(null);
+    setSortOrder("");
+  };
+
   const handleAddBackdropClick = (e) => {
     if (e.target === addModalRef.current) closeAddModal();
   };
@@ -222,17 +241,11 @@ function MainCategory() {
 
   const handleStatusUpdateSubmit = async (category, status) => {
     try {
-      const formData = new FormData();
 
-      formData.append('category_id', category.id);
-      formData.append('name', category.name);
-      formData.append('status', status);
-
-      const url = `https://users.mpdatahub.com/api/edit-main-category`;
+      const url = `https://users.mpdatahub.com/api/category/change-status?category_id=${category.id}&status=${status}`;
 
       const response = await fetch(url, {
-        method: 'POST',
-        body: formData,
+        method: 'GET',
       });
 
       if (response.ok) {
@@ -248,6 +261,61 @@ function MainCategory() {
       }
     } catch (error) {
       console.error('Error updating main category:', error);
+      showToast('Network error. Please try again.', 'error');
+    }
+  };
+
+  const handleArticleUpdateSubmit = async (category, status) => {
+    try {
+      const newValue = status === 'yes' ? 'no' : 'yes';
+      const formData = new FormData();
+
+      formData.append('category_id', category.id);
+      formData.append('single_article', newValue);
+
+      const url = `https://users.mpdatahub.com/api/category/single-article-status`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        showToast('Main Category Article Status updated successfully!', 'success');
+        fetchMainCategories();
+      } else {
+        const errData = await response.json();
+        showToast(
+          errData.message || 'Failed to update status. Please try again.',
+          'error'
+        );
+      }
+    } catch (error) {
+      console.error('Error updating main category:', error);
+      showToast('Network error. Please try again.', 'error');
+    }
+  };
+
+  const handleSortOrderUpdateSubmit = async (category, sortOrder) => {
+    try {
+      const url = `https://users.mpdatahub.com/api/update-order-sort?category_id=${category.id}&order_sort=${sortOrder}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        showToast('Main Category Sort Order updated successfully!', 'success');
+        fetchMainCategories();
+      } else {
+        const errData = await response.json();
+        showToast(
+          errData.message || 'Failed to update Sort Order. Please try again.',
+          'error'
+        );
+      }
+    } catch (error) {
+      console.error('Error updating Sort Order:', error);
       showToast('Network error. Please try again.', 'error');
     }
   };
@@ -416,6 +484,73 @@ function MainCategory() {
         </div>
       )}
 
+      {showSortModal && (
+        <div
+          className="subcategory-modal-overlay"
+          onClick={closeSortModal}
+        >
+          <div
+            className="subcategory-modal-box"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="subcategory-modal-header">
+              <h2>Update Sort Order</h2>
+
+              <button
+                className="subcategory-modal-close"
+                onClick={closeSortModal}
+              >
+                ×
+              </button>
+            </div>
+            <div className='subcategory-modal-form'>
+              <div className="subcategory-form-group">
+                <label className="subcategory-form-label">
+                  Category
+                </label>
+
+                <input
+                  className="subcategory-form-input"
+                  value={sortCategory?.name}
+                  disabled
+                />
+              </div>
+
+              <div className="subcategory-form-group">
+                <label className="subcategory-form-label">
+                  Sort Order
+                </label>
+
+                <input
+                  type="number"
+                  min="1"
+                  className="subcategory-form-input"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                />
+              </div>
+
+              <div className="subcategory-modal-actions">
+                <button
+                  className="subcategory-btn-cancel"
+                  onClick={closeSortModal}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="subcategory-btn-save"
+                  onClick={() => { handleSortOrderUpdateSubmit(sortCategory, sortOrder) }}
+                  disabled={sortLoading}
+                >
+                  {sortLoading ? "Updating..." : "Update"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Header ───────────────────────────────────────────────────── */}
       <div className="content-header">
         <h1 style={{ textAlign: 'left' }}>LookIt Main Category</h1>
@@ -488,35 +623,62 @@ function MainCategory() {
                       </div>
 
                       <div className="category-headerm">
+
                         <div className="category-titles-wrapper">
                           <h2 className="category-titles">{category.name}</h2>
                         </div>
-                        <div
-                          className="mc-toggle-btn"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {/* ── Edit button ── */}
-                          <button
-                            className="view-all-btndash"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEditModal(category);
-                            }}
+                        <div className='mc-main-toggle-container'>
+                          <div
+                            className="mc-toggle-btn"
+                            style={{ marginBottom: 10 }}
+                            onClick={(e) => e.stopPropagation()}
                           >
-                            ✏️ Edit
-                          </button>
+                            <button
+                              className="view-all-btndash"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openSortModal(category);
+                              }}
+                            >
+                              🔢 Sort
+                            </button>
 
-                          <StatusToggle
-                            defaultActive={
-                              category.status === 'allow' ? true : false
-                            }
-                            onChange={(isActive) => {
-                              handleStatusUpdateSubmit(
-                                category,
-                                isActive ? 'allow' : 'disable'
-                              );
-                            }}
-                          />
+                            <Toggle
+                              checked={category.article === 'yes'}
+                              label={'Article'}
+                              onChange={() => handleArticleUpdateSubmit(category, category.article)}
+                              labelOn="Article"
+                              labelOff="Normal"
+                            />
+                          </div>
+
+                          <div
+                            className="mc-toggle-btn"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {/* ── Edit button ── */}
+                            <button
+                              className="view-all-btndash"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openEditModal(category);
+                              }}
+                            >
+                              ✏️ Edit
+                            </button>
+
+                            <StatusToggle
+                              defaultActive={
+                                category.status === 'allow' ? true : false
+                              }
+                              onChange={(isActive) => {
+                                handleStatusUpdateSubmit(
+                                  category,
+                                  isActive ? 'allow' : 'disable'
+                                );
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                     </section>

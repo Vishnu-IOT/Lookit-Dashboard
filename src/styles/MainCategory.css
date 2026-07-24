@@ -365,12 +365,19 @@ body {
   border: none;
   margin: 0;
 }
+
 .mc-toggle-btn {
   display: flex;
   /* flex-direction: column; */
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  /* justify-content: center; */
   gap: 30px;
+}
+
+.mc-toggle-article-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .post-count {
@@ -672,6 +679,7 @@ body {
   .category-img {
     width: 30%;
   }
+
   .mc-toggle-btn {
     gap: 20px;
   }

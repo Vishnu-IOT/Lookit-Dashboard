@@ -2,8 +2,8 @@ import "../styles/Toggle.css";
 
 export default function Toggle({ checked, label, onChange, labelOn = "On", labelOff = "Off" }) {
     return (
-        <label className={`togg-group ${checked ? "togg-active" : ""}`}>
-            <span className="togg-title">{label || ''}:</span>
+        <label className={`togg-group ${checked ? "togg-active" : ""}`} style={label === "Article" ? { width: "0" } : {}}>
+            <span className="togg-title">{label || ''}</span>
 
             <span
                 className={`togg-switch ${checked ? "togg-checked" : ""}`}

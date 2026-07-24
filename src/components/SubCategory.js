@@ -164,7 +164,7 @@ const SubCategory = () => {
       subCategoryName: category.name,
       subCategoryTamName: category.tamil_name,
       subcategoryImage: '',
-      subcategoryStatus: 'disable',
+      subcategoryStatus: category.status,
     });
     setSubCategoriesId(category.id);
     setAddError('');
@@ -272,18 +272,11 @@ const SubCategory = () => {
 
   const handleStatusUpdateSubmit = async (category, status) => {
     try {
-      const formData = new FormData();
 
-      formData.append('category_id', category.id);
-      formData.append('parent_id', category.parent_id);
-      formData.append('name', category.name);
-      formData.append('status', status);
-
-      const url = `https://users.mpdatahub.com/api/edit-sub-category`;
+      const url = `https://users.mpdatahub.com/api/category/change-status?category_id=${category.id}&status=${status}`;
 
       const response = await fetch(url, {
-        method: 'POST',
-        body: formData,
+        method: 'GET',
       });
 
       if (response.ok) {
