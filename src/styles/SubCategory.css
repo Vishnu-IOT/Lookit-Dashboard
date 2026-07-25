@@ -140,6 +140,7 @@
 
 /* Section Cards */
 .section-carddash {
+  position: relative;
   background: white;
   border-radius: 6px;
   /* padding: 15px; */

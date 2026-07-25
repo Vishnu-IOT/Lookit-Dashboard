@@ -193,7 +193,7 @@ const SubCategory = () => {
   // ── Edit Sort Order modal handler ────────────────────────────────────────────────
   const openSortModal = (category) => {
     setSortCategory(category);
-    setSortOrder(category.order_sort || "");
+    setSortOrder(category.order_sort ?? "");
     setShowSortModal(true);
   };
 
@@ -325,6 +325,7 @@ const SubCategory = () => {
       if (response.ok) {
         showToast('Sub Category Sort Order updated successfully!', 'success');
         fetchSubCategory();
+        closeSortModal();
       } else {
         const errData = await response.json();
         showToast(
@@ -710,6 +711,11 @@ const SubCategory = () => {
                 key={`category-${category.id}`}
                 className="section-carddash category-sectiondash sub-category-card"
               >
+                {mainCategoryId === '224' && (
+                  <div className='mc-category-overlay'>
+                    <p className='mc-category-sort'>{category.order_sort ?? "-"}</p>
+                  </div>
+                )}
                 <div className="sub-category-img">
                   <img
                     src={category.FullImgPath || '/assets/lookit.png'}
@@ -729,15 +735,7 @@ const SubCategory = () => {
 
                 <div className="section-headerdash sub-category-right">
                   <div className="sub-category-toggle">
-                    <StatusToggle
-                      defaultActive={category.status === 'allow' ? true : false}
-                      onChange={(isActive) => {
-                        handleStatusUpdateSubmit(
-                          category,
-                          isActive ? 'allow' : 'disable'
-                        );
-                      }}
-                    />
+
                   </div>
                   <div className="category-infodash sub-category-name">
                     <div className="category-infodash1">
@@ -769,6 +767,16 @@ const SubCategory = () => {
                           🔢 Sort
                         </button>
                       )}
+
+                      <StatusToggle
+                        defaultActive={category.status === 'allow' ? true : false}
+                        onChange={(isActive) => {
+                          handleStatusUpdateSubmit(
+                            category,
+                            isActive ? 'allow' : 'disable'
+                          );
+                        }}
+                      />
                     </div>
                   </div>
                 </div>

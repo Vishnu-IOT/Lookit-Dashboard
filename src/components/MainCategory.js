@@ -168,7 +168,7 @@ function MainCategory() {
   // ── Edit Sort Order modal handler ────────────────────────────────────────────────
   const openSortModal = (category) => {
     setSortCategory(category);
-    setSortOrder(category.order_sort || "");
+    setSortOrder(category.order_sort ?? "");
     setShowSortModal(true);
   };
 
@@ -307,6 +307,7 @@ function MainCategory() {
       if (response.ok) {
         showToast('Main Category Sort Order updated successfully!', 'success');
         fetchMainCategories();
+        closeSortModal();
       } else {
         const errData = await response.json();
         showToast(
@@ -623,7 +624,7 @@ function MainCategory() {
                       </div>
 
                       <div className='mc-category-overlay'>
-                        <p className='mc-category-sort'>{category.order_sort || '-'}</p>
+                        <p className='mc-category-sort'>{category.order_sort  ?? "-"}</p>
                       </div>
 
                       <div className="category-headerm">
