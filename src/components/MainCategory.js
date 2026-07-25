@@ -622,6 +622,10 @@ function MainCategory() {
                         />
                       </div>
 
+                      <div className='mc-category-overlay'>
+                        <p className='mc-category-sort'>{category.order_sort || '-'}</p>
+                      </div>
+
                       <div className="category-headerm">
 
                         <div className="category-titles-wrapper">
