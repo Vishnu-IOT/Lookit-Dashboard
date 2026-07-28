@@ -10,6 +10,7 @@ import { MdSportsVolleyball, MdTravelExplore } from "react-icons/md";
 import { RiHealthBookLine } from "react-icons/ri";
 import { GiMaterialsScience, GiTravelDress } from "react-icons/gi";
 import { FaLandmarkDome } from "react-icons/fa6";
+import { GoLaw } from "react-icons/go";
 import axios from 'axios';
 
 
@@ -29,6 +30,7 @@ const categoryOptions = [
   { value: 'ARTS', label: 'Arts', icon: <HiOutlineSparkles /> },
   { value: 'POLITICS', label: 'Politics', icon: <FaLandmarkDome /> },
   { value: 'SPIRITUAL', label: 'Spiritual', icon: <PiHandsPrayingDuotone /> },
+  { value: 'LAW', label: 'Law', icon: <GoLaw /> },
 ];
 
 const typeOptions = [
@@ -158,7 +160,8 @@ const UpdatePostList = () => {
     SCIENCE: "அறிவியல் கண்டுபிடிப்புகள் மற்றும் ஆய்வுகள்.",
     ARTS: "கலை, இலக்கியம் மற்றும் படைப்பாற்றல் நிகழ்வுகள்.",
     POLITICS: "அரசியல் செய்திகள் மற்றும் பொது நிர்வாக தகவல்கள்.",
-    SPIRITUAL: "பிரபஞ்சம் உங்களுக்கு என்ன சொல்ல வருகிறது என்று தெரிந்துகொள்ளுங்கள்!"
+    SPIRITUAL: "பிரபஞ்சம் உங்களுக்கு என்ன சொல்ல வருகிறது என்று தெரிந்துகொள்ளுங்கள்!",
+    LAW: "சட்டத்தை அறிந்த குடிமகனே தனது உரிமைகளையும் கடமைகளையும் சிறப்பாகக் காப்பாற்ற முடியும்."
   };
 
   // ── Image compression ──────────────────────────────────────────────────

@@ -18,6 +18,7 @@ const categoryOptions = [
   { value: 'ARTS', label: 'Arts' },
   { value: 'POLITICS', label: 'Politics' },
   { value: 'SPIRITUAL', label: 'Spiritual' },
+  { value: 'LAW', label: 'Law' },
 ];
 
 const typeOptions = [
