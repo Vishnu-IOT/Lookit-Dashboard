@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Notiupdate.css";
-import { Bell, Send } from 'lucide-react';
+import { Bell, Send, Plus } from 'lucide-react';
 import { FaBell } from "react-icons/fa";
+import StatusToggle from "./StatusToggle";
 
 const API_BASE = "https://users.mpdatahub.com/api";
 
@@ -11,6 +12,9 @@ const Notiupdate = () => {
     const [preview, setPreview] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    // Add/Update notification modal state
+    const [showFormModal, setShowFormModal] = useState(false);
 
     // Notification sending states
     const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -43,7 +47,7 @@ const Notiupdate = () => {
 
     const fetchNotifications = async () => {
         try {
-            const res = await fetch(`${API_BASE}/listNotifications`);
+            const res = await fetch(`${API_BASE}/listNotificationsadmin`);
             const data = await res.json();
             setNotifications(data?.data || []);
         } catch (err) {
@@ -54,6 +58,45 @@ const Notiupdate = () => {
     useEffect(() => {
         fetchNotifications();
     }, []);
+
+    const handleNotificationUpdateSubmit = async (notification, status) => {
+        try {
+            // const newValue = status === 1 ? 0 : 1;
+            const formData = new FormData();
+
+            formData.append('id', notification.id);
+            formData.append('status', status);
+
+            const url = `https://users.mpdatahub.com/api/notification/change-status`;
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData,
+            });
+            if (response.ok) {
+                showToast('Notification Status updated successfully!', 'success');
+                fetchNotifications();
+            } else {
+                const errData = await response.json();
+                showToast(
+                    errData.message || 'Failed to update status. Please try again.',
+                    'error'
+                );
+            }
+        } catch (error) {
+            console.error('Error updating notification status:', error);
+            showToast('Network error. Please try again.', 'error');
+        }
+    };
+
+    const truncateWords = (text, maxWords = 3) => {
+        if (!text) return "";
+
+        const words = text.trim().split(/\s+/);
+
+        return words.length > maxWords
+            ? `${words.slice(0, maxWords).join(" ")}...`
+            : text;
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -111,6 +154,7 @@ const Notiupdate = () => {
             });
             showToast(editingId ? "Notification updated successfully!" : "Notification created successfully!", "success");
             resetForm();
+            setShowFormModal(false);
             fetchNotifications();
         } catch (err) {
             console.error("Submit error", err);
@@ -131,6 +175,18 @@ const Notiupdate = () => {
         setEditingId(null);
     };
 
+    // Open the Add/Update modal for creating a new notification
+    const openAddModal = () => {
+        resetForm();
+        setShowFormModal(true);
+    };
+
+    // Close the Add/Update modal
+    const closeFormModal = () => {
+        setShowFormModal(false);
+        resetForm();
+    };
+
     const handleEdit = (item) => {
         setEditingId(item.id);
         setFormData({
@@ -140,7 +196,7 @@ const Notiupdate = () => {
             status: item.status,
         });
         setPreview(item.image);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        setShowFormModal(true);
     };
 
     const handleDelete = async (id) => {
@@ -263,16 +319,69 @@ const Notiupdate = () => {
             {toast.show && (
                 <div className={`toast-box ${toast.type}`}>{toast.message}</div>
             )}
-            {/* Notification Modal */}
+
+            {/* Add/Update Notification Modal */}
+            {showFormModal && (
+                <div className="noti-update-modal-overlay">
+                    <div className="noti-update-modal-content">
+                        <div className="noti-update-modal-header">
+                            <h2>{editingId ? "Update Notification" : "Add Notification"}</h2>
+                            <button
+                                className="noti-update-modal-close-btn"
+                                onClick={closeFormModal}
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <form className="notification-form" onSubmit={handleSubmit}>
+                            <input
+                                name="category_name"
+                                placeholder="Category Name"
+                                value={formData.category_name}
+                                onChange={handleChange}
+                                required
+                            />
+                            <input
+                                name="title"
+                                placeholder="Title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                required
+                            />
+                            <textarea
+                                name="description"
+                                placeholder="Description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                required
+                            />
+                            <input type="file" accept="image/jpeg,image/png,image/gif" onChange={handleImageChange} />
+                            {preview && (
+                                <img src={preview} alt="preview" className="image-preview" />
+                            )}
+                            <select name="status" value={formData.status} onChange={handleChange}>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                            <button type="submit" disabled={loading}>
+                                {loading ? "Uploading..." : editingId ? "Update" : "Create"}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Send Notification Modal */}
             {showNotificationModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
+                <div className="noti-update-modal-overlay">
+                    <div className="noti-update-modal-content">
+                        <div className="noti-update-modal-header">
                             <h2>
                                 {notificationType === 'single' ? 'Send Single Notification' : 'Send Bulk Notification'}
                             </h2>
                             <button
-                                className="modal-close-btn"
+                                className="noti-update-modal-close-btn"
                                 onClick={closeNotificationModal}
                             >
                                 &times;
@@ -281,7 +390,7 @@ const Notiupdate = () => {
 
                         <form onSubmit={sendNotification} className="notification-form">
                             {notificationType === 'single' && (
-                                <div className="form-group">
+                                <div className="noti-update-form-group">
                                     <label htmlFor="user_id">User ID *</label>
                                     <input
                                         type="text"
@@ -294,7 +403,7 @@ const Notiupdate = () => {
                                 </div>
                             )}
 
-                            <div className="form-group">
+                            <div className="noti-update-form-group">
                                 <label htmlFor="title">Title *</label>
                                 <input
                                     type="text"
@@ -307,7 +416,7 @@ const Notiupdate = () => {
                                 />
                             </div>
 
-                            <div className="form-group">
+                            <div className="noti-update-form-group">
                                 <label htmlFor="message">Message *</label>
                                 <textarea
                                     id="message"
@@ -320,7 +429,7 @@ const Notiupdate = () => {
                                 />
                             </div>
 
-                            <div className="form-group">
+                            <div className="noti-update-form-group">
                                 <label htmlFor="image">Image URL</label>
                                 <input
                                     type="text"
@@ -331,13 +440,13 @@ const Notiupdate = () => {
                                     placeholder="Image URL for notification"
                                 />
                                 {notificationForm.image && (
-                                    <div className="image-preview-small">
+                                    <div className="noti-update-image-preview-small">
                                         <img src={notificationForm.image} alt="Notification preview" />
                                     </div>
                                 )}
                             </div>
 
-                            <div className="form-group">
+                            <div className="noti-update-form-group">
                                 <label htmlFor="type">Type *</label>
                                 <select
                                     id="type"
@@ -354,7 +463,7 @@ const Notiupdate = () => {
                                 </select>
                             </div>
 
-                            <div className="form-group">
+                            <div className="noti-update-form-group">
                                 <label htmlFor="type_id">Type ID *</label>
                                 <input
                                     type="text"
@@ -367,8 +476,8 @@ const Notiupdate = () => {
                                 />
                             </div>
 
-                            <div className="notification-info">
-                                <p className="info-text">
+                            <div className="noti-update-info">
+                                <p className="noti-update-info-text">
                                     <strong>Note:</strong> This notification will be sent to {
                                         notificationType === 'single'
                                             ? 'a specific user'
@@ -377,10 +486,10 @@ const Notiupdate = () => {
                                 </p>
                             </div>
 
-                            <div className="form-actions">
+                            <div className="noti-update-form-actions">
                                 <button
                                     type="submit"
-                                    className={`btn ${notificationType === 'single' ? 'btn-primary' : 'btn-bulk'}`}
+                                    className={`noti-update-btn ${notificationType === 'single' ? 'noti-update-btn-primary' : 'noti-update-btn-bulk'}`}
                                     disabled={notificationLoading}
                                 >
                                     {notificationLoading
@@ -389,7 +498,7 @@ const Notiupdate = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    className="btn btn-secondary"
+                                    className="noti-update-btn noti-update-btn-secondary"
                                     onClick={closeNotificationModal}
                                     disabled={notificationLoading}
                                 >
@@ -401,52 +510,47 @@ const Notiupdate = () => {
                 </div>
             )}
 
-            <h2>{editingId ? "Update Notification" : "Add Notification"}</h2>
-            <form className="notification-form" onSubmit={handleSubmit}>
-                <input
-                    name="category_name"
-                    placeholder="Category Name"
-                    value={formData.category_name}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    name="title"
-                    placeholder="Title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                />
-                <textarea
-                    name="description"
-                    placeholder="Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                />
-                <input type="file" accept="image/jpeg,image/png,image/gif" onChange={handleImageChange} />
-                {preview && (
-                    <img src={preview} alt="preview" className="image-preview" />
-                )}
-                <select name="status" value={formData.status} onChange={handleChange}>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                </select>
-                <button type="submit" disabled={loading}>
-                    {loading ? "Uploading..." : editingId ? "Update" : "Create"}
+            <div className="noti-update-header-row">
+                <h2 style={{ border: "none", margin: 0, padding: 0 }}>Notifications</h2>
+                <button className="noti-update-add-btn" onClick={openAddModal}>
+                    <Plus size={18} /> Add Notification
                 </button>
-            </form>
+            </div>
 
             <div className="notification-list">
                 {notifications.map((item) => (
                     <div className="notification-card" key={item.id}>
+                        <div className="noti-card-title-row" style={{ marginBottom: 14 }}>
+                            <div className="noti-update-category">
+                                <span className="noti-update-status-dot"></span>
+                                <p className="category">
+                                    {item.category_name}
+                                </p>
+                            </div>
+                            <StatusToggle
+                                defaultActive={
+                                    item.status === '1' ? true : false
+                                }
+                                onChange={(isActive) => {
+                                    handleNotificationUpdateSubmit(
+                                        item,
+                                        isActive ? 1 : 0
+                                    );
+                                }}
+                            />
+                        </div>
                         <div className="card-header">
                             <div className="noti-card-title-row">
                                 <div className="noti-title-cat">
                                     <div className="uf-user-initial">
                                         <p className="noti-title-cat"><FaBell fontSize={24} /></p>
                                     </div>
-                                    <h4>{item.title}</h4>
+                                    <h4>
+                                        {item.title.length > 24
+                                            ? item.title.slice(0, 24) + "..."
+                                            : item.title}
+                                        {/* {truncateWords(item.title, 5)} */}
+                                    </h4>
                                 </div>
                                 <div className="notification-icons">
                                     <button
@@ -463,19 +567,25 @@ const Notiupdate = () => {
                                     >
                                         <Send size={18} />
                                     </button>
-                                    <span
+                                    {/* <span
                                         className={`status-label ${item.status === "1" || item.status === 1 ? "active" : "inactive"
                                             }`}
                                     >
                                         {item.status === "1" || item.status === 1 ? "Active" : "Inactive"}
-                                    </span>
+                                    </span> */}
                                 </div>
                             </div>
                         </div>
-                        <p className="category">{item.category_name}</p>
                         <p>{item.description}</p>
                         {item.image && (
-                            <img src={item.image} alt="notification" />
+                            <img
+                                src={item.image || "/assets/lookit.png"}
+                                alt="notification"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/assets/lookit.png";
+                                }}
+                            />
                         )}
                         <div className="card-actions">
                             <button onClick={() => handleEdit(item)}>Edit</button>
