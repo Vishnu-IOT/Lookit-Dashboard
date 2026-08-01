@@ -46,6 +46,7 @@ import CreatorDetails from "./components/CreatorDetails";
 import AccountSettings from "./components/AccountSettings";
 import CreatorPostList from "./components/CreatorPostList";
 import ReportedPosts from "./components/ReportedPosts";
+import ExitBanner from "./components/ExitBanner";
 
 // Dashboard Layout Component
 const DashboardLayout = ({
@@ -86,6 +87,7 @@ const DashboardLayout = ({
       notifications: "Notifications",
       schedule: "Schedule",
       banner: "Banner",
+      "exit-banner": "Explore Banner",
       list: "List",
       article: "Article",
     };
@@ -140,6 +142,7 @@ const DashboardLayout = ({
             <Route path="poll-list" element={<PollList />} />
             <Route path="rasi-upload" element={<Form />} />
             <Route path="content-creator" element={<CreatorList />} />
+            <Route path="exit-banner" element={<ExitBanner />} />
             <Route
               path="creator-details/:channelId"
               element={<CreatorDetails />}

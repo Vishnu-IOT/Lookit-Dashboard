@@ -234,6 +234,11 @@ const Sidebar = ({ isOpen, onClose, activeMenu }) => {
       icon: '/assets/calendarntn.png',
     },
     {
+      name: 'Explore Banner',
+      path: '/exit-banner',
+      icon: '/assets/exitbanner.png',
+    },
+    {
       name: 'Banner',
       path: '/banner',
       icon: '/assets/astrology.png',
