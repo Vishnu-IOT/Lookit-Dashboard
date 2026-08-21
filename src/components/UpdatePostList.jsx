@@ -85,6 +85,7 @@ const UpdatePostList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 15;
   const [totalPosts, setTotalPosts] = useState(0);
+  const [updatesCategory, setUpdatesCategory] = useState([]);
 
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const showToast = (message, type = 'success') => {
@@ -127,6 +128,24 @@ const UpdatePostList = () => {
       alert('Error loading user information. Please login again.');
     }
   };
+
+  // ── Updates Category ────────────────────────────────────────────────────
+  const fetchUpdatesCategories = async () => {
+    axios
+      .get('https://users.mpdatahub.com/api/update-categories')
+      .then((res) => {
+        const allowed = (res.data.data || []).filter(
+          (cat) => cat.status === 1
+        );
+        setUpdatesCategory(allowed);
+      })
+      .catch(() => showToast('Failed to load updates categories', 'error'))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchUpdatesCategories();
+  }, []);
 
   // ── Fetch list ─────────────────────────────────────────────────────────
   const fetchCategories = async () => {
@@ -374,7 +393,7 @@ const UpdatePostList = () => {
     setNotificationForm({
       user_id: type === 'schedule' ? (post.user_id || currentUserId).toString() : '',
       title: post.title || post.category || 'New Update',
-      message: post.description || notificationMessage[post?.category_name],
+      message: post.description || notificationMessage[post?.category_name] || "பிரபஞ்சம் உங்களுக்கு என்ன சொல்ல வருகிறது என்று தெரிந்துகொள்ளுங்கள்!",
       image: post.image || '',
       type: 'POSTER',
       type_id: post.id.toString(),
@@ -785,9 +804,9 @@ const UpdatePostList = () => {
                   required
                 >
                   <option value="">Select a category</option>
-                  {categoryOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
+                  {updatesCategory.map((option) => (
+                    <option key={option.name} value={option.name}>
+                      {option.name}
                     </option>
                   ))}
                 </select>
@@ -967,7 +986,9 @@ const UpdatePostList = () => {
                             {category.category_name ? (
                               // initials(category.category_name)
                               getCategoryIcon(category.category_name)
-
+                              // ?
+                              //   <img className="uf-category-icon" src={getCategoryIcon(category.category_name)} alt={category.category_name} />
+                              //   : <HiOutlineNewspaper />
                             ) : (
                               <IoPersonCircleOutline />
                             )}

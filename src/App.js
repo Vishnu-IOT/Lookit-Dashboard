@@ -47,6 +47,7 @@ import AccountSettings from "./components/AccountSettings";
 import CreatorPostList from "./components/CreatorPostList";
 import ReportedPosts from "./components/ReportedPosts";
 import ExitBanner from "./components/ExitBanner";
+import UpdatesCategory from "./components/UpdatesCategory";
 
 // Dashboard Layout Component
 const DashboardLayout = ({
@@ -83,6 +84,7 @@ const DashboardLayout = ({
       updates: "Updates",
       "add-updates": "Add Updates",
       "list-updates": "List & Edit Updates",
+      "updates-category": "Updates-Category",
       "notification-update": "Notification update",
       notifications: "Notifications",
       schedule: "Schedule",
@@ -160,6 +162,7 @@ const DashboardLayout = ({
             <Route path="today-jobs" element={<Todayjobsform />} />
             <Route path="rasi-list" element={<RasiAllList />} />
             <Route path="updates" element={<Updates />} />
+            <Route path="updates-category" element={<UpdatesCategory />} />
             <Route path="add-updates" element={<UpdatePostForm />} />
             <Route path="list-updates" element={<UpdatePostList />} />
             <Route path="notification-update" element={<Notiupdate />} />

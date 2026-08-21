@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import imageCompression from 'browser-image-compression';
 import '../styles/Updates.css';
+import axios from 'axios';
 
 const categoryOptions = [
   { value: 'NEWS', label: 'News' },
@@ -46,6 +47,7 @@ const UpdatePostForm = () => {
   const [videoSizeError, setVideoSizeError] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState('');
+  const [updatesCategory, setUpdatesCategory] = useState([]);
 
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const showToast = (message, type = 'success') => {
@@ -79,6 +81,23 @@ const UpdatePostForm = () => {
       alert('Error loading user information. Please login again.');
     }
   };
+
+  const fetchUpdatesCategories = async () => {
+    axios
+      .get('https://users.mpdatahub.com/api/update-categories')
+      .then((res) => {
+        const allowed = (res.data.data || []).filter(
+          (cat) => cat.status === 1
+        );
+        setUpdatesCategory(allowed);
+      })
+      .catch(() => showToast('Failed to load updates categories', 'error'))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchUpdatesCategories();
+  }, []);
 
   const compressImage = async (file) => {
     if (!file) return null;
@@ -211,9 +230,9 @@ const UpdatePostForm = () => {
             required
           >
             <option value="">Select a category</option>
-            {categoryOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            {updatesCategory.map((option) => (
+              <option key={option.name} value={option.name}>
+                {option.name}
               </option>
             ))}
           </select>

@@ -153,6 +153,11 @@ const Sidebar = ({ isOpen, onClose, activeMenu }) => {
     //   icon: '/assets/update.png',
     // },
     {
+      name: 'Updates Categories',
+      path: '/updates-category',
+      icon: '/assets/creator.jpg',
+    },
+    {
       name: 'Updates',
       submenus: [
         { name: 'Add Updates', path: '/add-updates', icon: '/assets/add.png' },
