@@ -380,6 +380,7 @@ const Listarticle = () => {
       // FIXED: Use notificationData.image which contains the web_thumbnail
       const basePayload = {
         type: notificationData.type || "ARTICLE",
+        notification_type: "articles",
         type_id:
           notificationData.type_id || selectedPostForNotification.id.toString(),
         post_id: selectedPostForNotification.id.toString(),

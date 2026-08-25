@@ -433,6 +433,7 @@ const UpdatePostList = () => {
           message: notificationForm.message,
           image: notificationForm.image,
           type: notificationForm.type,
+          notification_type: "updates",
           type_id: notificationForm.type_id,
           topic: 'MPeoplesNEWS',
         }
